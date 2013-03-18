@@ -5,7 +5,7 @@ function filters = gabor_filter_bank_2d(size_in, options)
 % wavelet transform.
 %
 % inputs :
-% - size_in : <2x1 int> : size of the input of the scattering
+% - size_in : <1x2 int> : size of the input of the scattering
 % - options : [optional] <1x1 struct> containing the following optional options
 %   - a : <1x1 double> the dilation factor of wavelet
 %   - J : <1x1 int> the maximum scale of wavelets will be a^J
