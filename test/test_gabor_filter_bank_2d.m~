@@ -1,0 +1,6 @@
+size_in = [256, 256];
+
+filters = gabor_filter_bank_2d(size_in);
+
+figure(1);
+display_filter_spatial_all(filters);

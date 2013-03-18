@@ -1,0 +1,17 @@
+function [filt]=display_filter_spatial(filtf, n, rorim)
+% display the spatially centered version of a filters
+% parameters :
+% - filtf : <NxM double> the fourier transform of
+
+if ~exist('rorim','var')
+   rorim='r';
+end
+[H,W] = size(filtf);
+filt = fftshift(ifft2(filtf));
+filt = (filt(floor(H/2)-n+1:floor(H/2)+n+1,floor(W/2)-n+1:floor(W/2)+n+1));
+switch rorim
+   case 'r'
+      imagesc(real(filt));
+   case 'i'
+      imagesc(imag(filt));
+end
