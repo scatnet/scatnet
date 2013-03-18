@@ -1,5 +1,6 @@
 function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset)
 % function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset)
+%
 % 2d elliptic gabor filter
 %
 % WARNING :

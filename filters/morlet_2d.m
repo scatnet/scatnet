@@ -1,5 +1,6 @@
 function gab = morlet_2d(N, M, sigma, slant, xi, theta,offset)
 % function gab = morlet_2d(N, M, sigma, slant, xi, theta,offset)
+%
 % 2d elliptic morlet filter (with analytic formulae)
 %
 % WARNING :

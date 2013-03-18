@@ -1,4 +1,16 @@
 function filters = gabor_filter_bank_2d_all_low_pass(size_in, options)
+% function filters = gabor_filter_bank_2d_all_low_pass(size_in, options)
+%
+% builds a filter bank to compute littlewood-paley
+% wavelet transform 
+%
+% inputs : same as gabor_filter_bank_2d 
+%
+% outputs : same as gabor_filter_bank_2d, plus :
+% - filters.phi_allscale : <nested cell> : filters.phi_allscale{res+1}{j+1}
+%     contains the fourier transform of low pass filter at resolution res
+%     and scale a^j
+
 options.null = 1;
 filters = gabor_filter_bank_2d(size_in,options);
 J = filters.infos.J;

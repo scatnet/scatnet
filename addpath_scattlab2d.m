@@ -1,6 +1,6 @@
 % replace path_to_scattlab2d with the location of the scattlab2d on your
 % system
-path_to_scattlab2d = '/Users/laurentsifre/Dropbox/These/Code/svn/code/scattlab2d';
+path_to_scattlab2d = '/Users/laurentsifre/Dropbox/These/Code/scattlab2d/scattlab2d';
 
 addpath(fullfile(path_to_scattlab2d, 'classification'));
 addpath(fullfile(path_to_scattlab2d, 'core'));

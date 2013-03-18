@@ -1,53 +1,55 @@
-function filters = tiny_wavelets(N, L, display)
-% function filters = tiny_wavelets(N, L, display)
+function filters = tiny_wavelets(N, L)
+% function filters = tiny_wavelets(N, L)
 %
-% compute morlet wavelets filter bank with very small support
+% builds a 1D morlet wavelets filter bank with very small support
 % which will act on the rotation parameter
 % in the roto-translation joint scattering
 %
 % inputs :
-% N : <1x1 int> number of sample (16)
-% L : <1x1 int> maximum scale
-% display = display the wavelet or not
-% Wavelets are stored in fourier domain
-if ~exist('display','var')
-  display = 0;
-end
-% compute a tiny wavelet transform (on N=16 samples)
+% - N : <1x1 int> number of sample, should be two times the number of
+%   orientation of the 2d oriented wavelets
+% - L : <1x1 int> maximum scale
+%
+% outputs :
+% - filters : <1x1 struct> : containing the following fields
+%   - psi : <nested cell> : containing all high pass filters at every
+%     resolution, scale and orientation
+%   - phi : <nested cell> : containing all low pass filters at every
+%     resolution
+%
+% outputs :
+% - filters : <1x1 struct> : containing the following fields
+%   - psi : <1xL cell> : filters.psi{l+1} contains
+%       the fourier transform of high pass filter at scale 2^j
+%   - phi : <1xN double> : filters.phi contains
+%       the fourier transform of low pass filter at scale 2^J
+
 sigma0 = 0.7;
 xi0 = 3*pi/4;
 slant = 1;
 
-%compute wavelet on large support and periodize them to avoid
-%boundary effects
+% compute wavelet on large support NN and periodize them to avoid
+% boundary effects
 K = 16;
 NN = K*N;
 for l=0:L-1
-  %normalization scale since morlet_2d are normalized for 2d
+  % normalization scale since morlet_2d are normalized for 2d
   scale=2^l;
   filterlarge=scale*2*sqrt(2*pi*sigma0^2/slant)*morlet_2d(1,NN,sigma0*scale,slant,xi0/scale,0);
   filter=zeros(1,N);
+  % sum over the K blocks of size N
   for k=1:K
     filter=filter+filterlarge((1:N)+(k-1)*N);
   end
-  if display
-    subplot(L+1,1,l+1);
-    plot(1:N,fftshift(real(filter)),1:N,fftshift(imag(filter)));
-  end
-  %sum(filter)
   filters.psi{l+1}=conj(fft(filter));
 end
 
+%normalization scale since morlet_2d are normalized for 2d
 scale=2^L;
-
 filterlarge=scale*sqrt(2*pi*sigma0^2/slant)*gabor_2d(1,NN,sigma0*scale,slant,0,0);
 filter=zeros(1,N);
 for k=1:K
   filter=filter+filterlarge((1:N)+(k-1)*N);
-end
-if display
-  subplot(L+1,1,L+1);
-  plot(fftshift(real(filter)));
 end
 filters.phi=conj(fft(filter));
 end

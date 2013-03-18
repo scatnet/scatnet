@@ -1,5 +1,7 @@
 function filters = gabor_filter_bank_2d(size_in, options)
-% this functions construct a filter bank to be compute littlewood-paley
+% function filters = gabor_filter_bank_2d(size_in, options)
+%
+% builds a filter bank to compute littlewood-paley
 % wavelet transform.
 %
 % inputs :
@@ -13,15 +15,18 @@ function filters = gabor_filter_bank_2d(size_in, options)
 %   - sigma00 : <1x1 double> the width of the envelope of the high pass psi_0
 %   - xi0 : <1x1 double> the frequency peak of the high_pass psi_0
 %   - slant : <1x1 double> the excentricity of the elliptic enveloppe of
-%   the high_pass psi_0 (the smaller slant, the larger angular resolution)
+%       the high_pass psi_0 (the smaller slant, the larger angular resolution)
 %
 % outputs :
 % - filters : <1x1 struct> : containing the following fields
-%   - psi : <nested cell> : containing all high pass filters at every
-%     resolution, scale and orientation
-%   - phi : <nested cell> : containing all low pass filters at every
-%     resolution
+%   - psi : <nested cell> : filters.psi{res+1}{j+1}{th} contains
+%       the fourier transform of high pass filter at resolution res, 
+%       scale a^j and orientation index th
+%   - phi : <nested cell> : filters.phi{res+1} contains
+%       the fourier transform of low pass filter at resolution res
+%       and scale a^J
 %   - infos : <1x1 struct> : parameters of the wavelets
+
 options.null=1;
 
 a = getoptions(options, 'a', 2);
