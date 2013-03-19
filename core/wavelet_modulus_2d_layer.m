@@ -1,4 +1,27 @@
 function out = wavelet_modulus_2d_layer(previous_layer, filters, downsampler, next_bands, options)
+% function out = wavelet_modulus_2d(x, filters, downsampler, options)
+%
+% apply wavelet transform and complex modulus to a scattering layer 
+%
+% inputs :
+% - previous_layer : <1x1 struct> containing fields :
+%   - sig{p}          : the image of the p-th path of the input layer
+%   - meta.j(p,:)     : the sequence of j (log-a of scale) corresponding to this path
+%   - meta.theta(p,:) : the sequence of theta (orientation) corresponding to this path
+%   - meta.res(p,:)   : the sequence of log2 of resolution corresponding to this path
+% - downsampler : <function_handle> that return the log2 of the downsampling step
+%   as a function of the scale and previous resolution
+% - options : [optional] <1x1 struct> that may contain :
+%   - preserve_l2_norm : [optional] <1x1 bool> wether the downsampling
+%     should preserves the L2 norm of the signal.
+%
+% output :
+% - out : <1x1 struct> containing fields :
+%   - sig{p}          : the image of the p-th path of the output layer
+%   - meta.j(p,:)     : the sequence of j (log-a of scale) corresponding to this path
+%   - meta.theta(p,:) : the sequence of theta (orientation) corresponding to this path
+%   - meta.res(p,:)   : the sequence of log2 of resolution corresponding to this path
+
 options.null = 1;
 preserve_l2_norm = getoptions(options,'preserve_l2_norm',1);
 L = numel(filters.psi{1}{1});

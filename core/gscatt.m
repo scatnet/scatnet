@@ -1,16 +1,32 @@
 function [S, U] = gscatt(in, propagators)
 % function [S, U] = gscatt(in, propagators)
+%
 % this function implements a generic scattering
 % where propagators may be different from one layer to the next.
 %
-% intput :
-% - in : <NxM double> input image
+% intputs :
+% - in : <HxW double> input image
 % - propagators : <1x1 struct> containing fields :
-%   - U : <1xm cell> of <function_handle> to apply successively
-%   - A : <1x(m+1) cell> of <function_handle> to apply after U
+%   - U : <1xM cell> of <function_handle> of wavelet-modulus operators 
+%     to apply successively to the input image 
+%   - A : <1x(M+1) cell> of <function_handle> of averaging operators
+%     to apply after a sequence of U
 %
-% output :
-% - S
+% outputs :
+% - S : <1xM cell> : the output scattering nodes
+%   - S{m+1} : <1x1 struct> : the m-th layer of the scattering. It corresponds to m
+%     applications of wavelet modulus operators followed by a final
+%     application of an averaging operator. It contains fields :
+%     - sig{p}          : the image of the p-th path of the m-th layer
+%     - meta.j(p,:)     : the sequence of j (log-a of scale) corresponding to this path
+%     - meta.theta(p,:) : the sequence of theta (orientation) corresponding to this path
+%     - meta.res(p,:)   : the sequence of log2 of resolution corresponding to this path
+%        NOTE : meta may contains different fields depending on the nature of
+%        the scattering that is being computed (1d, 2d, joint, ...)
+% - U : <1xM cell> of <1x1 struct>: the inner scattering nodes. 
+%   - U{m+1} is the m-th inner layer of the scattering. It corresponds to m
+%     applications of wavelet modulus operators without averaging. It has
+%     the same structure as S
 %
 % NOTE : 
 % propagators can be obtained with a variety of propagators_builder such as :
@@ -34,14 +50,14 @@ function [S, U] = gscatt(in, propagators)
 
 U{1} = in;
 
-for m = 1:numel(propagators.U)
-  % inside node : wavelet modulus operators
+for m = 1 : numel(propagators.U)
+  % inner nodes : wavelet modulus operators
   U{m+1} = propagators.U{m}(U{m});
 end
 
-for m = 1:numel(propagators.A)
-  % outside node : averaging
-  S{m}  = propagators.A{m}(U{m});
+for m = 0 : numel(propagators.A)-1
+  % outside nodes : inner nodes + averaging
+  S{m+1}  = propagators.A{m+1}(U{m+1});
 end
 
 
