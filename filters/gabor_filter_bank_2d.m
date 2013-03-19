@@ -5,27 +5,25 @@ function filters = gabor_filter_bank_2d(size_in, options)
 % wavelet transform.
 %
 % inputs :
-% - size_in : <1x2 int> : size of the input of the scattering
-% - options : [optional] <1x1 struct> containing the following optional options
-%   - a : <1x1 double> the dilation factor of wavelet
-%   - J : <1x1 int> the maximum scale of wavelets will be a^J
-%   - L : <1x1 int> the number of orientations
+% - size_in : <1x2 int> size of the input of the scattering
+% - options : [optional] <1x1 struct> contains the following optional fields
+%   - a        : <1x1 double> the dilation factor of wavelet
+%   - J        : <1x1 int> the maximum scale of wavelets will be a^J
+%   - L        : <1x1 int> the number of orientations
 %   - gab_type : <string> the kind of wavelets used
-%   - sigma0 : <1x1 double> the width of the low pass phi_0
-%   - sigma00 : <1x1 double> the width of the envelope of the high pass psi_0
-%   - xi0 : <1x1 double> the frequency peak of the high_pass psi_0
-%   - slant : <1x1 double> the excentricity of the elliptic enveloppe of
+%   - sigma0   : <1x1 double> the width of the low pass phi_0
+%   - sigma00  : <1x1 double> the width of the envelope of the high pass psi_0
+%   - xi0      : <1x1 double> the frequency peak of the high_pass psi_0
+%   - slant    : <1x1 double> the excentricity of the elliptic enveloppe of
 %       the high_pass psi_0 (the smaller slant, the larger angular resolution)
 %
 % outputs :
-% - filters : <1x1 struct> : containing the following fields
-%   - psi : <nested cell> : filters.psi{res+1}{j+1}{th} contains
-%       the fourier transform of high pass filter at resolution res, 
-%       scale a^j and orientation index th
-%   - phi : <nested cell> : filters.phi{res+1} contains
-%       the fourier transform of low pass filter at resolution res
-%       and scale a^J
-%   - infos : <1x1 struct> : parameters of the wavelets
+% - filters : <1x1 struct> contains the following fields
+%   - psi{res+1}{j+1}{th} : <nested cell> the fourier transform of 
+%       high pass filter at resolution res, scale a^j and orientation index th
+%   - phi{res+1}          : <nested cell> the fourier transform of 
+%       low pass filter at resolution res and scale a^J
+%   - infos : <1x1 struct> parameters of the wavelets
 
 options.null=1;
 

@@ -1,4 +1,9 @@
-function out = lowpass_2d_layer(previous_layer,filters,downsampler,options)
+function out = lowpass_2d_layer(previous_layer, filters, downsampler, options)
+% function out = lowpass_2d_layer(previous_layer, filters, downsampler, options)
+%
+% apply spatial averaging to a scattering layer
+%
+%
 if (numel(previous_layer.sig)==0)
   out.sig = {};
   return

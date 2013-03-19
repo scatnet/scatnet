@@ -11,18 +11,11 @@ function filters = tiny_wavelets(N, L)
 % - L : <1x1 int> maximum scale
 %
 % outputs :
-% - filters : <1x1 struct> : containing the following fields
-%   - psi : <nested cell> : containing all high pass filters at every
-%     resolution, scale and orientation
-%   - phi : <nested cell> : containing all low pass filters at every
-%     resolution
-%
-% outputs :
-% - filters : <1x1 struct> : containing the following fields
-%   - psi : <1xL cell> : filters.psi{l+1} contains
-%       the fourier transform of high pass filter at scale 2^j
-%   - phi : <1xN double> : filters.phi contains
-%       the fourier transform of low pass filter at scale 2^J
+% - filters : <1x1 struct> contains the following fields
+%   - psi{l+1}: <1xL cell> the fourier transform of 
+%       high pass filter at scale 2^l
+%   - phi     : <1xN double> the fourier transform of 
+%       low pass filter 
 
 sigma0 = 0.7;
 xi0 = 3*pi/4;

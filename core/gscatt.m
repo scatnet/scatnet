@@ -2,15 +2,15 @@ function [S, U] = gscatt(in, propagators)
 % function [S, U] = gscatt(in, propagators)
 %
 % this function implements a generic scattering
-% where propagators may be different from one layer to the next.
+% where propagators may be different from one layer to the next
 %
 % intputs :
 % - in : <HxW double> input image
-% - propagators : <1x1 struct> containing fields :
-%   - U : <1xM cell> of <function_handle> of wavelet-modulus operators 
-%     to apply successively to the input image 
-%   - A : <1x(M+1) cell> of <function_handle> of averaging operators
-%     to apply after a sequence of U
+% - propagators : <1x1 struct> contains the following fields :
+%   - U{m} : <function_handle> the m-th wavelet-modulus operators to apply 
+%       successively to the input image 
+%   - A{m+1} : <function_handle> the m-th averaging operator to apply after
+%     to apply after U{m}
 %
 % outputs :
 % - S : <1xM cell> : the output scattering nodes
