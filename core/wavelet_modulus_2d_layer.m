@@ -9,13 +9,11 @@ function out = wavelet_modulus_2d_layer(previous_layer, filters, downsampler, ne
 %   - meta.j(p,:)     : the sequence of j (log-a of scale) corresponding to this path
 %   - meta.theta(p,:) : the sequence of theta (orientation) corresponding to this path
 %   - meta.res(p,:)   : the sequence of log2 of resolution corresponding to this path
-% - filters : <1x1 struct> : contains the following fields :
-%   - psi : <nested cell> : filters.psi{res+1}{j+1}{th} contains
-%       the fourier transform of high pass filter at resolution res, 
-%       scale a^j and orientation index th
-%   - phi : <nested cell> : filters.phi{res+1} contains
-%       the fourier transform of low pass filter at resolution res
-%       and scale a^J
+% - filters : <1x1 struct> contains the following fields
+%   - psi{res+1}{j+1}{th} : the fourier transform of high pass filter 
+%     at resolution res, scale a^j and orientation index th
+%   - phi{res+1}          :  the fourier transform of low pass filter 
+%     at resolution res and scale a^J
 % - downsampler : <function_handle> : returns the log2 of the downsampling step
 %   as a function of next j (log-a of scale) and previous resolution
 % - options : [optional] <1x1 struct> : may contain :

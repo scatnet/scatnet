@@ -7,8 +7,8 @@ function filters = gabor_filter_bank_2d_all_low_pass(size_in, options)
 % inputs : same as gabor_filter_bank_2d 
 %
 % outputs : same as gabor_filter_bank_2d, plus :
-% - filters.phi_allscale{res+1}{j+1} : <nested cell> the fourier transform 
-%     of low pass filter at resolution res and scale a^j
+% - filters.phi_allscale{res+1}{j+1} : the fourier transform of low pass filter 
+%   at resolution res and scale a^j
 
 options.null = 1;
 filters = gabor_filter_bank_2d(size_in,options);

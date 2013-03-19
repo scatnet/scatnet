@@ -5,13 +5,11 @@ function out = lowpass_2d(x, filters, downsampler, options)
 %
 % inputs :
 % - x : <NxM double> : input image
-% - filters : <1x1 struct> : contains the following fields
-%   - psi : <nested cell> : filters.psi{res+1}{j+1}{th} contains
-%       the fourier transform of high pass filter at resolution res, 
-%       scale a^j and orientation index th
-%   - phi : <nested cell> : filters.phi{res+1} contains
-%       the fourier transform of low pass filter at resolution res
-%       and scale a^J
+% - filters : <1x1 struct> contains the following fields
+%   - psi{res+1}{j+1}{th} : the fourier transform of high pass filter 
+%     at resolution res, scale a^j and orientation index th
+%   - phi{res+1}          :  the fourier transform of low pass filter 
+%     at resolution res and scale a^J
 % - downsampler : <function_handle> : returns the log2 of the downsampling step
 %   as a function of the j (log-a of scale)
 % - options     : [optional] <1x1 struct> : may contain :
@@ -20,7 +18,7 @@ function out = lowpass_2d(x, filters, downsampler, options)
 %
 % output :
 % - out : <1x1 struct> : contains the following fields :
-%   - sig{1} : <?x? double> the spatialy averaged image
+%   - sig{1} : the spatialy averaged image
 
 options.null = 1;
 preserve_l2_norm = getoptions(options,'preserve_l2_norm',1);

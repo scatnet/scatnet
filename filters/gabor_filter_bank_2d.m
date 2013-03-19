@@ -19,10 +19,10 @@ function filters = gabor_filter_bank_2d(size_in, options)
 %
 % outputs :
 % - filters : <1x1 struct> contains the following fields
-%   - psi{res+1}{j+1}{th} : <nested cell> the fourier transform of 
-%       high pass filter at resolution res, scale a^j and orientation index th
-%   - phi{res+1}          : <nested cell> the fourier transform of 
-%       low pass filter at resolution res and scale a^J
+%   - psi{res+1}{j+1}{th} : the fourier transform of high pass filter 
+%     at resolution res, scale a^j and orientation index th
+%   - phi{res+1}          :  the fourier transform of low pass filter 
+%     at resolution res and scale a^J
 %   - infos : <1x1 struct> parameters of the wavelets
 
 options.null=1;

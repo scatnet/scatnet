@@ -13,8 +13,8 @@ function [S, U] = gscatt(in, propagators)
 %     to apply after U{m}
 %
 % outputs :
-% - S : <1xM cell> : the output scattering nodes
-%   - S{m+1} : <1x1 struct> : the m-th layer of the scattering. It corresponds to m
+% - S : <1xM cell> the output scattering nodes
+%   - S{m+1} : <1x1 struct> the m-th layer of the scattering. It corresponds to m
 %     applications of wavelet modulus operators followed by a final
 %     application of an averaging operator. It contains fields :
 %     - sig{p}          : the image of the p-th path of the m-th layer
@@ -23,8 +23,8 @@ function [S, U] = gscatt(in, propagators)
 %     - meta.res(p,:)   : the sequence of log2 of resolution corresponding to this path
 %        NOTE : meta may contains different fields depending on the nature of
 %        the scattering that is being computed (1d, 2d, joint, ...)
-% - U : <1xM cell> of <1x1 struct>: the inner scattering nodes. 
-%   - U{m+1} is the m-th inner layer of the scattering. It corresponds to m
+% - U : <1xM cell> the inner scattering nodes. 
+%   - U{m+1} : <1x1 struct> the m-th inner layer of the scattering. It corresponds to m
 %     applications of wavelet modulus operators without averaging. It has
 %     the same structure as S
 %
