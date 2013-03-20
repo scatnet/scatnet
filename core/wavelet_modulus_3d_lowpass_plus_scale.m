@@ -1,20 +1,19 @@
-function [out,partial] = wavelet_modulus_3d(previous_layer, filters, filters_rotation, ...
+function [out,partial] = wavelet_modulus_3d_lowpass_plus_scale(previous_layer, filters, filters_rotation, ...
   downsampler, downsampler_rotation , ...
-  next_bands, options )
+  next_bands, next_bands_lp, options )
 % second layer 3d wavelet transform
-
+% with separable spatial+rotation wavelets
+rotation_spatial_separable = getoptions(options,'rotation_spatial_separable',0);
 preserve_l2_norm = getoptions(options,'preserve_l2_norm',1);
-
-
 L = numel(filters.psi{1}{1});
 J = numel(filters.psi{1});
 J_rot = numel(filters_rotation.psi);
 % spatial filtering
 p2 = 1;
 for p = 1:numel(previous_layer.sig)
-  res = previous_layer.meta.res(p, :);
-  j = previous_layer.meta.j(p, :);
-  theta = previous_layer.meta.theta(p, :);
+  res = previous_layer.meta.res(p,:);
+  j = previous_layer.meta.j(p,:);
+  theta = previous_layer.meta.theta(p,:);
   lastj = j(end);
   lastres = res(end);
   
@@ -27,27 +26,34 @@ for p = 1:numel(previous_layer.sig)
       % spatial filtering
       wx =  ifft2( xf .* filters.psi{lastres+1}{nextj+1}{nexttheta} ) ;
       % spatial downsampling
-      ds = downsampler(nextj, lastres);
-      partial.sig{p2} = downsampling_2d(wx, ds, preserve_l2_norm);
+      ds = downsampler(nextj,lastres);
+      partial.sig{p2} = downsampling_2d(wx,ds,preserve_l2_norm);
       % store meta
-      partial.meta.j(p2,:) = [j, nextj];
-      partial.meta.theta(p2,:) = [theta, nexttheta];
-      partial.meta.res(p2,:) = [res, lastres + ds];
+      partial.meta.j(p2,:) = [j,nextj];
+      partial.meta.theta(p2,:) = [theta,nexttheta];
+      partial.meta.res(p2,:) = [res,lastres + ds];
       p2 = p2 + 1;
     end
   end
   
-  % low pass spatial
-  % filter
-  wx = ifft2( xf .* filters.phi{lastres+1} );
-  % sptatial downsampling
-  ds = downsampler(J,lastres);
-  % store meta
-  partial.sig{p2} = downsampling_2d(wx, ds, preserve_l2_norm);
-  partial.meta.j(p2,:) = [j, J];
-  partial.meta.theta(p2,:) = [theta, -1];
-  partial.meta.res(p2,:) = [res, lastres + ds];
-  p2 = p2 + 1;
+  % DIFF FROM NON PLUS SCALE VERSION
+  % low pass spatial : all scale from J-delta_J_max + 1 :J
+  nblp = next_bands_lp(lastj);
+  for nextj = nblp
+    % filter
+    wx = ifft2( xf .* filters.phi_allscale{lastres+1}{nextj+1} );
+    % sptatial downsampling
+    % ds = downsampler(J,lastres); AIE AIE AIE big bug
+    ds = downsampler(nextj,lastres);
+    
+    % store meta
+    partial.sig{p2} = downsampling_2d(wx,ds,preserve_l2_norm);
+    partial.meta.j(p2,:) = [j,nextj];
+    partial.meta.theta(p2,:) = [theta, -1 ];
+    partial.meta.res(p2,:) = [res, lastres + ds ];
+    p2 = p2 + 1;
+  end
+  
 end
 
 % compute 3d orbits
@@ -59,36 +65,35 @@ for p2 = 1:numel(partial.sig)
     j = partial.meta.j(p2,:);
     theta = partial.meta.theta(p2,:);
     
-    % compute rotation orbits
-    orbit = zeros([size(partial.sig{p2}),2*L]);
-    if theta(2) == -1 % spatial low pass do not have varying theta2
-      for theta_offset = 1:2*L
-        theta1_mod0L = 1 + mod(theta(1) + theta_offset -1, L);
-        p2_offset = find(partial.meta.j(:,1) == j(1) & ...
-          partial.meta.j(:,2) == j(2) & ...
-          partial.meta.theta(:,1) == theta1_mod0L);
-        not_yet_in_an_orbit(p2_offset) = 0;
-        orbit(:,:,theta_offset) = partial.sig{p2_offset};
-      end
+    % find the orbit :
+    if (rotation_spatial_separable)
+      p2_orbit = find( partial.meta.j(:,1) == j(1) & ...
+        partial.meta.j(:,2) == j(2) & ...
+        partial.meta.theta(:,2) == theta(2));
     else
-      for theta_offset = 1:2*L
-        theta1_mod0L = 1 + mod(theta(1) + theta_offset -1, L);
-        theta2_mod02L = 1 + mod(theta(2) + theta_offset -1, 2*L);
-        theta2_mod0L = 1 + mod(theta(2) + theta_offset -1, L);
-        p2_offset = find(partial.meta.j(:,1) == j(1) & ...
+      if theta(2) == -1
+        % spatial low pass do not have varying theta2
+        p2_orbit = find( partial.meta.j(:,1) == j(1) & ...
+          partial.meta.j(:,2) == j(2) );
+      else
+        p2_orbit = find( partial.meta.j(:,1) == j(1) & ...
           partial.meta.j(:,2) == j(2) & ...
-          partial.meta.theta(:,1) == theta1_mod0L & ...
-          partial.meta.theta(:,2) == theta2_mod0L);
-        not_yet_in_an_orbit(p2_offset) = 0;
-        if (theta2_mod02L <= L)
-          orbit(:, :, theta_offset) = partial.sig{p2_offset};
-        else % complex conjugate simulate filters with opposite direction for angle >= pi
-          orbit(:, :, theta_offset) = conj(partial.sig{p2_offset});
-        end
+          mod(partial.meta.theta(:,2) - partial.meta.theta(:,1), L) == ...
+          mod(theta(2)- theta(1), L));
       end
     end
     
-    % compute 1d fft along orbits (direction 3)
+    not_yet_in_an_orbit(p2_orbit) = 0;
+    % allocate and fill the orbit in a 3d matrix
+    % NEW : the orbit is now of size 2L
+    orbit = zeros([size(partial.sig{p2}),2*L]);
+    for theta1 = 1:L
+      p2_theta1 = p2_orbit(partial.meta.theta(p2_orbit,1) == theta1 );
+      orbit(:,:,theta1) = partial.sig{p2_theta1};
+      orbit(:,:,theta1 + L) = conj(partial.sig{p2_theta1});
+    end
+    
+    % compute 1d fft along direction 3
     orbitf = fft(orbit, [], 3);
     
     % high pass rotation
@@ -100,7 +105,7 @@ for p2 = 1:numel(partial.sig)
       ux = abs(ifft(  orbitf .* filt_rot, [], 3 ));
       % subsample
       ds = downsampler_rotation(j_rot);
-      for theta1_downsampled = 1:2^ds:2*L
+      for theta1_downsampled = 1:2^ds:L
         % store signal
         out.sig{p3} = ux(:,:,theta1_downsampled);
         % store meta
@@ -123,7 +128,7 @@ for p2 = 1:numel(partial.sig)
       ux = abs(ifft(  orbitf .* filt_rot, [], 3 ));
       % subsample
       ds = downsampler_rotation(J_rot);
-      for theta1_downsampled = 1:2^ds:2*L
+      for theta1_downsampled = 1:2^ds:L
         % store signal
         out.sig{p3} = ux(:,:,theta1_downsampled);
         % store meta

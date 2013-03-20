@@ -1,7 +1,6 @@
-function out = lowpass_3d_layer(previous_layer, filters, downsampler,options)
+function out = lowpass_3d_layer(previous_layer, filters, downsampler, options)
 if (isfield(previous_layer.meta,'theta1_downsampled'))
   previous_layer_order = 2;
-  rotation_spatial_separable = getoptions(options,'rotation_spatial_separable',0);
 else
   previous_layer_order = 1;
 end
@@ -26,19 +25,14 @@ for p = 1:numel(previous_layer.sig)
         not_yet_in_an_orbit(orbit) = 0;
       case 2
         j_rot = previous_layer.meta.j_rot(p,:);
-        if rotation_spatial_separable
-          orbit =  find(previous_layer.meta.j(:,1) == j(1) & ...
-            previous_layer.meta.j(:,2) == j(2) & ...
-            previous_layer.meta.j_rot(:,1) == j_rot(1) );
-          not_yet_in_an_orbit(orbit) = 0;
-        else
-          theta2 = previous_layer.meta.theta2(p,1) ;
-          orbit =  find(previous_layer.meta.j(:,1) == j(1) & ...
-            previous_layer.meta.j(:,2) == j(2) & ...
-            previous_layer.meta.j_rot(:,1) == j_rot(1) & ...
-            previous_layer.meta.theta2(:,1) == theta2);
-          not_yet_in_an_orbit(orbit) = 0;
-        end
+        
+        theta2 = previous_layer.meta.theta2(p,1) ;
+        orbit =  find(previous_layer.meta.j(:,1) == j(1) & ...
+          previous_layer.meta.j(:,2) == j(2) & ...
+          previous_layer.meta.j_rot(:,1) == j_rot(1) & ...
+          previous_layer.meta.theta2(:,1) == theta2);
+        not_yet_in_an_orbit(orbit) = 0;
+        
     end
     
     % average over the orbits :
@@ -64,10 +58,8 @@ for p = 1:numel(previous_layer.sig)
       case 1
       case 2
         out.meta.j_rot(p2,:) = j_rot;
-        if rotation_spatial_separable
-        else
-          out.meta.theta2(p2,:) = theta2;
-        end
+        out.meta.theta2(p2,:) = theta2;
+        
     end
     out.meta.res(p2,:) = [res, lastres + ds];
     p2 = p2 + 1;

@@ -9,7 +9,10 @@ end
 numel_per_width= zeros(10000,1);
 numel_per_height = zeros(10000,1);
 if (~isfield(Scatt,'sig'))
-  Scatt.sig = Scatt;
+  
+  Scatt2 = Scatt;
+  clear Scatt; % avoid warning
+  Scatt.sig = Scatt2;
 end
 if (size(Scatt.sig{1},3)==3)
   for rgb = 1:3

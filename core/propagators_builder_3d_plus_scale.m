@@ -59,7 +59,7 @@ next_bands =  @(j)(next_bands_4d(j,J ,offset_j_min, delta_j, delta_J_max));
 next_bands_lp = @(j)(next_bands_4d_lowpass(j,J, 1,delta_j, delta_J_max));
 
 % rotation stuff
-filters_rotation = tiny_wavelets(2*options_filters.L,3,0);
+filters_rotation = tiny_wavelets(2*options_filters.L,3);
 downsampler_rotation = @(j_rot) (max( j_rot - aa_rot, 0));
 if (getoptions(options,'output_filters',0)) % output the filter bank if requested
   propagators.filters_rotation = filters_rotation;
