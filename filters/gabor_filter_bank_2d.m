@@ -36,10 +36,10 @@ if isfield(options, 'a')
 end
 
 gab_type = getoptions(options, 'gab_type', 'morlet_noDC');
-sigma0 = getoptions(options, 'sigma0', 1);
-slant = getoptions(options, 'slant', 0.5);
-xi0 = getoptions(options, 'xi0', 3*pi/4);
-sigma00=getoptions(options,'sigma00', 0.8);
+sigma0   = getoptions(options, 'sigma0',   1);
+slant    = getoptions(options, 'slant',    0.5);
+xi0      = getoptions(options, 'xi0',      3*pi/4);
+sigma00  = getoptions(options, 'sigma00',  0.8);
 
 switch gab_type
   case 'gabor'
