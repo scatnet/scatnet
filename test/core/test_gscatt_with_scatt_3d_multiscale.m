@@ -1,5 +1,5 @@
 x = uiuc_sample;
-x = x(1:143,1:127);
+
 
 clear options;
 options.L = 8;
@@ -9,7 +9,7 @@ J = options.J;
 
 
 % compute propagators
-propagators = propagators_builder_3d(size(x), options);
+propagators = propagators_builder_3d_multiscale(size(x), options);
 
 % compute scattering
 [S, U] = gscatt(x, propagators);
