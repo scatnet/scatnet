@@ -9,3 +9,4 @@ so that matlab does the addpath automatically when it starts
 
 addpath /path/to/scattlab;
 addpath_scattlab;
+
