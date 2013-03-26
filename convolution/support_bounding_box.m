@@ -1,5 +1,9 @@
-function half_bb_length = support_bounding_box(filter_spatial, error_threshold)
+function half_bb_length = support_bounding_box(filter_spatial, options)
+
 %%
+options.null = 1;
+relative_error = getoptions(options, 'relative_error', 1E-2);
+
 [N, M] = size(filter_spatial);
 
 % energy
@@ -28,5 +32,5 @@ eng_ctr_cs = cumsum(cumsum(eng_ctr,1),2);
 eng_ctr_cs_diag = diag(eng_ctr_cs);
 
 % find first
-half_bb_length = find(eng_ctr_cs_diag> 1-error_threshold, 1, 'first');
-half_bb_length
+half_bb_length = find(eng_ctr_cs_diag> 1-relative_error, 1, 'first');
+
