@@ -1,21 +1,27 @@
-function energy = energize(U)
-% function energy = ernergize(U)
+function energy = energize(S, U)
+% function energy = energize(S, U)
 %
-% compute the sum of the energy of all layers
-
+% compute the sum of the energy of all scattering layers
 
 energy = 0;
 
-if (iscell(U))
-  for m = 1:numel(U)
-    energy = energize(U{m});
+if (exist('U', 'var'))
+  energy = energize(S) + energize(U);
+else
+  
+  if (iscell(S))
+    for m = 1:numel(S)
+      energy = energize(S{m});
+    end
+  else
+    
+    for p = 1:numel(S.sig)
+      sig = S.sig{p};
+      energy = energy + sum(abs(sig(:)).^2);
+    end
+    
   end
+  
 end
-
-for p = 1:numel(U.sig)
-  sig = U.sig{p};
-  energy = energy + sum(abs(sig(:)).^2);
-end
-
 end
 
