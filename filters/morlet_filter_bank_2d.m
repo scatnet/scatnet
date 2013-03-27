@@ -28,7 +28,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 %   - psi.meta.theta(p,1) : its orientation scale
 %   - phi.filter.type     : <string>'fourier_multires'
 %   - phi.filter.coefft
-%   - phi.meta.k(p,1)   
+%   - phi.meta.k(p,1)
 
 %   - meta : <1x1 struct> global parameters of the filter bank
 
@@ -38,7 +38,7 @@ v = getoptions(options,        'v',        1); % number of scale per octave
 nb_scale = getoptions(options, 'nb_scale', 4); % total number of scales
 nb_angle = getoptions(options, 'nb_angle', 8); % number of orientations
 
-sigma_phi  = getoptions(options, 'sigma_phi',   1); 
+sigma_phi  = getoptions(options, 'sigma_phi',   0.8);
 sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
 xi_psi     = getoptions(options, 'xi_psi',     3*pi/4);
 slant_psi  = getoptions(options, 'slant_psi',  0.5);
@@ -46,45 +46,59 @@ slant_psi  = getoptions(options, 'slant_psi',  0.5);
 res_max = floor(nb_scale/v);
 
 % compute low pass filters phi
-filters.phi.filter.type = 'fourier_multires';
+phi.filter.type = 'fourier_multires';
+
+% compute all resolution of the filters
 for res = 0:res_max
+  
   N = ceil(size_in(1) / 2^res);
   M = ceil(size_in(2) / 2^res);
-  scale = 2^((nb_scale-1) / v);
-  filter_spatial = sqrt(2) * gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
-  filters.phi.filter.coefft{res+1} = fft2(filter_spatial);
-end
-
-% compute high pass filters psi
-angles = (0:nb_angle-1)  * pi / nb_angle;
-p = 1;
-for k = 1:nb_scale
-  for theta = 1:numel(angles)
-    angle = angles(theta);
-    
-    % compute all resolution of the filters
-    filters.psi.filter{p}.type = 'fourier_multires';
-    for res = 0:res_max
-      N = ceil(size_in(1) / 2^res);
-      M = ceil(size_in(2) / 2^res);
+  scale = 2^((nb_scale-1) / v - res);
+  filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
+  phi.filter.coefft{res+1} = fft2(filter_spatial);
+  
+  
+  littlewood_final = zeros(N, M);
+  % compute high pass filters psi
+  angles = (0:nb_angle-1)  * pi / nb_angle;
+  p = 1;
+  for k = 1:nb_scale
+    for theta = 1:numel(angles)
+      
+      psi.filter{p}.type = 'fourier_multires';
+      
+      angle = angles(theta);
       scale = 2^((k-1)/v - res);
       if (scale >= 1)
-          filter_spatial = morlet_2d_noDC(N, ...
-            M,...
-            sigma_psi*scale,...
-            slant_psi,...
-            xi_psi/scale,...
-            angle) ;
-          filters.psi.filter{p}.coefft{res+1} = fft2(filter_spatial);
-       % littlewood_final = littlewood_final + abs(psif{res+1}{j+1}{th}).^2;
+        filter_spatial = morlet_2d_noDC(N, ...
+          M,...
+          sigma_psi*scale,...
+          slant_psi,...
+          xi_psi/scale,...
+          angle) ;
+        psi.filter{p}.coefft{res+1} = fft2(filter_spatial);
+        littlewood_final = littlewood_final + abs(psi.filter{p}.coefft{res+1}).^2;
       end
+      
+      psi.meta.k(p,1) = k;
+      psi.meta.theta(p,1) = theta;
+      p = p + 1;
     end
-    
-    filters.psi.meta.k(p,1) = k;
-    filters.psi.meta.theta(p,1) = theta;
-    p = p + 1;
+  end
+  
+  % second pass : renormalize psi by max of littlewood paley to have
+  % an almost unitary operator
+  % NOTE : phi must not be renormalized since we want its mean to be 1
+  K = max(littlewood_final(:));
+  for p = 1:numel(psi.filter)
+    if (numel(psi.filter{p}.coefft)>=res+1)
+      psi.filter{p}.coefft{res+1} = psi.filter{p}.coefft{res+1} / sqrt(K/2);
+    end
   end
 end
+
+filters.phi = phi;
+filters.psi = psi;
 
 filters.meta.v = v;
 filters.meta.nb_scale = nb_scale;

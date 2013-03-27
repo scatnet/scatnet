@@ -1,4 +1,4 @@
-function img = display_littlewood_paley(filters)
+function img = display_littlewood_paley_2d(filters)
 % function img = display_littlewood_paley(filterbank)
 % display the littlehood paley of the fine-resolution filters of the
 % filterbank
@@ -7,10 +7,10 @@ function img = display_littlewood_paley(filters)
 %
 % input :
 % - filters : <1x1 struct> filter bank typically obtained with
-%       gabor_filter_bank_2d.m
+%       morlet_filter_bank_2d.m
 % output :
 % - img : <NxM double> image of the littlewood paley
 
-lp = littlewood_paley(filters);
+lp = littlewood_paley_2d(filters);
 img = fftshift(lp{1});
 imagesc(img);
