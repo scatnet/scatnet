@@ -1,5 +1,5 @@
 function filters = morlet_filter_bank_2d(size_in, options)
-% function filters = gabor_filter_bank_2d(size_in, options)
+% function filters = morlet_filter_bank_2d(size_in, options)
 %
 % builds a filter bank to compute littlewood-paley
 % wavelet transform.
@@ -26,7 +26,6 @@ function filters = morlet_filter_bank_2d(size_in, options)
 %                          of the p high pass filter at resolution res
 %   - psi{p}.meta.k     : its scale index
 %   - psi{p}.meta.theta : its orientation scale
-
 %   - phi{p}.filter.type : <string>'fourier_multires'
 %   - phi{p}.meta.k
 
@@ -38,7 +37,7 @@ v = getoptions(options,        'v',        1); % number of scale per octave
 nb_scale = getoptions(options, 'nb_scale', 4); % total number of scales
 nb_angle = getoptions(options, 'nb_angle', 8); % number of orientations
 
-sigma_phi  = getoptions(options, 'sigma_phi',   1);
+sigma_phi  = getoptions(options, 'sigma_phi',   1); 
 sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
 xi_psi     = getoptions(options, 'xi_psi',     3*pi/4);
 slant_psi  = getoptions(options, 'slant_psi',  0.5);
@@ -54,7 +53,6 @@ for res = 0:res_max
   filter_spatial = sqrt(2) * gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
   filters.phi.filter.coefft{res+1} = fft2(filter_spatial);
 end
-
 
 % compute high pass filters psi
 angles = (0:nb_angle-1)  * pi / nb_angle;
@@ -94,54 +92,5 @@ filters.meta.sigma_phi = sigma_phi;
 filters.meta.sigma_psi = sigma_psi;
 filters.meta.xi_psi = xi_psi;
 filters.meta.slant_psi = slant_psi;
-
-
-
-
-%
-% thetas = (0:2*L-1)  * pi / L; % DEPREC
-% for res = 0:floor(log2(a)*(J-1))
-%   N = ceil(size_in(1)/2^res);
-%   M = ceil(size_in(2)/2^res);
-%
-%   scale = a^(J-1)*2^(-res);
-%   phif{res+1} = sqrt(2)*fft2(gabor_2d(N, M, sigma0*scale, 1, 0, 0));%no slant for low freq
-%
-%   %compute high pass filters psif{j}{theta}
-%   littlewood_final = abs(phif{res+1}).^2;
-%   for j = floor(res/log2(a)):(J-1)
-%     for th = 1:numel(thetas);
-%       theta = thetas(th);
-%       scale = a^j*2^(-res);
-%       psif{res+1}{j+1}{th} = ...
-%         fft2(gab(N, M, sigma00*scale, slant, xi0/scale,theta) );
-%       littlewood_final = littlewood_final + abs(psif{res+1}{j+1}{th}).^2;
-%     end
-%   end
-%
-%   %get max of littlewood paley
-%   K=max(max(littlewood_final));
-%   % divide filters to have littlewood paley between 1-epsilon and 1
-%   phif{res+1}=phif{res+1}/sqrt(K);
-%   for j=floor(res/log2(a)):(J-1)
-%     for th=1:numel(thetas)/2;
-%       psif2{res+1}{j+1}{th}=sqrt(2/K)*psif{res+1}{j+1}{th};
-%     end
-%   end
-%
-%   filters.psi = psif2;
-%   filters.phi = phif;
-% end
-%
-%
-% filters.infos.gab_type = gab_type;
-% filters.infos.sigma0 = sigma0;
-% filters.infos.sigma00 = sigma00;
-% filters.infos.slant = slant;
-% filters.infos.xi0 = xi0;
-% filters.infos.a = a;
-% filters.infos.L = L;
-% filters.infos.J = J;
-% filters.infos.K = K;
 
 end

@@ -32,7 +32,6 @@ end
 big_img((1:N), (1:N)) = real(filt_for_disp)/M;
 big_img((1:N)+N ,(1:N)) = imag(filt_for_disp)/M;
 
-
 % high pass
 for p = 1:numel(filters.psi)
   filter = filters.psi{p}.filter;
