@@ -21,13 +21,14 @@ function filters = morlet_filter_bank_2d(size_in, options)
 %
 % outputs :
 % - filters : <1x1 struct> contains the following fields
-%   - psi{p}.filter.type : <string> 'fourier_multires'
-%   - psi{p}.filter.coefft{res+1} : <?x? double> the fourier transform
+%   - psi.filter{p}.type : <string> 'fourier_multires'
+%   - psi.filter{p}.coefft{res+1} : <?x? double> the fourier transform
 %                          of the p high pass filter at resolution res
-%   - psi{p}.meta.k     : its scale index
-%   - psi{p}.meta.theta : its orientation scale
-%   - phi{p}.filter.type : <string>'fourier_multires'
-%   - phi{p}.meta.k
+%   - psi.meta.k(p,1)     : its scale index
+%   - psi.meta.theta(p,1) : its orientation scale
+%   - phi.filter.type     : <string>'fourier_multires'
+%   - phi.filter.coefft
+%   - phi.meta.k(p,1)   
 
 %   - meta : <1x1 struct> global parameters of the filter bank
 
@@ -62,7 +63,7 @@ for k = 1:nb_scale
     angle = angles(theta);
     
     % compute all resolution of the filters
-    filters.psi{p}.filter.type = 'fourier_multires';
+    filters.psi.filter{p}.type = 'fourier_multires';
     for res = 0:res_max
       N = ceil(size_in(1) / 2^res);
       M = ceil(size_in(2) / 2^res);
@@ -74,13 +75,13 @@ for k = 1:nb_scale
             slant_psi,...
             xi_psi/scale,...
             angle) ;
-          filters.psi{p}.filter.coefft{res+1} = fft2(filter_spatial);
+          filters.psi.filter{p}.coefft{res+1} = fft2(filter_spatial);
        % littlewood_final = littlewood_final + abs(psif{res+1}{j+1}{th}).^2;
       end
     end
     
-    filters.psi{p}.meta.k = k;
-    filters.psi{p}.meta.theta = theta;
+    filters.psi.meta.k(p,1) = k;
+    filters.psi.meta.theta(p,1) = theta;
     p = p + 1;
   end
 end

@@ -33,16 +33,16 @@ big_img((1:N), (1:N)) = real(filt_for_disp)/M;
 big_img((1:N)+N ,(1:N)) = imag(filt_for_disp)/M;
 
 % high pass
-for p = 1:numel(filters.psi)
-  filter = filters.psi{p}.filter;
+for p = 1:numel(filters.psi.filter)
+  filter = filters.psi.filter{p};
   filt_for_disp = display_filter_2d(filter, n);
   M = max(abs(filt_for_disp(:)));
   if (renorm == 0)
     M = 1;
   end
   
-  k = filters.psi{p}.meta.k;
-  theta = filters.psi{p}.meta.theta;
+  k = filters.psi.meta.k(p,1);
+  theta = filters.psi.meta.theta(p,1);
   
   big_img((1:N)+ (k-1)*N, (1:N) + N + (theta-1)*N) = ...
     real(filt_for_disp)/M;
