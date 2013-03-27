@@ -6,6 +6,8 @@
 
 \usepackage{url}
 
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+
 \graphicspath{{figures/}}
 
 \title{ScattLab Architecture Document}
@@ -13,5 +15,97 @@
 \begin{document}
 	
 \maketitle
+
+\section{Filters}
+
+\subsection{Filter Structure}
+
+Filters are defined by a signal size \mcode{[N,M]}, a filter type (Morlet, Gabor, spline), and wavelet-specific parameters. The boundary conditions (symmetric or periodic) are also specified when defining a filter. For one-dimensional signals, $M = 1$.
+
+Filter parameters are specified in a parameters structure, \mcode{fparam}, containing the following fields:
+\begin{itemize}
+	\item \mcode{fparam.filter_type}: The wavelet type, such as `morlet\_1d', `gabor\_2d', `spline\_1d', for example.
+	\item \mcode{fparam.boundary}: The boundary conditions used in convolutions. Could be either `symm' or `per' for symmetric or periodic boundary conditions, respectively.
+\end{itemize}
+In addition, the \mcode{fparam} structure would contain parameters specific to the wavelet type chosen (see below).
+
+Once filter parameters are entered, the \mcode{filter_bank} function is called
+to generate the filter bank:
+\begin{lstlisting}
+	filters = filter_bank([N M],fparam);
+\end{lstlisting}
+This function will then call the appropriate filter bank function (\mcode{filter_bank_morlet_1d}, \mcode{filter_bank_gabor_2d}, etc.) depending on the value of \mcode{fparam.filter_type}.
+
+The returned structure, \mcode{filters}, contains the filters $\psi$ and $\phi$ that form the filter bank, as well as meta information. Specifically, the fields are:
+\begin{itemize}
+	\item \mcode{filters.psi}: A set of wavelet filters $\psi_\lambda$ (for definition, see below)
+	\item \mcode{filters.phi}: A set of lowpass filter(s) $\phi$ (for definition, see below)
+	\item \mcode{filters.meta}: The meta information on the filter bank. Specifically, the parameters given in \mcode{fparam} and the signal size $\mcode{[N,M]}$. For example, \mcode{filter.meta.filter_type} gives the type of filters in \mcode{filters.psi} and \mcode{filters.phi}.
+\end{itemize}
+
+Each filter set (be it \mcode{filters.phi} or \mcode{filters.psi}), is a structure \mcode{fset} containing the following:
+\begin{itemize}
+	\item \mcode{fset.filter}: A cell array of the actual filter coefficients. These coefficients are implementation-dependent and can encode the filter spatially, in the Fourier domain, at different resolutions, etc.
+	\item \mcode{fset.meta}: Contains meta information on the filters. Specifically, it has two fields: \mcode{fset.meta.k}, which is the scale indices, and \mcode{fset.meta.theta}, which is the angle indices (for two-dimensional filters). Both \mcode{fset.meta.k} and \mcode{fset.meta.theta} are of the same length as \mcode{fset.filter}.
+\end{itemize}
+
+The scale and angle indices are non-negative integers. The scale index rises with increasing scale, while the angle index rises with increasing angle (counter-clockwise).
+
+\subsection{Morlet/Gabor filter bank}
+
+In addition to the parameters listed above, the Morlet/Gabor filter bank has the following options:
+\begin{itemize}
+	\item \mcode{fparam.V}: The number of wavelets per octave.
+	\item \mcode{fparam.nb_scales}: The number of wavelet scales.
+	\item \mcode{fparam.sigma_psi}: The standard deviation of the mother wavelet in space.
+	\item \mcode{fparam.sigma_phi}: The standard deviation of the scaling function in space.
+	\item \mcode{fparam.slant}: The slant of the mother wavelet ellipse in frequency.
+	\item \mcode{fparam.nb_theta}: The number of wavelet angles.
+\end{itemize}
+The maximal wavelet bandwidth (in space) is determined by $2^{nb\_scales/V}$. If \mcode{sigma\_psi} is smaller than a certain threshold, a number of constant-bandwidth filters are added, linearly spaced, to cover the low frequencies.
+
+\section{Wavelet Modulus and Scattering Transforms}
+
+\subsection{Wavelet Modulus Transform}
+
+The wavelet modulus transform takes a layer of coefficients and calculates the next. This layer has the fields:
+\begin{itemize}
+	\item \mcode{layer.signal}: A cell array of signals.
+	\item \mcode{layer.meta}: The meta information on the signals, such as their path, their resolutions, etc.
+\end{itemize}
+The signals are one-dimensional or two-dimensional arrays while \mcode{meta} contains the fields \mcode{meta.k} and \mcode{meta.theta}, which are two-dimensional arrays. The first dimension has length corresponding \mcode{layer.signal} while the second dimension as length corresponding to the order of the coefficients. The path of the $l$th coefficient is thus encoded in \mcode{meta.k(l,:)} and \mcode{meta.theta(l,:)}, respectively.
+
+A wavelet modulus transform (of which there are multiple) is a function that takes a layer, a filter bank (see previous section), an options structure, and returns the next layer as well as the smoothed output of this layer. Specifically, for a wavelet modulus transform \mcode{wavemod}, we have:
+\begin{lstlisting}
+	[U{m+1},S{m}] = wavemod(U{m},options,filters);
+\end{lstlisting}
+Here, \mcode{U} and \mcode{S} are cell arrays of layers, as described above. This wavelet modulus can be a one-dimensional wavelet modulus transform, a two-dimensional wavelet modulus transform, a joint wavelet modulus transform, etc. It only has to satisfy the above input/output conditions.
+
+\subsection{Scattering Transform}
+
+By stacking multiple wavelet modulus transforms together, we obtain the scattering transform. Specifically, the \mcode{scatt} function, takes a signal, an options structure, a cell array of wavelet modulus transforms (with filters fixed), and returns the scattering coefficients (or wavelet modulus coefficients, if desired). The scattering coefficients are output as a cell array of layers \mcode{S}.
+
+The scattering transform could be used like the following
+\begin{lstlisting}
+	fparam1.filter_type = 'gabor';
+	fparam1.V = 8;
+	fparam1.sigma_psi = 8;
+	fparam1.sigma_phi = 8;
+	fparam1.nb_scales = 80;
+	
+	fparam2.filter_type = 'morlet';
+	fparam2.V = 1;
+	fparam2.sigma_psi = 1;
+	fparam2.sigma_phi = 1;
+	fparam2.nb_scales = 13;
+	
+	filters1 = filter_bank(N,fparam1);
+	fitlers2 = filter_bank(N,fparam2);
+	
+	wavemod{1} = @(x,opt)(wavemod_1d(x,opt,filters1));
+	wavemod{2} = @(x,opt)(wavemod_1d(x,opt,filters2));
+	
+	S = scatt(x,options,wavemod);
+\end{lstlisting}
 
 \end{document}
