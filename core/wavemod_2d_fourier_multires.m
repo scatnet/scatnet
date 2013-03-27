@@ -3,8 +3,13 @@ function [S, U] = wavemod_2d_fourier_multires(x, filters, downsampler)
 xf = fft2(x);
 
 assert(strcmp(filters.phi.filter.type, 'fourier_multires'));
-S.sig{1} = ifft2(xf.*filters.phi.filter.coefft{1});
+ux = ifft2(xf.*filters.phi.filter.coefft{1});
+k = filters.phi.meta.k;
 
+ds = downsampler(k);
+ux = downsampling_2d(ux, ds);
+S.sig{1} = ux;
+S.meta.k = k;
 
 for p = 1:numel(filters.psi.filter)
   

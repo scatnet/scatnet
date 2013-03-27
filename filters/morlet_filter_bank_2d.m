@@ -56,7 +56,7 @@ for res = 0:res_max
   scale = 2^((nb_scale-1) / v - res);
   filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
   phi.filter.coefft{res+1} = fft2(filter_spatial);
-  
+  phi.meta.k = nb_scale + 1;
   
   littlewood_final = zeros(N, M);
   % compute high pass filters psi

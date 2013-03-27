@@ -1,4 +1,4 @@
-function big_img = display_gscatt_all(Scatt, renorm, dsp_legend)
+function big_img = display_scatt_2d_all_layer(Scatt, renorm, dsp_legend)
 if ~exist('renorm','var');
   renorm  = 1;
 end
@@ -19,7 +19,7 @@ if (size(Scatt.sig{1},3)==3)
     for p=1:numel(Scatt.sig)
       Scattrgb{rgb}.sig{p}=squeeze(Scatt.sig{p}(:,:,rgb));
     end
-    big_img(:,:,rgb) = display_gscatt_all(Scattrgb{rgb});
+    big_img(:,:,rgb) = display_scatt_2d_all_layer(Scattrgb{rgb});
   end
 else
   for p = 1:numel(Scatt.sig)

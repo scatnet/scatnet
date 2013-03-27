@@ -8,7 +8,7 @@ x = lena;
 filters = morlet_filter_bank_2d(size(x));
 
 % define downsampling policy
-downsampler = @(k)(k-1);
+downsampler = @(k)(max(0,k-2));
 
 % compute wavelet modulus transform
 [S, U] = wavemod_2d_fourier_multires(x, filters, downsampler);
@@ -21,4 +21,8 @@ assert(1-Wenerg/Xenerg < 0.01);
 fprintf('ratio energy of wavelet transform / energy of signal %f \n', Wenerg/Xenerg);
 
 %%
-imagesc(display_gscatt_all(U));
+% display 
+figure(1);
+imagesc(display_scatt_2d_all_layer(S,1,0));
+figure(2);
+imagesc(display_scatt_2d_all_layer(U,1,0));
