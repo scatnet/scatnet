@@ -1,16 +1,17 @@
-function propagators = propagators_builder_2d(size_in, options)
-% function propagators = propagators_builder_2d(size_in, options)
+function wavemod = wavemod_factory_2d(size_in, options)
+% function wavemod = wavemod_factory_2d(size_in, options)
 %
-% builds propagators to be used by the generic scattering gscatt.m
+% builds wavelet modulus operator to be used by the generic 
+% scattering scatt.m
 %
 % inputs :
 % - size_in : <1x2 int> : size of the input of the scattering
 % - options : [optional] <1x1 struct> containing the following optional options
 %   - all the valid options fields for gabor_filter_bank_2d 
-%   - M : <1x1 int> maximum scattering order (output will contains
-%       all paths of length 0 <= m <= M)
+%   - nb_layer : <1x1 int> maximum scattering order (output will contains
+%       all paths of length 0 <= m <= nb_layer)
 %   - aa : <1x1 int> antialiasing (output will be oversampled by up to 2^aa)
-%   - a : <1x1 double> dilation factor of wavelets
+%   - v : <1x1 double> number of voice per octave
 %   - J : <1x1 int> maximum scale of wavelet will be a^J
 %   - output_filters : <1x1 bool> if 1, output will contains filter bank
 %
