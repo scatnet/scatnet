@@ -1,11 +1,12 @@
-% replace path_to_scattlab2d with the location of the scattlab2d on your
-% system
-path_to_scattlab2d = '/Users/laurentsifre/Dropbox/These/Code/scattlab2d/scattlab2d';
+path_to_scattlab = fileparts(mfilename('fullpath'));
 
-addpath(fullfile(path_to_scattlab2d, 'classification'));
-addpath(fullfile(path_to_scattlab2d, 'convolution'));
-addpath(fullfile(path_to_scattlab2d, 'core'));
-addpath(fullfile(path_to_scattlab2d, 'display'));
-addpath(fullfile(path_to_scattlab2d, 'filters'));
-addpath(fullfile(path_to_scattlab2d, 'utils'));
-addpath(fullfile(path_to_scattlab2d, 'wrappers'));
+addpath(fullfile(path_to_scattlab, 'classification'));
+addpath(fullfile(path_to_scattlab, 'convolution'));
+addpath(fullfile(path_to_scattlab, 'core'));
+addpath(fullfile(path_to_scattlab, 'display'));
+addpath(fullfile(path_to_scattlab, 'filters'));
+addpath(fullfile(path_to_scattlab, 'utils'));
+addpath(fullfile(path_to_scattlab, 'wrappers'));
+
+clear path_to_scattlab;
+
