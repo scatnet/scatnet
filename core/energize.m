@@ -11,7 +11,7 @@ else
   
   if (iscell(S))
     for m = 1:numel(S)
-      energy = energize(S{m});
+      energy = energy+energize(S{m});
     end
   else
     
