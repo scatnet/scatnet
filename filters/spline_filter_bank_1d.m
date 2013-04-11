@@ -28,7 +28,7 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	options = fill_struct(options,'P',0);
 	options = fill_struct(options,'spline_order',3);
 	options = fill_struct(options,'precision','double');
-	options = fill_struct(options,'optimize','fourier_truncated');
+	options = fill_struct(options,'filter_format','fourier_truncated');
 	
 	if options.V ~= 1
 		error('Only one wavelet per octave allowed for spline wavelets');

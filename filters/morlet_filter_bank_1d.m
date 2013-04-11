@@ -71,7 +71,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	options = fill_struct(options, ...
 		'precision', 'double');
 	options = fill_struct(options, ...
-		'optimize', 'fourier_truncated');
+		'filter_format', 'fourier_truncated');
 
 	filters = struct();
 
