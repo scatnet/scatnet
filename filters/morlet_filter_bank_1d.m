@@ -44,7 +44,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 		options = struct();
 	end
 
-	parameter_fields = {'V','J','P','sigma_psi','sigma_phi','gabor'};
+	parameter_fields = {'V','J','P','xi_psi','sigma_psi','sigma_phi','gabor'};
 
 	% If we are given a two-dimensional size, take first dimension
 	sig_length = sig_length(1);
@@ -104,20 +104,10 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	filters.psi = cell(1,options.J+options.P);
 	filters.phi = [];
 
-	% Calculate logarithmically spaced filters.
-	for j1 = 0:options.J-1
-		psi_center(j1+1) = options.xi_psi*2^(-j1/options.V);
-		psi_sigma(j1+1) = options.sigma_psi*2^(j1/options.V);
-	end
+	[psi_center,psi_bw,phi_bw] = morlet_1d_freq(filters);
 
-	% Calculate linearly spaced filters so that they evenly cover the
-	% remaining part of the spectrum
-	step = pi*2^(-options.J/options.V)*(1-1/4*sigma0/options.sigma_phi*2^(1/options.V))/options.P;
-	for k1 = 0:options.P-1
-		psi_center(options.J+k1+1) = ...
-			options.xi_psi*2^((-options.J+1)/options.V)-step*(k1+1);
-		psi_sigma(options.J+k1+1) = options.sigma_psi*2^((options.J-1)/options.V);
-	end
+	psi_sigma = sigma0*pi/2./psi_bw;
+	phi_sigma = sigma0*pi/2./phi_bw;
 
 	% Calculate normalization of filters so that sum of squares does not 
 	% exceed 2. This guarantees that the scattering transform is
@@ -148,13 +138,11 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	end
 
 	% Calculate the associated low-pass filter
-	filters.phi = gabor(N, 0, ...
-		options.sigma_phi*2^((options.J-1)/options.V), ...
-		options.precision); 
+	filters.phi = gabor(N, 0, phi_sigma, options.precision); 
 
 	filters.phi = optimize_filter(filters.phi,1,options);
 
-	filters.type = 'morlet_1d';
+	filters.filter_type = 'morlet_1d';
 end
 
 function f = gabor(N,xi,sigma,precision)

@@ -110,5 +110,5 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	
 	filters.phi = optimize_filter(filters.phi,1,options);
 
-	filters.type = 'spline_1d';
+	filters.filter_type = 'spline_1d';
 end
