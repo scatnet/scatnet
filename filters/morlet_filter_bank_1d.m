@@ -101,7 +101,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	
 	filters.N = N;
 	
-	filters.psi = cell(1,options.J+options.P);
+	filters.psi.filter = cell(1,options.J+options.P);
 	filters.phi = [];
 
 	[psi_center,psi_bw,phi_bw] = morlet_1d_freq(filters);
@@ -128,19 +128,19 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	psi_ampl = sqrt(2/max(S));
 
 	% Apply the normalization factor to the filters.
-	for j1 = 0:length(filters.psi)-1
+	for j1 = 0:length(filters.psi.filter)-1
 		temp = gabor(N,psi_center(j1+1),psi_sigma(j1+1),options.precision);
 		if ~options.gabor
 			temp = morletify(temp,psi_sigma(j1+1)); 
 		end
-		filters.psi{j1+1} = psi_ampl*temp;
-		filters.psi{j1+1} = optimize_filter(filters.psi{j1+1},0,options);
+		filters.psi.filter{j1+1} = optimize_filter(psi_ampl*temp,0,options);
+		filters.psi.meta.k(j1+1,1) = j1;
 	end
 
 	% Calculate the associated low-pass filter
-	filters.phi = gabor(N, 0, phi_sigma, options.precision); 
-
-	filters.phi = optimize_filter(filters.phi,1,options);
+	filters.phi.filter = gabor(N, 0, phi_sigma, options.precision); 
+	filters.phi.filter = optimize_filter(filters.phi.filter,1,options);
+	filters.phi.meta.k(1,1) = options.J+options.P;
 
 	filters.filter_type = 'morlet_1d';
 end

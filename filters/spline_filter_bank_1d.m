@@ -71,7 +71,7 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	
 	filters.N = N;
 	
-	filters.psi = cell(1,J);
+	filters.psi.filter = cell(1,J);
 	filters.phi = [];
 		
 	omega = [0:N-1]'/N*2*pi;
@@ -79,36 +79,39 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	for j1 = 0:J-1
 		support = 1:N;
 		omega1 = 2^(j1+1)*omega(support);
-		filters.psi{j1+1} = zeros(N,1,precision);
-		filters.psi{j1+1}(support) = sqrt(2)*exp(-i*omega1/2)./omega1.^(spline_order+1).* ...
+		filter_f = zeros(N,1,precision);
+		filter_f(support) = sqrt(2)*exp(-i*omega1/2)./omega1.^(spline_order+1).* ...
 			sqrt(S(omega1/2+pi)./(S(omega1).*S(omega1/2)));
 
 		% Take care of Inf/Inf
 		ind = N/2^(j1+1)+1:N/2^j1:N;
-		filters.psi{j1+1}(ind) = sqrt(2)*exp(-i*omega1(ind)/2)./omega1(ind).^(spline_order+1).* ...
+		filter_f(ind) = sqrt(2)*exp(-i*omega1(ind)/2)./omega1(ind).^(spline_order+1).* ...
 			sqrt(2^(2*spline_order+2)./S(omega1(ind)/2));
 		
 		% Take care of 1/Inf
 		ind = 1:N/2^j1:N;
-		filters.psi{j1+1}(ind) = 0;
+		filter_f(ind) = 0;
 
-		filters.psi{j1+1} = cast(filters.psi{j1+1});
+		filter_f = cast(filter_f);
 		
-		filters.psi{j1+1} = optimize_filter(filters.psi{j1+1},0,options);
+		filters.psi.filter{j1+1} = optimize_filter(filter_f,0,options);
+		filters.psi.meta.k(j1+1) = j1;
 	end
 	
 	if J > 0
 		omega = [0:N/2 -N/2+1:-1]'/N*2*pi;
 		omega1 = 2^J*omega;
-		filters.phi = 1./(omega1.^(spline_order+1).*sqrt(S(omega1)));
-		filters.phi(1) = 1;
+		filters.phi.filter = 1./(omega1.^(spline_order+1).*sqrt(S(omega1)));
+		filters.phi.filter(1) = 1;
 
-		filters.phi = cast(filters.phi);
+		filters.phi.filter = cast(filters.phi.filter);
 	else
-		filters.phi = ones(N,1,precision);
+		filters.phi.filter = ones(N,1,precision);
 	end
 	
-	filters.phi = optimize_filter(filters.phi,1,options);
+	filters.phi.filter = optimize_filter(filters.phi.filter,1,options);
+	
+	filters.phi.meta.k(1,1) = options.J;
 
 	filters.filter_type = 'spline_1d';
 end
