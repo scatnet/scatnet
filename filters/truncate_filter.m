@@ -1,7 +1,7 @@
 function filter = truncate_filter(filter_f,threshold,lowpass)
 	N = length(filter_f);
 	
-	filter.type = 'fourier_truncate';
+	filter.type = 'fourier_truncated';
 	filter.N = N;
 
 	filter.recenter = lowpass;
