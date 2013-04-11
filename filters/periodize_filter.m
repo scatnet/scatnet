@@ -4,7 +4,7 @@ function filter = periodize_filter(filter_f,threshold)
 	filter.type = 'fourier_multires';
 	filter.N = N;
 	
-	filter.filter_f = {};
+	filter.coefft = {};
 	
 	j0 = 0;
 	while 1
