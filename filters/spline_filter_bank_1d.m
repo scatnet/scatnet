@@ -65,7 +65,7 @@ function filters = spline_filter_bank_1d(sig_length,options)
 			2*sin(omega/2).^4.*cos(omega/2).^2+2/3*sin(omega/2).^6)./(105*2^8*sin(omega/2).^8));
 	end
 	
-	N = sig_length;
+	N = 2*sig_length;
 	
 	filters.J = J;
 	

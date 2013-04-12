@@ -97,7 +97,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	% at the finest resolution (N)
 	psi_ampl = 1;
 
-	N = sig_length;
+	N = 2*sig_length;
 	
 	filters.N = N;
 	
