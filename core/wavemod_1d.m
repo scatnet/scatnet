@@ -1,7 +1,9 @@
-function [U,S] = wavemod_1d(in,filters,options)
+function [S,U] = wavemod_1d(in,filters,options)
 	if nargin < 3
 		options = struct();
 	end
+	
+	calc_U = (nargout>=2);
 
 	options = fill_struct(options,'antialiasing',1);
 	
@@ -11,6 +13,8 @@ function [U,S] = wavemod_1d(in,filters,options)
 	U.meta.bandwidth = [];
 	U.meta.resolution = [];
 	U.meta.scale = zeros(0,size(in.meta.scale,2)+1);
+	
+	calc_U
 	
 	rS = 1;
 	rU = 1;
@@ -26,6 +30,10 @@ function [U,S] = wavemod_1d(in,filters,options)
 		S.meta.scale(rS,:) = in.meta.scale(k1+1,:);
 		
 		rS = rS+1;
+		
+		if ~calc_U
+			continue;
+		end
 		
 		for k2 = find(in.meta.bandwidth(k1+1)>psi_xi)-1
 			filter_bw = psi_bw(k2+1);
