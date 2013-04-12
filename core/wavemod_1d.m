@@ -14,8 +14,6 @@ function [S,U] = wavemod_1d(in,filters,options)
 	U.meta.resolution = [];
 	U.meta.scale = zeros(0,size(in.meta.scale,2)+1);
 	
-	calc_U
-	
 	rS = 1;
 	rU = 1;
 	for k1 = 0:length(in.signal)-1
