@@ -45,14 +45,16 @@ function y = conv_sub(xf,filter,ds)
 		N = size(filter,1);
 		j0 = log2(N/size(xf,1));
 		filter_per = sum(reshape(filter,[N/2^j0 2^j0]),2);
-		yf = xf.*filter_per;
-		yf = sum(reshape(yf,[size(yf,1)/2^ds 2^ds]),2)/2^(ds/2);
+		yf = bsxfun(@times,xf,filter_per);
+		yf = sum(reshape(yf,[size(yf,1)/2^ds 2^ds size(yf,2)]),2)/2^(ds/2);
+		yf = reshape(yf,[size(yf,1) size(yf,3)]);
 		y = ifft(yf,[],1);
 	elseif isstruct(filter) && strcmp(filter.type,'fourier_multires')
 		N = filter.N;
 		j0 = log2(N/size(xf,1));
-		yf = xf.*filter.coefft{j0+1};
-		yf = sum(reshape(yf,[size(yf,1)/2^ds 2^ds]),2)/2^(ds/2);
+		yf = bsxfun(@times,xf,filter.coefft{j0+1});
+		yf = sum(reshape(yf,[size(yf,1)/2^ds 2^ds size(yf,2)]),2)/2^(ds/2);
+		yf = reshape(yf,[size(yf,1) size(yf,3)]);
 		y = ifft(yf,[],1);
 	elseif isstruct(filter) && strcmp(filter.type,'fourier_truncated')
 		N = filter.N;
