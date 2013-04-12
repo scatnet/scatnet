@@ -58,13 +58,13 @@ function y = conv_sub(xf,filter,ds)
 		N = filter.N;
 		j0 = log2(N/size(xf,1));
 		j1 = log2(N/length(filter.coefft));
+		ds = ds+j0-j1;
 		if j0 > j1
 			% TODO make this more efficient
 			xf = [xf(1:end/2,:); zeros(N*(2^(-j1)-2^(-j0)),size(xf,2)); xf(end/2+1:end,:)];
 			xf = xf*sqrt(2^(j0-j1));
 			j0 = j1;
 		end
-		ds = ds+j0-j1;
 		% WARNING: start is 1-based, not 0-based
 		if filter.start <= 0
 			ind = [N/2^j0+filter.start:N/2^j0 1:length(filter.coefft)+filter.start-1];
