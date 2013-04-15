@@ -27,7 +27,7 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 
 	class_ct = model.nr_class;
 	
-	sv_coef = zeros(model.totalSV,class_ct*(class_ct-1)/2,class(db.kernel.K));
+	sv_coef = zeros(model.totalSV,class_ct*(class_ct-1)/2,class(db.features));
 	
 	pairs = [];
 	
@@ -45,7 +45,7 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 		end
 	end
 
-	dec = zeros(length(ind_features0),size(sv_coef,2),class(db.kernel.K));
+	dec = zeros(length(ind_features0),size(sv_coef,2),class(db.features));
 
 	if full_test_kernel && ...
 		(model.Parameters(2) == 4 || ...

@@ -43,7 +43,7 @@ function [err,C,gamma] = svm_param_search(db,prt_train,prt_dev,opt)
 			model = svm_train(db,prt_train,opt1);
 			labels = svm_test(db,model,prt_dev);
 
-			err(r,1) = calc_err(labels,prt_dev,db.src);
+			err(r,1) = classif_err(labels,prt_dev,db.src);
 
 			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
 		end
