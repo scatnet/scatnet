@@ -30,7 +30,7 @@ function [best_err,best_dim,err] = affine_param_search(db,prt_train,prt_dev,opt)
 		model = affine_train(db,prt_train,opt);
 		labels = affine_test(db,model,prt_dev);
 		
-		err = calc_err(labels,prt_dev,db.src);
+		err = classif_err(labels,prt_dev,db.src);
 	end	
 		
 	[best_err,dim_ind] = min(mean(err,2),[],1);
