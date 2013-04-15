@@ -1,4 +1,6 @@
 function [err,C,gamma] = svm_adaptive_param_search(db,prt_train,prt_dev,opt)
+	opt = fill_struct(opt,'search_depth',2);
+
 	gamma0 = opt.gamma;
 	C0 = opt.C;
 
