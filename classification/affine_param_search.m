@@ -1,4 +1,4 @@
-function [best_err,best_dim,err] = affine_param_search(db,prt_train,prt_dev,opt)
+function [err,dim] = affine_param_search(db,prt_train,prt_dev,opt)
 	if nargin < 3
 		prt_dev = [];
 	end
@@ -20,7 +20,7 @@ function [best_err,best_dim,err] = affine_param_search(db,prt_train,prt_dev,opt)
 		prt_cvdev = prt_cvdev;
 		
 		for f = 1:opt.cv_folds
-			[temp1,temp2,err(:,f)] = affine_param_search(db, ...
+			err(:,f) = affine_param_search(db, ...
 				prt_train(prt_cvtrain),prt_train(prt_cvdev),opt);
 			
 			[prt_cvtrain,prt_cvdev] = ...
@@ -33,7 +33,5 @@ function [best_err,best_dim,err] = affine_param_search(db,prt_train,prt_dev,opt)
 		err = classif_err(labels,prt_dev,db.src);
 	end	
 		
-	[best_err,dim_ind] = min(mean(err,2),[],1);
-	
-	best_dim = opt.dim(dim_ind);
+	dim = opt.dim;
 end
