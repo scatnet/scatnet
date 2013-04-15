@@ -3,7 +3,7 @@ function model = affine_train(db,prt_train,opt)
 		opt = struct();
 	end
 	
-	opt = fill_struct(opt,'dim',0:160);
+	opt = fill_struct(opt,'dim',80);
 	
 	train_mask = ismember(1:length(db.src.objects),prt_train);
 	
