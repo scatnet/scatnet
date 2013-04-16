@@ -9,6 +9,11 @@ function [S,U] = wavemod_1d(in,filters,options)
 	
 	[psi_xi,psi_bw,phi_bw] = filter_freq(filters);
 	
+	S.signal = {};
+	S.meta.bandwidth = [];
+	S.meta.resolution = [];
+	S.meta.scale = zeros(0,size(in.meta.scale,2));
+	
 	U.signal = {};
 	U.meta.bandwidth = [];
 	U.meta.resolution = [];
