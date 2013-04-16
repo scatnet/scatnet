@@ -1,5 +1,5 @@
 %FORMAT_SCATT Formats a scattering representation
-%   [out,meta] = forma_scatt(X,fmt) formats the scattering output X (from
+%   [out,meta] = format_scatt(X,fmt) formats the scattering output X (from
 %   the function scatt, or scatt_time with output set to 'raw') according
 %   to the format specified in fmt. The following formats are allowed:
 %

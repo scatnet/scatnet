@@ -1,3 +1,13 @@
+% scatt_1d: Calculate the scattering transform.
+% Usage
+%    [S,U] = scatt_1d(x, wavemod)
+% Input
+%    x: The signal to be transformed.
+%    wavemod: The wavelet modulus transforms.
+% Output:
+%    S: The scattering coefficients.
+%    U: The wavelet modulus coefficients.
+
 function [S,U] = scatt_1d(x,wavemod)
 	N = size(x,1);
 	nb_layer = numel(wavemod)-1;

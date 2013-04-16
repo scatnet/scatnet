@@ -1,3 +1,15 @@
+% wavemod_1d: 1D wavelet modulus transform.
+% Usage
+%    [S,U] = wavemod_1d(in, filters, options)
+% Input
+%    in: The input layer to be transformed.
+%    filters: The filters of the wavelet transform.
+%    options: Various options for the transform. options.antialiasing controls
+%       the antialiasing factor when subsampling.
+% Output
+%    S: The coefficients of in, lowpass-filtered (scattering coefficients).
+%    U: The wavelet modulus coefficients.
+
 function [S,U] = wavemod_1d(in,filters,options)
 	if nargin < 3
 		options = struct();
