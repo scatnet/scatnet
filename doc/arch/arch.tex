@@ -20,27 +20,29 @@
 
 \subsection{Filter Structure}
 
-Filters are defined by a signal size \mcode{[N,M]}, a filter type (Morlet, Gabor, spline), and wavelet-specific parameters. The boundary conditions (symmetric or periodic) are also specified when defining a filter. For one-dimensional signals, $M = 1$.
+Filters are defined by a signal size \mcode{[N,M]}, a filter type (Morlet, Gabor, spline), and wavelet-specific parameters. For one-dimensional signals, $M = 1$.
 
 Filter parameters are specified in a parameters structure, \mcode{fparam}, containing the following fields:
 \begin{itemize}
 	\item \mcode{fparam.filter_type}: The wavelet type, such as `morlet\_1d', `gabor\_2d', `spline\_1d', for example.
-	\item \mcode{fparam.boundary}: The boundary conditions used in convolutions. Could be either `symm' or `per' for symmetric or periodic boundary conditions, respectively.
+	\item \mcode{fparam.precision}: The numeric precision of the filters. Either \mcode{'double'} or \mcode{'single'}.
 \end{itemize}
 In addition, the \mcode{fparam} structure would contain parameters specific to the wavelet type chosen (see below).
 
 Once filter parameters are entered, the \mcode{filter_bank} function is called
 to generate the filter bank:
 \begin{lstlisting}
-	filters = filter_bank([N M],fparam);
+	filters = filter_bank([N M], fparam);
 \end{lstlisting}
-This function will then call the appropriate filter bank function (\mcode{filter_bank_morlet_1d}, \mcode{filter_bank_gabor_2d}, etc.) depending on the value of \mcode{fparam.filter_type}.
+This function will then call the appropriate filter bank function (\mcode{morlet_1d_filter_bank}, \mcode{gabor_2d_filter_bank}, etc.) depending on the value of \mcode{fparam.filter_type} and put it in a cell array. 
+
+If one of the parameters is an array (except for \mcode{fparam.filter_type} and \mcode{fparam.precision}, which have to be cell arrays), \mcode{filter_bank} will create multiple filter banks and output them. For example, if \mcode{fparam.filter_type} equals \mcode{\{'gabor\_1d','spline_1d'\}}, \mcode{filter_bank} will output a cell array of two filter banks, one with Gabor wavelets and one with spline wavelets. If parameter fields are of different sizes, the shorter ones are extended by concatenating the last value the required number of times.
 
 The returned structure, \mcode{filters}, contains the filters $\psi$ and $\phi$ that form the filter bank, as well as meta information. Specifically, the fields are:
 \begin{itemize}
 	\item \mcode{filters.psi}: A set of wavelet filters $\psi_\lambda$ (for definition, see below)
 	\item \mcode{filters.phi}: A set of lowpass filter(s) $\phi$ (for definition, see below)
-	\item \mcode{filters.meta}: The meta information on the filter bank. Specifically, the parameters given in \mcode{fparam} and the signal size $\mcode{[N,M]}$. For example, \mcode{filter.meta.filter_type} gives the type of filters in \mcode{filters.psi} and \mcode{filters.phi}.
+	\item The parameters given in \mcode{fparam} and the signal size $\mcode{[N,M]}$. For example, \mcode{filter.filter_type} gives the type of filters in \mcode{filters.psi} and \mcode{filters.phi}.
 \end{itemize}
 
 Each filter set (be it \mcode{filters.phi} or \mcode{filters.psi}), is a structure \mcode{fset} containing the following:
@@ -56,13 +58,24 @@ The scale and angle indices are non-negative integers. The scale index rises wit
 In addition to the parameters listed above, the Morlet/Gabor filter bank has the following options:
 \begin{itemize}
 	\item \mcode{fparam.V}: The number of wavelets per octave.
-	\item \mcode{fparam.nb_scales}: The number of wavelet scales.
+	\item \mcode{fparam.J}: The number of wavelet scales.
 	\item \mcode{fparam.sigma_psi}: The standard deviation of the mother wavelet in space.
 	\item \mcode{fparam.sigma_phi}: The standard deviation of the scaling function in space.
 	\item \mcode{fparam.slant}: The slant of the mother wavelet ellipse in frequency.
-	\item \mcode{fparam.nb_theta}: The number of wavelet angles.
+	\item \mcode{fparam.nb_angle}: The number of wavelet angles.
 \end{itemize}
-The maximal wavelet bandwidth (in space) is determined by $2^{nb\_scales/V}$. If \mcode{sigma\_psi} is smaller than a certain threshold, a number of constant-bandwidth filters are added, linearly spaced, to cover the low frequencies.
+The maximal wavelet bandwidth (in space) is determined by $2^{J/V}$ times the bandwidth of the mother wavelet, which is proportional to \mcode{sigma\_psi}. If \mcode{sigma\_psi} is smaller than a certain threshold, a number of constant-bandwidth filters are added, linearly spaced, to cover the low frequencies.
+
+Again, we can specify different filter banks by setting \mcode{fparam.V} and \mcode{fparam.J}, etc. to arrays instead of scalars. This is often useful if the nature of the signal is different at different orders, which is usually the case in audio.
+
+\subsection{Spline filter bank}
+
+In addition to the parameters listed above, the spline filter bank has the following options:
+\begin{itemize}
+	\item \mcode{fparam.J}: The number of wavelet scales.
+	\item \mcode{fparam.spline_order}: The order of the splines. Only linear (spline order $1$) and cubic (spline order $3$) are supported.
+\end{itemize}
+The maximal bandwidth is specified here by $2^J$.
 
 \section{Wavelet Modulus and Scattering Transforms}
 
@@ -75,11 +88,11 @@ The wavelet modulus transform takes a layer of coefficients and calculates the n
 \end{itemize}
 The signals are one-dimensional or two-dimensional arrays while \mcode{meta} contains the fields \mcode{meta.k} and \mcode{meta.theta}, which are two-dimensional arrays. The first dimension has length corresponding \mcode{layer.signal} while the second dimension as length corresponding to the order of the coefficients. The path of the $l$th coefficient is thus encoded in \mcode{meta.k(l,:)} and \mcode{meta.theta(l,:)}, respectively.
 
-A wavelet modulus transform (of which there are multiple) is a function that takes a layer, a filter bank (see previous section), an options structure, and returns the next layer as well as the smoothed output of this layer. Specifically, for a wavelet modulus transform \mcode{wavemod}, we have:
+A wavelet modulus transform (of which there are multiple, such as \mcode{wavemod_1d}, \mcode{wavemod_2d}, etc.) is a function that takes a layer \mcode{U\{m\}}, a filter bank (see previous section), an options structure, and returns  the smoothed output of this layer \mcode{S\{m\}} as well as the next layer \mcode{U\{m+1\}}. Specifically, for a wavelet modulus transform \mcode{wavemod}, we have:
 \begin{lstlisting}
-	[U{m+1},S{m}] = wavemod(U{m},options,filters);
+	[S{m}, U{m+1}] = wavemod(U{m}, filters, options);
 \end{lstlisting}
-Here, \mcode{U} and \mcode{S} are cell arrays of layers, as described above. This wavelet modulus can be a one-dimensional wavelet modulus transform, a two-dimensional wavelet modulus transform, a joint wavelet modulus transform, etc. It only has to satisfy the above input/output conditions.
+Here, \mcode{U} and \mcode{S} are cell arrays of layers, as described above. This wavelet modulus can be a one-dimensional wavelet modulus transform (\mcode{wavemod\_1d}), a two-dimensional wavelet modulus transform (\mcode{wavemod\_2d}), a joint wavelet modulus transform, etc. It only has to satisfy the above input/output conditions.
 
 \subsection{Scattering Transform}
 
@@ -87,25 +100,88 @@ By stacking multiple wavelet modulus transforms together, we obtain the scatteri
 
 The scattering transform could be used like the following
 \begin{lstlisting}
-	fparam1.filter_type = 'gabor';
-	fparam1.V = 8;
-	fparam1.sigma_psi = 8;
-	fparam1.sigma_phi = 8;
-	fparam1.nb_scales = 80;
+	fparam.filter_type = {'gabor_1d', 'morlet_1d'};
+	fparam.V = [8 1];
+	fparam.J = [80 13];
+	fparam.sigma_psi = [8 1];
+	fparam.sigma_phi = [8 0.5];
 	
-	fparam2.filter_type = 'morlet';
-	fparam2.V = 1;
-	fparam2.sigma_psi = 1;
-	fparam2.sigma_phi = 1;
-	fparam2.nb_scales = 13;
+	filters = filter_bank(N,fparam);
 	
-	filters1 = filter_bank(N,fparam1);
-	fitlers2 = filter_bank(N,fparam2);
+	wavemod{1} = @(x)(wavemod_1d(x, filters{1}, options));
+	wavemod{2} = @(x)(wavemod_1d(x, filters{2}, options));
+	wavemod{3} = @(x)(wavemod_1d(x, filters{2}, options));
 	
-	wavemod{1} = @(x,opt)(wavemod_1d(x,opt,filters1));
-	wavemod{2} = @(x,opt)(wavemod_1d(x,opt,filters2));
-	
-	S = scatt(x,options,wavemod);
+	S = scatt(x,wavemod);
 \end{lstlisting}
+The above code will compute a filter bank for signals of length $N$, with the first filter bank consisting of $8$ filters per octave, for $80/8 = 10$ octaves, with a wavelet bandwidth corresponding to about $1/8$th of an octave. The second filter bank will only have one wavelet per octave, with the corresponding bandwidth, and $13$ octaves of wavelets. Since the mother wavelet for the first filter bank has bandwidth $8$ while that of the second has bandwidth $1$, their maximal bandwidths $8\cdot2^{80/10} = 8192$ and $2^{13} = 8192$ will coincide.
+
+Note that for the filter bank for which $V = 1$, the lowpass filter is half as wide in space compared to the largest wavelet. This is necessary to properly tile the frequency domain when $V = 1$. For larger $V$s, we can set \mcode{sigma\_phi} equal to \mcode{sigma\_psi}.
+
+These filters are then fed into wavelet modulus transform functions which are concatenated into a cell array. They are called with the options structure \mcode{opt} fixed, which contains various options for the wavelet modulus transform. Finally, the scattering transform is called, yielding the result \mcode{S} from the signal \mcode{x}.
+
+Another this to note is that the number of wavelet modulus is $3$, which means that \mcode{scatt} will produce zeroth-, first- and second-order coefficients. The last \mcode{wavemod} function will only serve to smooth the second-order wavelet modulus coefficients to give the second-order scattering coefficients. Thus to obtain scattering coefficients of maximal order $M$, you have to supply $M+1$ \mcode{wavemod} functions.
+
+To obtain the wavelet modulus coefficients \mcode{U}, \mcode{scatt} is called for two outputs, as in
+\begin{lstlisting}
+[S, U] = scatt(x,wavemod);
+\end{lstlisting}
+The structure of \mcode{U} follows that of \mcode{S}. That is it consists of a cell array representing each layer of wavelet modulus coefficients. The first layer corresponds to the zeroth-order wavelet modulus coefficients, which is the original signal. The second layer contains the first-order wavelet modulus coefficients, which are the signal convolved with the filters with the modulus applied, and so on. The coefficients in \mcode{S\{m+1\}} are thus the $m$th-order scattering coefficients obtained from smoothing the coefficients in \mcode{U\{m+1\}}.
+
+\subsection{\mcode{wavemod} Factory}
+To simplify the construction of wavelet modulus transforms, several wavelet modulus factory functions are provided. The one corresponding to \mcode{wavemod\_1d} is \mcode{wavemod\_1d\_factory}. These take as input the filter parameters along with options passed on to the wavelet modulus transforms. In addition, the desired order \mcode{M} of the scattering transform is specified.
+
+The code from the previous section then becomes:
+\begin{lstlisting}
+	fparam.filter_type = {'gabor_1d', 'morlet_1d'};
+	fparam.V = [8 1];
+	fparam.J = [80 13];
+	fparam.sigma_psi = [8 1];
+	fparam.sigma_phi = [8 0.5];
+	
+	wavemod = wavemod_1d_factory(fparam, options, 2);
+	
+	S = scatt(x,wavemod);
+\end{lstlisting}
+
+This is the recommended way of defining a scattering transform. The previous method of creating a cell array of \mcode{wavemod} functions may not always be supported.
+
+\section{Manipulating, Displaying, Formatting}
+
+\subsection{Renormalization and Logarithm}
+Often, second- and higher-order coefficients will reproduce information from their parent coefficients. That is, they will be highly correlated. To reduce this, the \mcode{renorm\_scatt} function renormalizes each coefficient by dividing it by its parent coefficient. Similarly, the \mcode{log\_scatt} function calculates the logarithm of each coefficient.
+
+These functions both act on the output of \mcode{scatt}, and so can be called on the scattering transform \mcode{S} like:
+\begin{lstlisting}
+	Sr = renorm_scatt(S);
+	Srl = log_scatt(S);
+\end{lstlisting}
+
+\subsection{Display}
+Two functions are available to display scattering coefficients, \mcode{display_slice} and \mcode{display_multifractal}. They both take as input a scattering transform \mcode{S} and a time point \mcode{t}.
+
+\subsection{Formatting}
+In order to use the scattering coefficients for classification, they need to be in a vector format. This is obtained using the function \mcode{format_scatt}, which arranges scattering coefficients into a two-dimensional table, the first dimension corresponding to a scattering coefficient index and the second dimension corresponding to time/space. It also returns a meta structure that specifies the order, scale, etc. of each scattering coefficient. The following example illustrates its usage:
+\begin{lstlisting}
+	[t,meta] = format_scatt(S);
+	
+	% plot the 2nd-order coefficients
+	% corresponding to scale (3, 7)
+	ind = find(meta.order==2 & meta.scale(:,1)==3 & meta.scale(:,2)==7);
+	plot(t(ind,:));
+	
+	% calculate the energy of 1st-order
+	% coefficients
+	ind = find(meta.order==1);
+	E2 = norm(t(ind,:),'fro')^2;
+\end{lstlisting}
+
+Note that if two or more filter banks are used when calculating \mcode{S}, formatting is only possible if the lowpass filters $\phi$ have the same bandwidth, since otherwise scattering coefficients of different orders will have different resolutions and so cannot be fitted into the same matrix without resampling.
+
+\section{Database Computation}
+
+\section{Affine Classifiers}
+
+\section{Support Vector Classifiers}
 
 \end{document}
