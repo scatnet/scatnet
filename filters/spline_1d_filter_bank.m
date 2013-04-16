@@ -71,6 +71,8 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	
 	filters.N = N;
 	
+	filters.spline_order = spline_order;
+	
 	filters.psi.filter = cell(1,J);
 	filters.phi = [];
 		
