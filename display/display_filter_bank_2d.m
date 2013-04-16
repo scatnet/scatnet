@@ -18,10 +18,13 @@ if (~exist('renorm','var'))
   renorm = 1;
 end
 
+margin = 4;
 N = 2*n+1;
+N_margin = N + margin;
 nb_scale = filters.meta.nb_scale;
 nb_angle = filters.meta.nb_angle;
-big_img = zeros(N*nb_scale, (2*N+1)*nb_angle);
+big_img = ones(N_margin*nb_scale, (2*nb_angle+1)*N_margin);
+
 
 % low pass : first on the left
 filt_for_disp = display_filter_2d(filters.phi.filter, n);
@@ -30,7 +33,7 @@ if (renorm == 0)
   M = 1;
 end
 big_img((1:N), (1:N)) = real(filt_for_disp)/M;
-big_img((1:N)+N ,(1:N)) = imag(filt_for_disp)/M;
+big_img((1:N)+N_margin ,(1:N)) = imag(filt_for_disp)/M;
 
 % high pass
 for p = 1:numel(filters.psi.filter)
@@ -44,9 +47,9 @@ for p = 1:numel(filters.psi.filter)
   k = filters.psi.meta.k(p,1);
   theta = filters.psi.meta.theta(p,1);
   
-  big_img((1:N)+ (k-1)*N, (1:N) + N + (theta-1)*N) = ...
+  big_img((1:N)+ (k-1)*N_margin, (1:N) + (theta)*N_margin) = ...
     real(filt_for_disp)/M;
-  big_img((1:N)+ (k-1)*N, (1:N) + N + (theta-1+nb_angle)*N) = ...
+  big_img((1:N)+ (k-1)*N_margin, (1:N) + (theta+nb_angle)*N_margin) = ...
     imag(filt_for_disp)/M;
 end
 
