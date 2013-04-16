@@ -1,0 +1,8 @@
+function wavemod = wavemod_1d_factory(N,filter_options,scatt_options,M)
+	filters = filter_bank(N,filter_options);
+	
+	for m = 0:M
+		filt_ind = min(numel(filters),m+1);
+		wavemod{m+1} = @(x)(wavemod_1d(x,filters{filt_ind},scatt_options));
+	end
+end
