@@ -178,10 +178,135 @@ In order to use the scattering coefficients for classification, they need to be 
 
 Note that if two or more filter banks are used when calculating \mcode{S}, formatting is only possible if the lowpass filters $\phi$ have the same bandwidth, since otherwise scattering coefficients of different orders will have different resolutions and so cannot be fitted into the same matrix without resampling.
 
-\section{Database Computation}
+\section{Classification}
 
-\section{Affine Classifiers}
+\subsection{Batch Computation}
 
-\section{Support Vector Classifiers}
+To compute scattering coefficients for a database of signals, we first define a source using \mcode{create_src(directory,objects_fun)} (or one of its wrappers, such as \mcode{gtzan_src}). Given a directory, this function recursively traverses it, looking for `.jpg', `.wav' or `.au' files. For each such file, it calls \mcode{objects_fun} to determine its constituent objects and their classes. To add a new database, it suffices to write the corresponding \mcode{objects_fun} function.
+
+The \mcode{objects_fun} function has the following signature
+\begin{lstlisting}
+[objects,classes] = objects_fun(file);
+\end{lstlisting}
+Given a file, it returns a structure array \mcode{objects} of the objects it contains and a cell array of their class names \mcode{classes}. 
+
+In this framework, an ``object'' is that which is classified as belonging to one class or another. Often, a file will only contain one object, so \mcode{objects} is a simple structure, but this can vary from database to database.
+
+The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in the image (1D signal). These bounds are inclusive. For the case where a file only contains one object, these bounds will simply be the bounds of the file data.
+
+Given a directory and this function, \mcode{create_src} returns a source structure \mcode{src}, which has the following fields
+\begin{itemize}
+	\item \mcode{src.classes}: A cell array of the class names.
+	\item \mcode{src.files}: A cell array of the file names.
+	\item \mcode{src.objects}: A struct array of the objects returned by applying \mcode{objects_fun} to each filename, but with two supplementary fields: \mcode{src.objects.ind}, corresponding to the index of its parent filename in \mcode{src.files} and \mcode{src.objects.class}, corresponding to the index of its class in \mcode{src.classes}.
+\end{itemize}
+
+The scattering coefficients of the objects in \mcode{src} can now be calculated using the function \mcode{prepare_db}. This function takes for input the \mcode{src} structure, a cell array of function handles, \mcode{feature_fun}, which contain the functions calculating the feature representations, and an options structure.
+
+A ``feature function'' takes as an input the file data and a structure array of its constituent objects and returns the corresponding feature vectors as a 2D matrix. Its signature is thus
+\begin{lstlisting}
+feat = feature_fun(x,objects);
+\end{lstlisting}
+Since this flexibility is often not necessary, a simplified feature function is also allowed, which only takes inputs \mcode{x_obj} in the form of a 2D matrix, each column corresponding to a signal to be transformed, and returns the associated feature vectors \mcode{feat_obj}. It has the following signature
+\begin{lstlisting}
+feat_obj = feature_fun(x_obj);
+\end{lstlisting}
+In this case, the function \mcode{feature_wrapper} is called, which extracts the objects from the file data \mcode{x}, applies the feature function to each object, and collects the output features.
+
+Note that a feature function is not required to output only one feature vector for each object. If more than one feature vector is associated to a single object, the classifier will classify each feature vector separately and aggregate the results, either through averaging the approximation error (for the affine space classifier) or through voting (for the SVM classifier).
+
+The following code sets up a feature function array for the normalized log-scattering transform:
+\begin{lstlisting}
+fparam.filter_type = {'gabor_1d', 'morlet_1d'};
+fparam.V = [8 1];
+fparam.J = [80 13];
+fparam.sigma_psi = [8 1];
+fparam.sigma_phi = [8 0.5];
+
+wavemod = wavemod_1d_factory(fparam, options, 2);
+
+feature_fun = {@(x)(format_scatt( ...
+	log_scatt(scatt(x, wavemod))))};
+\end{lstlisting}
+
+The feature vectors are then computed by calling \mcode{prepare_db}, as in:
+\begin{lstlisting}
+db = prepare_db(src,feature_fun);
+\end{lstlisting}
+The resulting \mcode{db} structure then contains three fields:
+\begin{itemize}
+	\item \mcode{db.src}: The original \mcode{src} structure from which the features were computed.
+	\item \mcode{db.features}: The feature vectors, arranged in a 2D matrix, each feature vector forming a column.
+	\item \mcode{db.indices}: The indices corresponding to each object in \mcode{db.src}. Specifically, \mcode{db.features(:,db.indices\{k\})} contains the features vector(s) calculated from \mcode{db.src.objects(k)}.
+\end{itemize}
+
+\subsection{Training/Testing}
+
+Once the database of feature vectors is constructed, models can be trained and tested. To create a train/test partition, the function \mcode{create_partition} is available. Given a source \mcode{src} and a ratio, it partitions the objects so that each class is divided evenly into the training and testing set according to the ratio. For example, the following code defines a train/test partition with $80\%$ of the objects in the training set:
+\begin{lstlisting}
+[prt_train,prt_test] = create_partition(src, 0.8);
+\end{lstlisting}
+Here, \mcode{prt_train} will contain the indices in \mcode{src.objects} that correspond to the training instances, while \mcode{prt_test} will contain those corresponding to testing instances.
+
+Alternatively, a partition can be defined manually by traversing the \mcode{src.objects} array and recording the desired indices.
+
+Given a partition, a model can be trained using the appropriate training function. We will denote the training function by \mcode{train}, but in reality it will be either \mcode{affine_train} or \mcode{svm_train}. The training is then done by:
+\begin{lstlisting}
+model = train(db, prt_train, train_opt);
+\end{lstlisting}
+The structure \mcode{train_opt} contains various parameters for training the model, which will depend on the type of classifier used.
+
+To test the model, the functions \mcode{affine_test} and \mcode{svm_test} are used. Here, we denote the testing function by \mcode{test}. The labels obtained for the testing instances specified by \mcode{prt_test} are then obtained by:
+\begin{lstlisting}
+labels = test(db, model, prt_test);
+\end{lstlisting}
+To calculate the classification error, the \mcode{classif_err} is used:
+\begin{lstlisting}
+err = classif_err(labels, prt_test, src);
+\end{lstlisting}
+Note that the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
+
+\subsection{Affine Classifier}
+
+The affine classifier is defined by the functions \mcode{affine_train} and \mcode{affine_test}. The former takes as an option the number of dimensions, \mcode{train_opt.dim} used for the affine space model of each class. 
+
+Multiple dimensions can be specified in order to test the difference in performance for different dimensions. In this case, the labels returned by \mcode{affine_test} form a 2D matrix, with the first dimension corresponding to the dimension and the second dimension corresponding to the testing instance index.
+
+The following code calculates the minimum error for an affine space classifier of dimension between $0$ and $160$:
+\begin{lstlisting}
+train_opt.dim = 0:160;
+model = affine_train(db, prt_train, train_opt);
+labels = affine_test(db, model, prt_test);
+err = classif_err(labels, prt_test, src);
+[min_err, dim_ind] = min(err);
+min_dim = train_opt.dim(dim_ind);
+\end{lstlisting}
+
+For an affine space classifier, the model structure contains the dimensions for which it is defined \mbox{model.dim}, the centers of the classes \mbox{model.mu} and the direction vectors defining the affine space \mbox{model.v}.
+
+\subsection{Support Vector Machine}
+
+\textbf{NOTE: Requires the LIBSVM library, see \url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/}}
+
+The support vector machine classifier is defined by the functions \mcode{svm_train} and \mcode{svm_test}. The training options consist of:
+\begin{itemize}
+	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
+	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
+	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
+\end{itemize}
+
+The following code calculates the error for an SVM classifier with a linear kernel and a slack factor $C = 8$:
+\begin{lstlisting}
+train_opt.kernel_type = 'linear';
+train_opt.C = 8;
+model = svm_train(db, prt_train, train_opt);
+labels = svm_test(db, model, prt_test);
+err = classif_err(labels, prt_test, src);
+\end{lstlisting}
+
+If a linear kernel is used, we can extract the discriminant vector $w$ and bias $\rho$ from the model using the function \mcode{svm_extract_w}. The function takes as input the database \mcode{db} and the SVM model \mcode{model}. It outputs the $w$s corresponding to each pair of classes in the model, arranged in the order $1$vs$2$,$1$vs$3$,\ldots$1$vs$N$,$2$vs$3$,\ldots,$2$vs$N$,\ldots,$(N-1)$vs$N$, where $N$ is the number of classes. The function is called as in:
+\begin{lstlisting}
+[w,rho] = svm_extract_w(db, model);
+\end{lstlisting}
 
 \end{document}
