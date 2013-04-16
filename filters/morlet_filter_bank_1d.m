@@ -44,7 +44,8 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 		options = struct();
 	end
 
-	parameter_fields = {'V','J','P','xi_psi','sigma_psi','sigma_phi','gabor'};
+	parameter_fields = {'filter_type','V','J','P','xi_psi','sigma_psi', ...
+		'sigma_phi'};
 
 	% If we are given a two-dimensional size, take first dimension
 	sig_length = sig_length(1);
@@ -52,6 +53,8 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	sigma0 = 2/sqrt(3);
 
 	% Fill in default parameters
+	options = fill_struct(options, ...
+		'filter_type','morlet_1d');
 	options = fill_struct(options, ...
 		'V', 1);
 	options = fill_struct(options, ...
@@ -67,11 +70,16 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	options = fill_struct(options, ...
 		'P', round(2*2^(-1/options.V)*(options.sigma_psi/sigma0)-1/2*options.sigma_psi/options.sigma_phi));
 	options = fill_struct(options, ...
-		'gabor', 0);
-	options = fill_struct(options, ...
 		'precision', 'double');
 	options = fill_struct(options, ...
 		'filter_format', 'fourier_truncated');
+
+	if ~strcmp(options.filter_type,'morlet_1d') && ...
+	   ~strcmp(options.filter_type,'gabor_1d')
+		error('Filter type must be ''morlet_1d'' or ''gabor_1d''.');
+	end
+	
+	do_gabor = strcmp(options.filter_type,'gabor_1d');
 
 	filters = struct();
 
@@ -81,18 +89,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 		filters = setfield(filters,parameter_fields{l}, ...
 			getfield(options,parameter_fields{l}));
 	end
-
-	% Calculate center frequency and standard deviation for mother wavelet
-	% these should reduce to 3*pi/4 and sqrt(3)/2, respectively, for the case
-	% Q = 1 (why?)
-	%psi_xi = 0.5*(2^(-1/options.V)+1)*pi;
-	%psi_bw = ((2^(1/options.Q)-1)/(2^(1/options.Q)+1)*3)*psi_xi/(3*pi/4)*pi;
-	%psi_sigma = (sqrt(3)/2)*psi_bw/pi;
-
-	% Calculate the standard deviation for the scaling function
-	%phi_bw = psi_bw;
-	%phi_sigma = 2*psi_sigma;
-
+	
 	% The normalization factor for the wavelets, calculated using the filters
 	% at the finest resolution (N)
 	psi_ampl = 1;
@@ -119,7 +116,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	% properly normalized, so we only sum their contributions.
 	for j1 = 0:options.J-1
 		temp = gabor(N,psi_center(j1+1),psi_sigma(j1+1),options.precision);
-		if ~options.gabor
+		if ~do_gabor
 			temp = morletify(temp,psi_sigma(j1+1));
 		end
 		S = S+abs(temp).^2;
@@ -130,7 +127,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	% Apply the normalization factor to the filters.
 	for j1 = 0:length(filters.psi.filter)-1
 		temp = gabor(N,psi_center(j1+1),psi_sigma(j1+1),options.precision);
-		if ~options.gabor
+		if ~do_gabor
 			temp = morletify(temp,psi_sigma(j1+1)); 
 		end
 		filters.psi.filter{j1+1} = optimize_filter(psi_ampl*temp,0,options);
@@ -141,8 +138,6 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	filters.phi.filter = gabor(N, 0, phi_sigma, options.precision); 
 	filters.phi.filter = optimize_filter(filters.phi.filter,1,options);
 	filters.phi.meta.k(1,1) = options.J+options.P;
-
-	filters.filter_type = 'morlet_1d';
 end
 
 function f = gabor(N,xi,sigma,precision)
