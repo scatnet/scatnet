@@ -23,7 +23,11 @@
 %         would have meta.order(k) equal to 2, and meta.scale(k,:) equal to
 %         [j1 j2].
 
-function [out,meta] = format_output(X,fmt)
+function [out,meta] = format_scatt(X,fmt)
+	if nargin < 2
+		fmt = 'table';
+	end
+	
 	if strcmp(fmt,'raw')
 		out = X;
 		meta = [];
