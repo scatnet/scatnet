@@ -1,3 +1,14 @@
+% prepare_db: Calculates the features from objects in a source.
+% Usage
+%    db = prepare_db(src, feature_fun, options)
+% Input
+%    src: The source specifying the objects.
+%    feature_fun: The feature functions applied to each object.
+%    options: Options for calculating the features. options.feature_sampling
+%       specifies how to sample the feature vectors in time/space.
+% Output
+%    db: The database of feature vectors.
+
 function db = prepare_db(src,feature_fun,opt)
 	if nargin < 3
 		opt = struct();

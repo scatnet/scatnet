@@ -1,3 +1,15 @@
+% svm_test: Calculate labels for an SVM model.
+% Usage
+%    [labels, votes, feature_labels] = svm_test(db, model, prt_test)
+% Input
+%    db: The database containing the feature vector.
+%    model: The affine space model obtained from svm_train.
+%    prt_test: The object indices of the testing instances.
+% Output
+%    labels: The assigned labels.
+%    votes: The number of votes for each testing instance and class pair.
+%    feature_labels: The labels assigned to the individual features.
+
 function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,prt_test)
 	ind_features = [db.indices{prt_test}];
 	

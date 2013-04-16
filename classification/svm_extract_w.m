@@ -1,4 +1,14 @@
-function w = svm_extract_w(db,model)
+% svm_extract_w: Calculates the discriminant vector for a linear SVM
+% Usage
+%    [w,rho] = svm_extract_w(db, model)
+% Input
+%    db: The database from which the model is calculated.
+%    model: The linear SVM model.
+% Output
+%    w: The discriminant vectors for each pair of classes in the model.
+%    rho: The biases for each pair of classes in the model.
+
+function [w,rho] = svm_extract_w(db,model)
 	if model.svm.Parameters(2) == 0			% linear SVM
 		class_ct = model.svm.nr_class;
 		w = zeros(size(model.svm.SVs,2),class_ct*(class_ct-1)/2);
@@ -16,6 +26,7 @@ function w = svm_extract_w(db,model)
 				
 				w(:,r) = (model.svm.SVs(class1_SVs,:).'*sv_coef1) + ...
 					(model.svm.SVs(class2_SVs,:).'*sv_coef2);
+				rho(r) = model.svm.rho(r);
 				
 				r = r+1;
 			end

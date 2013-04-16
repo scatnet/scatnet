@@ -1,3 +1,16 @@
+% svm_train: Train an SVM classifier.
+% Usage
+%    model = svm_train(db, prt_train, options)
+% Input
+%    db: The database containing the feature vector.
+%    prt_train: The object indices of the training instances.
+%    options: The training options. options.kernel_type specifies the kernel
+%       type ('linear' or 'gaussian'), options.C specified the slack factor,
+%       and options.gamma specifies the gamma constant for the Gaussian kernel
+%       case.
+% Output
+%    model: The SVM model.
+
 function model = svm_train(db,prt_train,opt)
 	if nargin < 3
 		opt = struct();

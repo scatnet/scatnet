@@ -1,3 +1,15 @@
+% affine_param_search: Parameter search for affine classifier.
+% Usage
+%    [err,dim] = affine_param_search(db, prt_train, prt_dev, options)
+% Input
+%    db: The database containing the feature vector.
+%    prt_train: The object indices of the training instances.
+%    prt_dev: The object indices of the validation instances.
+%    options: The training options passed to affine_train.
+% Output
+%    err: The errors for the dimensions in dim.
+%    dim: The dimensions tested.
+
 function [err,dim] = affine_param_search(db,prt_train,prt_dev,opt)
 	if nargin < 3
 		prt_dev = [];

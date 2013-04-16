@@ -1,3 +1,14 @@
+% affine_train: Train an affine space classifier.
+% Usage
+%    model = affine_train(db, prt_train, options)
+% Input
+%    db: The database containing the feature vector.
+%    prt_train: The object indices of the training instances.
+%    options: The training options. options.dim specifies the dimensionality
+%        of the affine spaces modeling each class.
+% Output
+%    model: The affine space model.
+
 function model = affine_train(db,prt_train,opt)
 	if nargin < 3
 		opt = struct();

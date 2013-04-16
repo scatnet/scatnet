@@ -1,3 +1,11 @@
+% gtzan_src: Creates a source for the GTZAN dataset.
+% Usage
+%    src = gtzan_src(directory)
+% Input
+%    directory: The directory containing the GTZAN dataset.
+% Output
+%    src: The GTZAN source.
+
 function src = gtzan_src(directory,N)
 	if nargin < 1
 		directory = 'gtzan';

@@ -1,3 +1,17 @@
+% affine_test: Calculate labels for an affine space model.
+% Usage
+%    [labels, err, feature_err] = affine_test(db, model, prt_test)
+% Input
+%    db: The database containing the feature vector.
+%    model: The affine space model obtained from affine_train.
+%    prt_test: The object indices of the testing instances.
+% Output
+%    labels: The assigned labels.
+%    err: The average approximation error for each testing instance and
+%       class pair.
+%    feature_err: The approximation error for each feature vector and class
+%       pair.
+
 function [labels,err,feature_err] = affine_test(db,model,prt_test)
 	test_mask = ismember(1:length(db.src.objects),prt_test);
 	

@@ -1,3 +1,15 @@
+% create_partition: Creates a train/test partition.
+% Usage
+%    [prt_train, prt_test] = create_partition(src, ratio)
+% Input
+%    src: The source structure describing the objects.
+%    ratio: The proportion of all instances selected for training.
+% Output
+%    prt_train: The indices of objects in src.objects corresponding to 
+%       training instances.
+%    prt_test: The indices of objects in src.objects corresponding to 
+%       testing instances.
+
 function [prt_train,prt_test,prt_dev] = create_partition(obj_class,ratio,shuffle)
 	if nargin < 1
 		error('Must specify a source or a list of object classes!');
