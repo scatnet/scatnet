@@ -1,4 +1,4 @@
-function X = ave_scatt(X,T,step,window_fun)
+function X = average_scatt(X,T,step,window_fun)
 	if nargin < 3
 		step = T/2;
 	end
