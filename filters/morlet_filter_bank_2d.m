@@ -56,31 +56,38 @@ for res = 0:res_max
   scale = 2^((nb_scale-1) / v - res);
   filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
   phi.filter.coefft{res+1} = fft2(filter_spatial);
-  phi.meta.k = nb_scale + 1;
+  phi.meta.J = nb_scale + 1;
   
   littlewood_final = zeros(N, M);
   % compute high pass filters psi
   angles = (0:nb_angle-1)  * pi / nb_angle;
   p = 1;
-  for k = 1:nb_scale
+  for j = 1:nb_scale
     for theta = 1:numel(angles)
       
       psi.filter{p}.type = 'fourier_multires';
       
       angle = angles(theta);
-      scale = 2^((k-1)/v - res);
+      scale = 2^((j-1)/v - res);
       if (scale >= 1)
-        filter_spatial = morlet_2d_noDC(N, ...
-          M,...
-          sigma_psi*scale,...
-          slant_psi,...
-          xi_psi/scale,...
-          angle) ;
-        psi.filter{p}.coefft{res+1} = fft2(filter_spatial);
+        if (res==0)
+          filter_spatial = morlet_2d_noDC(N, ...
+            M,...
+            sigma_psi*scale,...
+            slant_psi,...
+            xi_psi/scale,...
+            angle) ;
+          psi.filter{p}.coefft{res+1} = fft2(filter_spatial);
+        else
+          % no need to recompute : just downsample by periodizing in
+          % fourier
+          psi.filter{p}.coefft{res+1} = ...
+            sum(extract_block(psi.filter{p}.coefft{1}, [2^res, 2^res]), 3) / 2^res;
+        end
         littlewood_final = littlewood_final + abs(psi.filter{p}.coefft{res+1}).^2;
       end
       
-      psi.meta.k(p,1) = k;
+      psi.meta.j(p,1) = j;
       psi.meta.theta(p,1) = theta;
       p = p + 1;
     end
@@ -107,5 +114,6 @@ filters.meta.sigma_phi = sigma_phi;
 filters.meta.sigma_psi = sigma_psi;
 filters.meta.xi_psi = xi_psi;
 filters.meta.slant_psi = slant_psi;
+filters.meta.N = size_in(1);
 
 end

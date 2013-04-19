@@ -21,10 +21,8 @@ if ~exist('offset','var')
 end
 [x , y] = meshgrid(1:M, 1:N);
 
-x = x - ceil(M/2) - 1;
-y = y - ceil(N/2) - 1;
-x = x - offset(1);
-y = y - offset(2);
+x = x - ceil(M/2) - 1 - offset(1);
+y = y - ceil(N/2) - 1 - offset(2);
 
 Rth = rotation_matrix_2d(theta);
 A = inv(Rth) * [1/sigma^2, 0 ; 0 slant^2/sigma^2] * Rth ;

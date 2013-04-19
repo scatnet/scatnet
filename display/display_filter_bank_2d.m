@@ -44,12 +44,12 @@ for p = 1:numel(filters.psi.filter)
     M = 1;
   end
   
-  k = filters.psi.meta.k(p,1);
+  j = filters.psi.meta.j(p,1);
   theta = filters.psi.meta.theta(p,1);
   
-  big_img((1:N)+ (k-1)*N_margin, (1:N) + (theta)*N_margin) = ...
+  big_img((1:N)+ (j-1)*N_margin, (1:N) + (theta)*N_margin) = ...
     real(filt_for_disp)/M;
-  big_img((1:N)+ (k-1)*N_margin, (1:N) + (theta+nb_angle)*N_margin) = ...
+  big_img((1:N)+ (j-1)*N_margin, (1:N) + (theta+nb_angle)*N_margin) = ...
     imag(filt_for_disp)/M;
 end
 
