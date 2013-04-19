@@ -2,7 +2,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 
 % option retrieving
 antialiasing = getoptions(options, 'antialiasing', 1);
-mask_psi = getoptions(options, 'mask_psi', ones(1,numel(filters.psi.filter)));
+psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 
 % precomputation
 xf = fft2(x);
@@ -16,7 +16,7 @@ x_phi = real(conv_sub_2d(xf, filters.phi.filter, ds));
 
 % high pass filtering and downsampling
 x_psi = {};
-for p = find(mask_psi)
+for p = find(psi_mask)
   j = filters.psi.meta.j(p);
   ds = max(floor(j/v)- lastres - antialiasing, 0);
   x_psi{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);

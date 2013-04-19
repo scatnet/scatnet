@@ -62,13 +62,13 @@ for res = 0:res_max
   % compute high pass filters psi
   angles = (0:nb_angle-1)  * pi / nb_angle;
   p = 1;
-  for j = 1:nb_scale
+  for j = 0:nb_scale-1
     for theta = 1:numel(angles)
       
       psi.filter{p}.type = 'fourier_multires';
       
       angle = angles(theta);
-      scale = 2^((j-1)/v - res);
+      scale = 2^(j/v - res);
       if (scale >= 1)
         if (res==0)
           filter_spatial = morlet_2d_noDC(N, ...
