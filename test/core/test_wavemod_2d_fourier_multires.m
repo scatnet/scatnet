@@ -15,7 +15,7 @@ downsampler = @(k)(max(0,k-2));
 
 %%
 % check conservation of energy
-Wenerg = energize(S, U);
+Wenerg = scatt_energy(S, U);
 Xenerg = sum(abs((x(:)).^2));
 assert(1-Wenerg/Xenerg < 0.01);
 fprintf('ratio energy of wavelet transform / energy of signal %f \n', Wenerg/Xenerg);
