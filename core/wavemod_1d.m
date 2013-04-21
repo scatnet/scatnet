@@ -39,7 +39,7 @@ function [S,U] = wavemod_1d(in,filters,options)
 		
 		filter_bw = phi_bw;
 		ds = max(0,round(log2(2*pi/filter_bw))-log2(filters.N/size(sig,1))-options.antialiasing);
-		S.signal{rS} = real(conv_sub(sig_f,filters.phi.filter,ds));
+		S.signal{rS} = real(conv_sub_1d(sig_f,filters.phi.filter,ds));
 		S.meta.bandwidth(rS,1) = filter_bw;
 		S.meta.resolution(rS,1) = log2(filters.N/size(S.signal{rS},1));
 		S.meta.scale(rS,:) = in.meta.scale(k1+1,:);
@@ -53,7 +53,7 @@ function [S,U] = wavemod_1d(in,filters,options)
 		for k2 = find(in.meta.bandwidth(k1+1)>psi_xi)-1
 			filter_bw = psi_bw(k2+1);
 			ds = max(0,round(log2(2*pi/filter_bw/2))-log2(filters.N/size(sig,1))-options.antialiasing);
-			U.signal{rU} = abs(conv_sub(sig_f,filters.psi.filter{k2+1},ds));
+			U.signal{rU} = abs(conv_sub_1d(sig_f,filters.psi.filter{k2+1},ds));
 			U.meta.bandwidth(rU,1) = filter_bw;
 			U.meta.resolution(rU,1) = log2(filters.N/size(U.signal{rU},1));
 			U.meta.scale(rU,:) = [in.meta.scale(k1+1,:) k2];
