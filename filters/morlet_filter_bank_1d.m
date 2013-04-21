@@ -44,7 +44,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 		options = struct();
 	end
 
-	parameter_fields = {'filter_type','V','J','P','xi_psi','sigma_psi', ...
+	parameter_fields = {'filter_type','Q','B','J','P','xi_psi','sigma_psi', ...
 		'sigma_phi'};
 
 	% If we are given a two-dimensional size, take first dimension
@@ -56,19 +56,21 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	options = fill_struct(options, ...
 		'filter_type','morlet_1d');
 	options = fill_struct(options, ...
-		'V', 1);
+		'Q', 1);
 	options = fill_struct(options, ...
-		'xi_psi',1/2*(2^(-1/options.V)+1)*pi);
+		'B', options.Q);
 	options = fill_struct(options, ...
-		'sigma_psi',1/2*sigma0/(1-2^(-1/options.V)));
+		'xi_psi',1/2*(2^(-1/options.Q)+1)*pi);
 	options = fill_struct(options, ...
-		'B_phi', 2);
+		'sigma_psi',1/2*sigma0/(1-2^(-1/options.B)));
 	options = fill_struct(options, ...
-		'sigma_phi', options.sigma_psi/options.B_phi);
+		'phi_bw_multiplier', 2);
 	options = fill_struct(options, ...
-		'J', floor(log2(sig_length/(options.sigma_psi/sigma0))*options.V));
+		'sigma_phi', options.sigma_psi/options.phi_bw_multiplier);
 	options = fill_struct(options, ...
-		'P', round(2*2^(-1/options.V)*(options.sigma_psi/sigma0)-1/2*options.sigma_psi/options.sigma_phi));
+		'J', floor(log2(sig_length/(options.sigma_psi/sigma0))*options.Q));
+	options = fill_struct(options, ...
+		'P', round(2*2^(-1/options.Q)*(options.sigma_psi/sigma0)-1/2*options.sigma_psi/options.sigma_phi));
 	options = fill_struct(options, ...
 		'precision', 'double');
 	options = fill_struct(options, ...
@@ -101,7 +103,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	filters.psi.filter = cell(1,options.J+options.P);
 	filters.phi = [];
 
-	[psi_center,psi_bw,phi_bw] = morlet_1d_freq(filters);
+	[psi_center,psi_bw,phi_bw] = morlet_freq_1d(filters);
 
 	psi_sigma = sigma0*pi/2./psi_bw;
 	phi_sigma = sigma0*pi/2./phi_bw;

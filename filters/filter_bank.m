@@ -57,14 +57,16 @@
 
 
 function filters = filter_bank(sig_length,options)
-	parameter_fields = {'filter_type','V','xi_psi','sigma_psi','B_phi', ... 
-		'sigma_phi','J','P','spline_order','precision','filter_format'};
+	parameter_fields = {'filter_type','Q','B','xi_psi','sigma_psi', ...
+		'phi_bw_multiplier','sigma_phi','J','P','spline_order', ...
+		'precision','filter_format'};
 	
 	options = fill_struct(options, 'filter_type', 'morlet');
-	options = fill_struct(options, 'V', []);
+	options = fill_struct(options, 'Q', []);
+	options = fill_struct(options, 'B', []);
 	options = fill_struct(options, 'xi_psi', []);
 	options = fill_struct(options, 'sigma_psi', []);
-	options = fill_struct(options, 'B_phi', []);
+	options = fill_struct(options, 'phi_bw_multiplier', []);
 	options = fill_struct(options, 'sigma_phi', []);
 	options = fill_struct(options, 'J', []);
 	options = fill_struct(options, 'P', []);

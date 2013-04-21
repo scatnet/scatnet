@@ -2,11 +2,11 @@ src = gtzan_src('~/matlab/y/gtzan');
 
 N = 5*2^17;
 
-filt1_opt.V = 8;
+filt1_opt.Q = 8;
 filt1_opt.J = 80;
 filt1_opt.gabor = 1;
 
-filt2_opt.V = 1;
+filt2_opt.Q = 1;
 filt2_opt.J = 13;
 
 filters1 = morlet_filter_bank_1d(N,filt1_opt);

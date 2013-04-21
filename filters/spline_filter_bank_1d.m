@@ -23,15 +23,20 @@ function filters = spline_filter_bank_1d(sig_length,options)
 		options = struct();
 	end
 	
-	options = fill_struct(options,'V',1);
-	options = fill_struct(options,'J',floor(log2(sig_length)*options.V+1e-6));
+	options = fill_struct(options,'Q',1);
+	options = fill_struct(options,'B',1);
+	options = fill_struct(options,'J',floor(log2(sig_length)*options.Q+1e-6));
 	options = fill_struct(options,'P',0);
 	options = fill_struct(options,'spline_order',3);
 	options = fill_struct(options,'precision','double');
 	options = fill_struct(options,'filter_format','fourier_truncated');
 	
-	if options.V ~= 1
+	if options.Q ~= 1
 		error('Only one wavelet per octave allowed for spline wavelets');
+	end
+	
+	if options.B ~= 1
+		error('Bandwidth is fixed for spline wavelets');
 	end
 
 	if options.P ~= 0
