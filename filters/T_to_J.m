@@ -17,5 +17,5 @@ function J = T_to_J(T, Q, B, phi_bw_multiplier)
 		phi_bw_multiplier = 1+(Q==1);
 	end
 	
-	J = round(log2(T./(2*B./phi_bw_multiplier)).*Q);
+	J = round(log2(T./(4*B./phi_bw_multiplier)).*Q)+1;
 end
