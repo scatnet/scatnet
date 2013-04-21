@@ -110,9 +110,9 @@ function filters = filter_bank(sig_length,options)
 		% Calculate the k:th filter bank
 		if strcmp(options_k.filter_type,'morlet_1d') || ...
 		   strcmp(options_k.filter_type,'gabor_1d')
-			filters{k} = morlet_1d_filter_bank(sig_length,options_k);
+			filters{k} = morlet_filter_bank_1d(sig_length,options_k);
 		elseif strcmp(options_k.filter_type,'spline_1d')
-			filters{k} = spline_1d_filter_bank(sig_length,options_k);
+			filters{k} = spline_filter_bank_1d(sig_length,options_k);
 		else
 			error(['Unknown wavelet type ''' options_k.filter_type '''']);
 		end

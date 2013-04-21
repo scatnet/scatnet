@@ -1,4 +1,4 @@
-function [psi_xi,psi_bw,phi_bw] = morlet_1d_freq(filters)
+function [psi_xi,psi_bw,phi_bw] = morlet_freq_1d(filters)
 	sigma0 = 2/sqrt(3);
 	
 	% Calculate logarithmically spaced filters.

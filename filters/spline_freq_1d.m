@@ -1,4 +1,4 @@
-function [psi_xi,psi_bw,phi_bw] = spline_1d_freq(filters)
+function [psi_xi,psi_bw,phi_bw] = spline_freq_1d(filters)
 	xi0 = 3*pi/4;
 
 	psi_xi = xi0.*2.^(-[0:filters.J-1]);
