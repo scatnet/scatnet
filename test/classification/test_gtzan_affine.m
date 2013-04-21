@@ -15,7 +15,7 @@ filters2 = morlet_filter_bank_1d(N,filt2_opt);
 scatt_fun = @(x)(scatt_1d(x,{@(x)(wavemod_1d(x,filters1)),@(x)(wavemod_1d(x,filters2)),@(x)(wavemod_1d(x,filters2))}));
 scatt_fun = @(x)(format_scatt(log_scatt(renorm_scatt(scatt_fun(x))),'table'));
 
-db = prepare_db(src,{scatt_fun});
+db = prepare_database(src,{scatt_fun});
 
 [prt_train,prt_test] = create_partition(src);
 
