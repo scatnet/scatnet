@@ -34,7 +34,7 @@ to generate the filter bank:
 \begin{lstlisting}
 	filters = filter_bank([N M], fparam);
 \end{lstlisting}
-This function will then call the appropriate filter bank function (\mcode{morlet_1d_filter_bank}, \mcode{gabor_2d_filter_bank}, etc.) depending on the value of \mcode{fparam.filter_type} and put it in a cell array. 
+This function will then call the appropriate filter bank function (\mcode{spline_filter_bank_1d}, \mcode{morlet_filter_bank_2d}, etc.) depending on the value of \mcode{fparam.filter_type} and put it in a cell array. 
 
 If one of the parameters is an array (except for \mcode{fparam.filter_type} and \mcode{fparam.precision}, which have to be cell arrays), \mcode{filter_bank} will create multiple filter banks and output them. For example, if \mcode{fparam.filter_type} equals \mcode{\{'gabor\_1d','spline_1d'\}}, \mcode{filter_bank} will output a cell array of two filter banks, one with Gabor wavelets and one with spline wavelets. If parameter fields are of different sizes, the shorter ones are extended by concatenating the last value the required number of times.
 
@@ -48,7 +48,7 @@ The returned structure, \mcode{filters}, contains the filters $\psi$ and $\phi$ 
 Each filter set (be it \mcode{filters.phi} or \mcode{filters.psi}), is a structure \mcode{fset} containing the following:
 \begin{itemize}
 	\item \mcode{fset.filter}: A cell array of the actual filter coefficients. These coefficients are implementation-dependent and can encode the filter spatially, in the Fourier domain, at different resolutions, etc.
-	\item \mcode{fset.meta}: Contains meta information on the filters. Specifically, it has two fields: \mcode{fset.meta.k}, which is the scale indices, and \mcode{fset.meta.theta}, which is the angle indices (for two-dimensional filters). Both \mcode{fset.meta.k} and \mcode{fset.meta.theta} are of the same length as \mcode{fset.filter}.
+	\item \mcode{fset.meta}: Contains meta information on the filters. Specifically, it has two fields: \mcode{fset.meta.j}, which is the scale indices, and \mcode{fset.meta.theta}, which is the angle indices (for two-dimensional filters). Both \mcode{fset.meta.j} and \mcode{fset.meta.theta} are of the same length as \mcode{fset.filter}.
 \end{itemize}
 
 The scale and angle indices are non-negative integers. The scale index rises with increasing scale, while the angle index rises with increasing angle (counter-clockwise).
@@ -57,16 +57,23 @@ The scale and angle indices are non-negative integers. The scale index rises wit
 
 In addition to the parameters listed above, the Morlet/Gabor filter bank has the following options:
 \begin{itemize}
-	\item \mcode{fparam.V}: The number of wavelets per octave.
+	\item \mcode{fparam.Q}: The number of wavelets per octave. By default $1$.
 	\item \mcode{fparam.J}: The number of wavelet scales.
-	\item \mcode{fparam.sigma_psi}: The standard deviation of the mother wavelet in space.
-	\item \mcode{fparam.sigma_phi}: The standard deviation of the scaling function in space.
+	\item \mcode{fparam.B}: The reciprocal octave bandwidth of the wavelets. By default \mcode{fparam.Q}.
+	\item \mcode{fparam.sigma_psi}: The standard deviation of the mother wavelet in space. By default calculated from \mcode{fparam.B}.
+	\item \mcode{fparam.sigma_phi}: The standard deviation of the scaling function in space. By default calculated from \mcode{fparam.B}.
 	\item \mcode{fparam.slant}: The slant of the mother wavelet ellipse in frequency.
 	\item \mcode{fparam.nb_angle}: The number of wavelet angles.
 \end{itemize}
-The maximal wavelet bandwidth (in space) is determined by $2^{J/V}$ times the bandwidth of the mother wavelet, which is proportional to \mcode{sigma\_psi}. If \mcode{sigma\_psi} is smaller than a certain threshold, a number of constant-bandwidth filters are added, linearly spaced, to cover the low frequencies.
+The maximal wavelet bandwidth (in space) is determined by $2^{J/Q}$ times the bandwidth of the mother wavelet, which is proportional to \mcode{sigma\_psi}. If \mcode{sigma\_psi} is smaller than a certain threshold, a number of constant-bandwidth filters are added, linearly spaced, to cover the low frequencies.
 
-Again, we can specify different filter banks by setting \mcode{fparam.V} and \mcode{fparam.J}, etc. to arrays instead of scalars. This is often useful if the nature of the signal is different at different orders, which is usually the case in audio.
+Again, we can specify different filter banks by setting \mcode{fparam.Q} and \mcode{fparam.J}, etc. to arrays instead of scalars. This is often useful if the nature of the signal is different at different orders, which is usually the case in audio.
+
+To calculate the appropriate \mcode{J} necessary for a given window size \mcode{T} and filter parameters \mcode{Q}, etc, there is the conversion function \mcode{T_to_J}, which is called using:
+\begin{lstlisting}
+	fparam.J = T_to_J(T, fparam.Q);
+\end{lstlisting}
+This will ensure that the maximum wavelet scale, and thus the averaging scale of the lowpass filter, will be approximately \mcode{T}.
 
 \subsection{Spline filter bank}
 
@@ -77,74 +84,62 @@ In addition to the parameters listed above, the spline filter bank has the follo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
-\section{Wavelet Modulus and Scattering Transforms}
+\section{Wavelet and Scattering Transforms}
 
-\subsection{Wavelet Modulus Transform}
+\subsection{Wavelet Transform}
 
-The wavelet modulus transform takes a layer of coefficients and calculates the next. This layer has the fields:
+Given a signal \mcode{x}, a filter bank \mcode{filters}, and an options structure \mcode{options}, the wavelet transforms \mcode{wavelet_1d} and \mcode{wavelet_2d} decompose the former into a lowpass part \mcode{x_phi} and a cell array of its wavelet coefficients \mcode{x_psi}. The 1D version is called in the following manner:
+\begin{lstlisting}
+	[x_phi, x_psi] = wavelet_1d(x, filters, options)
+\end{lstlisting}
+The outputs are sampled according to their frequency bandwidth.
+
+This transform can also be applied on a layer of coefficients, representing layers of a scattering transform. These layers are defined as structures with fields:
 \begin{itemize}
 	\item \mcode{layer.signal}: A cell array of signals.
 	\item \mcode{layer.meta}: The meta information on the signals, such as their path, their resolutions, etc.
 \end{itemize}
-The signals are one-dimensional or two-dimensional arrays while \mcode{meta} contains the fields \mcode{meta.k} and \mcode{meta.theta}, which are two-dimensional arrays. The first dimension has length corresponding \mcode{layer.signal} while the second dimension as length corresponding to the order of the coefficients. The path of the $l$th coefficient is thus encoded in \mcode{meta.k(l,:)} and \mcode{meta.theta(l,:)}, respectively.
+The signals are one-dimensional or two-dimensional arrays while \mcode{meta} contains the fields \mcode{meta.j} and \mcode{meta.theta}, which are two-dimensional arrays. The first dimension has length corresponding \mcode{layer.signal} while the second dimension as length corresponding to the order of the coefficients. The path of the $p$th coefficient is thus encoded in \mcode{meta.j(p,:)} and \mcode{meta.theta(p,:)}, respectively.
 
-A wavelet modulus transform (of which there are multiple, such as \mcode{wavemod_1d}, \mcode{wavemod_2d}, etc.) is a function that takes a layer \mcode{U\{m\}}, a filter bank (see previous section), an options structure, and returns  the smoothed output of this layer \mcode{S\{m\}} as well as the next layer \mcode{U\{m+1\}}. Specifically, for a wavelet modulus transform \mcode{wavemod}, we have:
+The corresponding layer transforms are \mcode{wavelet_layer_1d} and \mcode{wavelet_layer_2d}, the former being applied to the layer \mcode{U} by calling
 \begin{lstlisting}
-	[S{m}, U{m+1}] = wavemod(U{m}, filters, options);
+	[U_phi, U_psi] = wavelet_layer_1d(U, filters, options);
 \end{lstlisting}
-Here, \mcode{U} and \mcode{S} are cell arrays of layers, as described above. This wavelet modulus can be a one-dimensional wavelet modulus transform (\mcode{wavemod\_1d}), a two-dimensional wavelet modulus transform (\mcode{wavemod\_2d}), a joint wavelet modulus transform, etc. It only has to satisfy the above input/output conditions.
+
+In addition, there is a function \mcode{modulus_layer}, which computes the complex modulus of the coefficients in the layer.
+
+Combining the wavelet transform with the modulus operator, we can construct a scattering transform. First, we initialize $U\{1\}$ with the input signal, then iterate the following calls:
+\begin{lstlisting}
+	[S{m}, W] = wavelet_layer_1d(U{m}, filters, options);
+	U{m+1} = modulus_layer(W);
+\end{lstlisting}
+Then \mcode{S\{m+1\}} and \mcode{U\{m+1\}} will contain the $m$th-order scattering and wavelet modulus coefficients, respectively.
+
+In the next section, we see how this can be automated.
 
 \subsection{Scattering Transform}
 
-By stacking multiple wavelet modulus transforms together, we obtain the scattering transform. Specifically, the \mcode{scatt} function, takes a signal, an options structure, a cell array of wavelet modulus transforms (with filters fixed), and returns the scattering coefficients (or wavelet modulus coefficients, if desired). The scattering coefficients are output as a cell array of layers \mcode{S}.
+By alternating wavelet transforms and modulus operators, we obtain the scattering transform. Specifically, the \mcode{scatt} function takes a signal, an options structure, a structure defining the wavelet cascade, and returns the scattering coefficients (or wavelet modulus coefficients, if desired). The scattering coefficients are output as a cell array of layers \mcode{S}.
 
-The scattering transform could be used like the following
+To create this cascade structure, a factory function, \mcode{cascade_factory_1d} or \mcode{cascade_factory_2d} is used, which takes as input the signal size, a filter parameter structure, a scattering options structure, and the order of the transform. The scattering transform could be used like the following
 \begin{lstlisting}
 	fparam.filter_type = {'gabor_1d', 'morlet_1d'};
-	fparam.V = [8 1];
-	fparam.J = [80 13];
-	fparam.sigma_psi = [8 1];
-	fparam.sigma_phi = [8 0.5];
+	fparam.Q = [8 1];
+	fparam.J = T_to_J(8192,fparam.Q);
 	
-	filters = filter_bank(N,fparam);
+	options = struct();
 	
-	wavemod{1} = @(x)(wavemod_1d(x, filters{1}, options));
-	wavemod{2} = @(x)(wavemod_1d(x, filters{2}, options));
-	wavemod{3} = @(x)(wavemod_1d(x, filters{2}, options));
+	cascade = cascade_factory_1d(N, fparam, options, 2);
 	
-	S = scatt(x,wavemod);
+	S = scatt(x,cascade);
 \end{lstlisting}
-The above code will compute a filter bank for signals of length $N$, with the first filter bank consisting of $8$ filters per octave, for $80/8 = 10$ octaves, with a wavelet bandwidth corresponding to about $1/8$th of an octave. The second filter bank will only have one wavelet per octave, with the corresponding bandwidth, and $13$ octaves of wavelets. Since the mother wavelet for the first filter bank has bandwidth $8$ while that of the second has bandwidth $1$, their maximal bandwidths $8\cdot2^{80/10} = 8192$ and $2^{13} = 8192$ will coincide.
-
-Note that for the filter bank for which $V = 1$, the lowpass filter is half as wide in space compared to the largest wavelet. This is necessary to properly tile the frequency domain when $V = 1$. For larger $V$s, we can set \mcode{sigma\_phi} equal to \mcode{sigma\_psi}.
-
-These filters are then fed into wavelet modulus transform functions which are concatenated into a cell array. They are called with the options structure \mcode{opt} fixed, which contains various options for the wavelet modulus transform. Finally, the scattering transform is called, yielding the result \mcode{S} from the signal \mcode{x}.
-
-Another this to note is that the number of wavelet modulus is $3$, which means that \mcode{scatt} will produce zeroth-, first- and second-order coefficients. The last \mcode{wavemod} function will only serve to smooth the second-order wavelet modulus coefficients to give the second-order scattering coefficients. Thus to obtain scattering coefficients of maximal order $M$, you have to supply $M+1$ \mcode{wavemod} functions.
+The above code will compute a filter bank for signals of length $N$, with the first filter bank consisting of $8$ filters per octave. The second filter bank will only have one wavelet per octave, with the corresponding bandwidth, and $13$ octaves of wavelets. The averaging scale of both filter banks is set to $T = 8192$. These filters are then used to specify the wavelet transforms that are stored in the cascade structure.
 
 To obtain the wavelet modulus coefficients \mcode{U}, \mcode{scatt} is called for two outputs, as in
 \begin{lstlisting}
 [S, U] = scatt(x,wavemod);
 \end{lstlisting}
 The structure of \mcode{U} follows that of \mcode{S}. That is it consists of a cell array representing each layer of wavelet modulus coefficients. The first layer corresponds to the zeroth-order wavelet modulus coefficients, which is the original signal. The second layer contains the first-order wavelet modulus coefficients, which are the signal convolved with the filters with the modulus applied, and so on. The coefficients in \mcode{S\{m+1\}} are thus the $m$th-order scattering coefficients obtained from smoothing the coefficients in \mcode{U\{m+1\}}.
-
-\subsection{\mcode{wavemod} Factory}
-To simplify the construction of wavelet modulus transforms, several wavelet modulus factory functions are provided. The one corresponding to \mcode{wavemod\_1d} is \mcode{wavemod\_1d\_factory}. These take as input the filter parameters along with options passed on to the wavelet modulus transforms. In addition, the desired order \mcode{M} of the scattering transform is specified.
-
-The code from the previous section then becomes:
-\begin{lstlisting}
-	fparam.filter_type = {'gabor_1d', 'morlet_1d'};
-	fparam.V = [8 1];
-	fparam.J = [80 13];
-	fparam.sigma_psi = [8 1];
-	fparam.sigma_phi = [8 0.5];
-	
-	wavemod = wavemod_1d_factory(fparam, options, 2);
-	
-	S = scatt(x,wavemod);
-\end{lstlisting}
-
-This is the recommended way of defining a scattering transform. The previous method of creating a cell array of \mcode{wavemod} functions may not always be supported.
 
 \section{Manipulating, Displaying, Formatting}
 
@@ -153,8 +148,8 @@ Often, second- and higher-order coefficients will reproduce information from the
 
 These functions both act on the output of \mcode{scatt}, and so can be called on the scattering transform \mcode{S} like:
 \begin{lstlisting}
-	Sr = renorm_scatt(S);
-	Srl = log_scatt(S);
+	S_renorm = renorm_scatt(S);
+	S_renorm_log = log_scatt(S_renorm);
 \end{lstlisting}
 
 \subsection{Display}
@@ -163,36 +158,38 @@ Two functions are available to display scattering coefficients, \mcode{display_s
 \subsection{Formatting}
 In order to use the scattering coefficients for classification, they need to be in a vector format. This is obtained using the function \mcode{format_scatt}, which arranges scattering coefficients into a two-dimensional table, the first dimension corresponding to a scattering coefficient index and the second dimension corresponding to time/space. It also returns a meta structure that specifies the order, scale, etc. of each scattering coefficient. The following example illustrates its usage:
 \begin{lstlisting}
-	[t,meta] = format_scatt(S);
+	[sc_table, meta] = format_scatt(S);
 	
 	% plot the 2nd-order coefficients
 	% corresponding to scale (3, 7)
 	ind = find(meta.order==2 & meta.scale(:,1)==3 & meta.scale(:,2)==7);
-	plot(t(ind,:));
+	plot(sc_table(ind, :));
 	
 	% calculate the energy of 1st-order
 	% coefficients
 	ind = find(meta.order==1);
-	E2 = norm(t(ind,:),'fro')^2;
+	E2 = norm(sc_table(ind,:),'fro')^2;
 \end{lstlisting}
 
-Note that if two or more filter banks are used when calculating \mcode{S}, formatting is only possible if the lowpass filters $\phi$ have the same bandwidth, since otherwise scattering coefficients of different orders will have different resolutions and so cannot be fitted into the same matrix without resampling.
+Note that if two or more filter banks are used when calculating \mcode{S}, formatting is only possible if the lowpass filters $\phi$ have the same bandwidth, since otherwise scattering coefficients of different orders will have different resolutions and so cannot be fitted into the same matrix without resampling. Using the \mcode{T_to_J} function will ensure that this is always the case.
 
 \section{Classification}
 
 \subsection{Batch Computation}
 
-To compute scattering coefficients for a database of signals, we first define a source using \mcode{create_src(directory,objects_fun)} (or one of its wrappers, such as \mcode{gtzan_src}). Given a directory, this function recursively traverses it, looking for `.jpg', `.wav' or `.au' files. For each such file, it calls \mcode{objects_fun} to determine its constituent objects and their classes. To add a new database, it suffices to write the corresponding \mcode{objects_fun} function.
+To compute scattering coefficients for a database of signals, we first define a source. A source is a set of files, each file containing a number of objects to be classified. Each object has a class associated with it and a location within the file.
 
-The \mcode{objects_fun} function has the following signature
+The source can be created using \mcode{create_src(directory, extract_objects_fun)} (or one of its wrappers, such as \mcode{gtzan_src}). Given a directory, this function recursively traverses it, looking for `.jpg', `.wav', or `.au' files. For each such file, it calls \mcode{extract_objects_fun} to determine its constituent objects and their classes. To add a new database, it suffices to write the corresponding \mcode{extract_objects_fun} function.
+
+The \mcode{extract_objects_fun} function has the following signature
 \begin{lstlisting}
-[objects,classes] = objects_fun(file);
+[objects, classes] = extract_objects_fun(file);
 \end{lstlisting}
 Given a file, it returns a structure array \mcode{objects} of the objects it contains and a cell array of their class names \mcode{classes}. 
 
-In this framework, an ``object'' is that which is classified as belonging to one class or another. Often, a file will only contain one object, so \mcode{objects} is a simple structure, but this can vary from database to database.
+Most often, a file will only contain one object, so \mcode{objects} is a  structure of size one, but this can vary from database to database (for example in speech recognition a file corresponds to a recording of a phrase, which can contain different phones to be classified).
 
-The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in the image (1D signal). These bounds are inclusive. For the case where a file only contains one object, these bounds will simply be the bounds of the file data.
+The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in a 2D (or 1D) signal. These bounds are inclusive. For the case where a file only contains one object, the bounds will simply be the bounds of the signal.
 
 Given a directory and this function, \mcode{create_src} returns a source structure \mcode{src}, which has the following fields
 \begin{itemize}
@@ -201,64 +198,64 @@ Given a directory and this function, \mcode{create_src} returns a source structu
 	\item \mcode{src.objects}: A struct array of the objects returned by applying \mcode{objects_fun} to each filename, but with two supplementary fields: \mcode{src.objects.ind}, corresponding to the index of its parent filename in \mcode{src.files} and \mcode{src.objects.class}, corresponding to the index of its class in \mcode{src.classes}.
 \end{itemize}
 
-The scattering coefficients of the objects in \mcode{src} can now be calculated using the function \mcode{prepare_db}. This function takes for input the \mcode{src} structure, a cell array of function handles, \mcode{feature_fun}, which contain the functions calculating the feature representations, and an options structure.
+The scattering coefficients of the objects in \mcode{src} can now be calculated using the function \mcode{prepare_database}. This function takes for input the \mcode{src} structure, a cell array of function handles, \mcode{feature_fun}, which contain the functions calculating the feature representations, and an options structure.
 
 A ``feature function'' takes as an input the file data and a structure array of its constituent objects and returns the corresponding feature vectors as a 2D matrix. Its signature is thus
 \begin{lstlisting}
-feat = feature_fun(x,objects);
+features = feature_fun(signal, objects);
 \end{lstlisting}
-Since this flexibility is often not necessary, a simplified feature function is also allowed, which only takes inputs \mcode{x_obj} in the form of a 2D matrix, each column corresponding to a signal to be transformed, and returns the associated feature vectors \mcode{feat_obj}. It has the following signature
+Since this flexibility is often not necessary, a simplified feature function is also allowed, which only takes inputs \mcode{obj_signal} in the form of a 2D matrix, each column corresponding to a signal to be transformed, and returns the associated feature vectors \mcode{obj_features}. It has the following signature
 \begin{lstlisting}
-feat_obj = feature_fun(x_obj);
+obj_features = feature_fun(obj_signal);
 \end{lstlisting}
-In this case, the function \mcode{feature_wrapper} is called, which extracts the objects from the file data \mcode{x}, applies the feature function to each object, and collects the output features.
+In this case, the function \mcode{feature_wrapper} is called, which extracts the objects from the file data \mcode{signal}, applies the feature function to each object, and collects the output features.
 
 Note that a feature function is not required to output only one feature vector for each object. If more than one feature vector is associated to a single object, the classifier will classify each feature vector separately and aggregate the results, either through averaging the approximation error (for the affine space classifier) or through voting (for the SVM classifier).
 
 The following code sets up a feature function array for the normalized log-scattering transform:
 \begin{lstlisting}
 fparam.filter_type = {'gabor_1d', 'morlet_1d'};
-fparam.V = [8 1];
-fparam.J = [80 13];
-fparam.sigma_psi = [8 1];
-fparam.sigma_phi = [8 0.5];
+fparam.Q = [8 1];
+fparam.J = T_to_J(8192,fparam.Q);
 
-wavemod = wavemod_1d_factory(fparam, options, 2);
+options = struct();
+
+cascade = cascade_factory_1d(N, fparam, options, 2);
 
 feature_fun = {@(x)(format_scatt( ...
-	log_scatt(scatt(x, wavemod))))};
+	log_scatt(renorm_scatt(scatt(x, cascade)))))};
 \end{lstlisting}
 
-The feature vectors are then computed by calling \mcode{prepare_db}, as in:
+The feature vectors are then computed by calling \mcode{prepare_database}, as in:
 \begin{lstlisting}
-db = prepare_db(src,feature_fun);
+database = prepare_database(src, feature_fun);
 \end{lstlisting}
-The resulting \mcode{db} structure then contains three fields:
+The resulting \mcode{database} structure then contains three fields:
 \begin{itemize}
-	\item \mcode{db.src}: The original \mcode{src} structure from which the features were computed.
-	\item \mcode{db.features}: The feature vectors, arranged in a 2D matrix, each feature vector forming a column.
-	\item \mcode{db.indices}: The indices corresponding to each object in \mcode{db.src}. Specifically, \mcode{db.features(:,db.indices\{k\})} contains the features vector(s) calculated from \mcode{db.src.objects(k)}.
+	\item \mcode{database.src}: The original \mcode{src} structure from which the features were computed.
+	\item \mcode{database.features}: The feature vectors, arranged in a 2D matrix, each feature vector forming a column.
+	\item \mcode{database.indices}: The indices corresponding to each object in \mcode{database.src}. Specifically, \mcode{database.features(:,database.indices\{k\})} contains the features vector(s) calculated from \mcode{database.src.objects(k)}.
 \end{itemize}
 
 \subsection{Training/Testing}
 
 Once the database of feature vectors is constructed, models can be trained and tested. To create a train/test partition, the function \mcode{create_partition} is available. Given a source \mcode{src} and a ratio, it partitions the objects so that each class is divided evenly into the training and testing set according to the ratio. For example, the following code defines a train/test partition with $80\%$ of the objects in the training set:
 \begin{lstlisting}
-[prt_train,prt_test] = create_partition(src, 0.8);
+[train_set, test_set] = create_partition(src, 0.8);
 \end{lstlisting}
-Here, \mcode{prt_train} will contain the indices in \mcode{src.objects} that correspond to the training instances, while \mcode{prt_test} will contain those corresponding to testing instances.
+Here, \mcode{train_set} will contain the indices in \mcode{src.objects} that correspond to the training instances, while \mcode{test_set} will contain those corresponding to testing instances.
 
 Alternatively, a partition can be defined manually by traversing the \mcode{src.objects} array and recording the desired indices.
 
 Given a partition, a model can be trained using the appropriate training function. We will denote the training function by \mcode{train}, but in reality it will be either \mcode{affine_train} or \mcode{svm_train}. The training is then done by:
 \begin{lstlisting}
-model = train(db, prt_train, train_opt);
+model = train(database, train_set, train_opt);
 \end{lstlisting}
 The structure \mcode{train_opt} contains various parameters for training the model, which will depend on the type of classifier used.
 
-To test the model, the functions \mcode{affine_test} and \mcode{svm_test} are used. Here, we denote the testing function by \mcode{test}. The labels obtained for the testing instances specified by \mcode{prt_test} are then obtained by:
+To test the model, the functions \mcode{affine_test} and \mcode{svm_test} are used. Here, we denote the testing function by \mcode{test}. The labels obtained for the testing instances specified by \mcode{test_set} are then obtained by:
 \begin{lstlisting}
-labels = test(db, model, prt_test);
+labels = test(database, model, prt_test);
 \end{lstlisting}
 To calculate the classification error, the \mcode{classif_err} is used:
 \begin{lstlisting}
@@ -275,14 +272,14 @@ Multiple dimensions can be specified in order to test the difference in performa
 The following code calculates the minimum error for an affine space classifier of dimension between $0$ and $160$:
 \begin{lstlisting}
 train_opt.dim = 0:160;
-model = affine_train(db, prt_train, train_opt);
-labels = affine_test(db, model, prt_test);
+model = affine_train(database, prt_train, train_opt);
+labels = affine_test(database, model, prt_test);
 err = classif_err(labels, prt_test, src);
 [min_err, dim_ind] = min(err);
 min_dim = train_opt.dim(dim_ind);
 \end{lstlisting}
 
-For an affine space classifier, the model structure contains the dimensions for which it is defined \mbox{model.dim}, the centers of the classes \mbox{model.mu} and the direction vectors defining the affine space \mbox{model.v}.
+For an affine space classifier, the model structure contains the dimensions for which it is defined \mcode{model.dim}, the centers of the classes \mcode{model.mu} and the direction vectors defining the affine space \mcode{model.v}.
 
 \subsection{Support Vector Machine}
 
@@ -299,14 +296,14 @@ The following code calculates the error for an SVM classifier with a linear kern
 \begin{lstlisting}
 train_opt.kernel_type = 'linear';
 train_opt.C = 8;
-model = svm_train(db, prt_train, train_opt);
-labels = svm_test(db, model, prt_test);
+model = svm_train(database, prt_train, train_opt);
+labels = svm_test(database, model, prt_test);
 err = classif_err(labels, prt_test, src);
 \end{lstlisting}
 
-If a linear kernel is used, we can extract the discriminant vector $w$ and bias $\rho$ from the model using the function \mcode{svm_extract_w}. The function takes as input the database \mcode{db} and the SVM model \mcode{model}. It outputs the $w$s corresponding to each pair of classes in the model, arranged in the order $1$vs$2$,$1$vs$3$,\ldots$1$vs$N$,$2$vs$3$,\ldots,$2$vs$N$,\ldots,$(N-1)$vs$N$, where $N$ is the number of classes. The function is called as in:
+If a linear kernel is used, we can extract the discriminant vector $w$ and bias $\rho$ from the model using the function \mcode{svm_extract_w}. The function takes as input the database \mcode{database} and the SVM model \mcode{model}. It outputs the $w$s corresponding to each pair of classes in the model, arranged in the order $1$vs$2$,$1$vs$3$,\ldots$1$vs$N$,$2$vs$3$,\ldots,$2$vs$N$,\ldots,$(N-1)$vs$N$, where $N$ is the number of classes. The function is called as in:
 \begin{lstlisting}
-[w,rho] = svm_extract_w(db, model);
+[w,rho] = svm_extract_w(database, model);
 \end{lstlisting}
 
 \end{document}
