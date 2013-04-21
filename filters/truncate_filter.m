@@ -4,7 +4,8 @@ function filter = truncate_filter(filter_f,threshold,lowpass)
 	filter.type = 'fourier_truncated';
 	filter.N = N;
 
-	filter.recenter = lowpass;
+	%filter.recenter = lowpass;
+	filter.recenter = 1;
 	
 	%filter_f = fftshift(filter_f);
 	[temp,ind_max] = max(filter_f);
