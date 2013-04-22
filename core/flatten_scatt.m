@@ -22,20 +22,20 @@ function Y = flatten_scatt(X)
 			end
 			new_value = getfield(X{m+1}.meta,field);
 			
-			if size(value,2) < size(new_value,2)
-				value = [value ...
-					-ones(size(value,1),size(new_value,2)-size(value,2))];
-			elseif size(value,2) > size(new_value,2)
-				new_value = [new_value ...
-				 	-ones(size(new_value,1),size(value,2)-size(new_value,2))];
+			if size(value,1) < size(new_value,1)
+				value = [value; ...
+					-ones(size(new_value,1)-size(value,1),size(value,2))];
+			elseif size(value,1) > size(new_value,1)
+				new_value = [new_value; ...
+				 	-ones(size(value,1)-size(new_value,1),size(new_value,2))];
 			end
 			
-			value = [value; new_value];
+			value = [value new_value];
 			
 			Y.meta = setfield(Y.meta,field,value);
 		end
 		
-		Y.meta.order = [Y.meta.order; m*ones(length(ind),1)];
+		Y.meta.order = [Y.meta.order m*ones(1,length(ind))];
 		
 		r = r+length(ind);
 	end
