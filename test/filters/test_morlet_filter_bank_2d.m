@@ -1,4 +1,4 @@
-size_in = [256 , 256];
+size_in = [512  , 512];
 
 clear options;
 options.null = 1;

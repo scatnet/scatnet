@@ -1,5 +1,5 @@
 function [S, U] = scatt(x, cascade)
-% function [S, U] = scatt(x, cascade)
+% function [S, U] = scat(x, cascade)
 % S{m+1} contains the averaged scattering vector of order m
 % U{m+1} contains the unaveraged scattering vector of order m
 

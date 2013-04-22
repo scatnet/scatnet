@@ -1,4 +1,4 @@
-function Y = flatten_scatt(X,depth)
+function Y = flatten_scatt(X)
 	Y.signal = {};
 	Y.meta = struct();
 	
@@ -12,8 +12,8 @@ function Y = flatten_scatt(X,depth)
 		
 		Y.signal(ind) = X{m+1}.signal;
 		
-		for k = 1:length(meta_fields)
-			field = meta_fields{k};
+		for p = 1:length(meta_fields)
+			field = meta_fields{p};
 			
 			if isfield(Y.meta,field)
 				value = getfield(Y.meta,field);
