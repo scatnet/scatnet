@@ -3,17 +3,17 @@ function gab = morlet_2d(N, M, sigma, slant, xi, theta,offset)
 %
 % 2d elliptic morlet filter (with analytic formulae)
 %
-% input : 
+% input :
 % - N      : <1x1 int> first dimension of the filter
 % - M      : <1x1 int> second dimension of the filter
 % - sigma0 : <1x1 double> the width of the envelope
 % - slant  : <1x1 double> the excentricity of the elliptic envelope
 %            (the smaller slant, the larger angular resolution)
-% - xi     : <1x1 double> the frequency peak 
+% - xi     : <1x1 double> the frequency peak
 % - theta  : <1x1 double> the orientation in radians of the filter
 % - offset : [optional] <2x1 double> : the offset location
 %
-% output : 
+% output :
 % - gab : <NxM double> the morlet filter in spatial domain
 %
 % WARNING :
@@ -22,7 +22,7 @@ function gab = morlet_2d(N, M, sigma, slant, xi, theta,offset)
 % consider the use of morlet_2d_noDC.m that enforce zero DC
 
 if ~exist('offset','var')
-    offset = [0,0];
+	offset = [0,0];
 end
 [x , y] = meshgrid(1:M, 1:N);
 

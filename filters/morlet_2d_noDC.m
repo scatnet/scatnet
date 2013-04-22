@@ -9,7 +9,7 @@ function gab = morlet_2d_noDC(N, M, sigma, slant, xi, theta, offset)
 % - sigma0 : <1x1 double> the width of the envelope
 % - slant  : <1x1 double> the excentricity of the elliptic envelope
 %            (the smaller slant, the larger angular resolution)
-% - xi     : <1x1 double> the frequency peak 
+% - xi     : <1x1 double> the frequency peak
 % - theta  : <1x1 double> the orientation in radians of the filter
 % - offset : [optional] <2x1 double> : the offset location
 %
@@ -17,7 +17,7 @@ function gab = morlet_2d_noDC(N, M, sigma, slant, xi, theta, offset)
 % - gab : <NxM double> the morlet filter in spatial domain
 
 if ~exist('offset','var')
-    offset = [0, 0];
+	offset = [0, 0];
 end
 [x , y] = meshgrid(1:M, 1:N);
 
