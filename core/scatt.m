@@ -5,7 +5,7 @@ function [S, U] = scatt(x, cascade)
 
 % init signal and meta
 U{1}.signal{1} = x;
-U{1}.meta.j = zeros(1,0);
+U{1}.meta.j = zeros(0,1);
 
 
 U{1} = cascade.pad(U{1});
