@@ -39,4 +39,6 @@ function Y = flatten_scatt(X,depth)
 		
 		r = r+length(ind);
 	end
+	
+	Y = {Y};
 end

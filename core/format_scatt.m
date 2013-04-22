@@ -54,7 +54,7 @@ function [out,meta] = format_scatt(X,fmt)
 				end
 			end
 			
-			X{1} = flatten_scatt(X);
+			X = flatten_scatt(X);
 		end
 		
 		last = 0;
