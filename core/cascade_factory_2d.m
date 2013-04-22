@@ -1,4 +1,4 @@
-function cascade = cascade_factory_2d(size_in, options)
+function [cascade, filters] = cascade_factory_2d(size_in, options)
 	
 	options = fill_struct(options, 'J', 4);
 	options = fill_struct(options, 'antialiasing', 1);
@@ -28,5 +28,7 @@ function cascade = cascade_factory_2d(size_in, options)
 	for m = 1:options.nb_layer
 		cascade.modulus{m} = @(x)(modulus_layer(x));
 	end
+	
+	
 	
 end

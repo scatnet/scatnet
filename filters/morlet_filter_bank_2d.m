@@ -114,6 +114,6 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	filters.meta.sigma_psi = sigma_psi;
 	filters.meta.xi_psi = xi_psi;
 	filters.meta.slant_psi = slant_psi;
-	filters.meta.N = size_in(1);
+	filters.meta.size_in = size_in;
 	
 end

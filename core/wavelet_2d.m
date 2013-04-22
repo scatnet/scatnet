@@ -6,7 +6,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	
 	% precomputation
 	xf = fft2(x);
-	lastres = log2(filters.meta.N/size(x,1));
+	lastres = log2(filters.meta.size_in(1)/size(x,1));
 	v = filters.meta.v;
 	
 	% low pass filtering and downsampling

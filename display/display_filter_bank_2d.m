@@ -12,7 +12,7 @@ function big_img = display_filter_bank_2d(filters, n, renorm)
 % - big_img : <?x? double> with all the filters display
 
 if (~exist('n','var'))
-  n =32;
+  n = min(32, floor(min(filters.meta.size_in)/2 -1));
 end
 if (~exist('renorm','var'))
   renorm = 1;
