@@ -1,7 +1,23 @@
-
-% function [S, U] = scat(x, cascade)
-% S{m+1} contains the averaged scattering vector of order m
-% U{m+1} contains the unaveraged scattering vector of order m
+% scatt : Compute the scattering transform
+%
+% Usage
+%    S = scatt(x, cascade) computes the scattering invariant coefficients S
+%    [S, U] = scatt(x, cascade) computes the scattering invariant
+%    coefficients S and the intermediate covariant coefficients U
+% 
+% Input
+%    x : input signal
+%    cascade : <struct> the cascade of operator, typically obtained
+%       with the provided factory cascade_factory_1d or cascade_factory_2d
+%
+% Output
+%    S : contains the invariant scattering vectors
+%    S{m}.signal{p} contains the signal corresponding to the 
+%        p-th path of the m-th layer of scattering.
+%    Sx{m}.meta.j(:,p) contains the succesive scales of the wavelets
+%    corresponding to S{m}.signal{p}
+%   
+%      
 function [S, U] = scatt(x, cascade)
 	
 	% init signal and meta
