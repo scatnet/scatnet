@@ -12,10 +12,10 @@ function energy = scatt_energy(S, U)
 	if nargin < 2
 		U = [];
 	end
-
+	
 	if ~isempty(U)
 		energy = scatt_energy(S) + scatt_energy(U);
-	else	
+	else
 		if iscell(S)
 			energy = 0;
 			for m = 1:numel(S)
