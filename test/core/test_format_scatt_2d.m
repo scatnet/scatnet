@@ -18,4 +18,4 @@ options.antialiasing = 0;
 
 
 Sx = scatt(x, cascade);
-sx = format_scatt(Sx,'table');
+[sx , meta] = format_scatt(Sx,'table');

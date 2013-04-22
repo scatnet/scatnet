@@ -1,9 +1,39 @@
+% cascade_factory_2d: Create wavelet cascade operators
+%
+% Usage
+%    cascade = cascade_factory_1d(size_in, options)
+%
+% Input
+%    size_in : <1x2> the size of the signals to be transformed.
+%    options : <struct> of optionnal parameters such as :
+%      - nb_layer   : <1x1> the number of layers
+%      - J          : <1x1> the total number of scale
+%      - nb_angle   : <1x1> the number of orientations
+%      - margin_in  : <1x2> margin for mirror-padding before scattering
+%      - margin_out : <1x2> margin for unpadding after scattering
+%    options will be passed to morlet_filter_bank_2d and wavelet_layer_2d
+%    an can thus contains any other relevant options for these functions.
+%      
+% Output
+%    cascade : <struct> containing all operators that will be successively
+%    apply in the computation of scattering : 
+%      - pad : <function_handle> mirror pading to apply before
+%      scattering
+%      - unpad : <function_handle> unpading to apply after scattering
+%      - wavelet{m} : <function_handle> the m-th wavelet operator in the
+%      scattering cascade
+%      - modulus{m} : <function_handle> the m-th modulus operator in the
+%      scattering cascade
+%    filters : <struct> the filter bank used by the wavelet transform
+%
+
 function [cascade, filters] = cascade_factory_2d(size_in, options)
 	
+	options = fill_struct(options, 'nb_layer', 3);
 	options = fill_struct(options, 'J', 4);
 	options = fill_struct(options, 'antialiasing', 1);
 	options = fill_struct(options, 'v', 1);
-	options = fill_struct(options, 'nb_layer', 3);
+	
 	
 	% padding and unpadding:
 	default_margin = ...

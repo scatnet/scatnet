@@ -1,2 +1,2 @@
-addpath_scattlab2d;
+addpath_scattlab;
 
