@@ -116,11 +116,6 @@ function [S,U] = scatt_freq(X,cascade)
 			
 			r = r+size(signal,1);
 		end
-		
-		if m == 0
-			S{m+1} = {struct('signal',[],'meta',struct())};
-			U{m+1} = {struct('signal',[],'meta',struct())};
-		end
 	end
 	
 	for m = 0:length(S)-1
