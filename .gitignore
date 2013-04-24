@@ -1,5 +1,5 @@
 .DS_Store
 *.m~
-doc/arch/arch.aux
-doc/arch/arch.log
+doc/*/*.aux
+doc/*/*.log
 
