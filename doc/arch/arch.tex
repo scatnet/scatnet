@@ -6,7 +6,7 @@
 
 \usepackage{url}
 
-\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage[framed,numbered,autolinebreaks,useliterate]{../common/mcode}
 
 \graphicspath{{figures/}}
 
@@ -162,7 +162,7 @@ In order to use the scattering coefficients for classification, they need to be 
 	
 	% plot the 2nd-order coefficients
 	% corresponding to scale (3, 7)
-	ind = find(meta.order==2 & meta.scale(:,1)==3 & meta.scale(:,2)==7);
+	ind = find(meta.order==2 & meta.j(1,:)==3 & meta.j(2,:)==7);
 	plot(sc_table(ind, :));
 	
 	% calculate the energy of 1st-order
