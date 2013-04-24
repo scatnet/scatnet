@@ -96,7 +96,7 @@ function [S,U] = scatt_freq(X,cascade)
 								X_fr{mp+1}.meta.bandwidth(kp);
 							X{m+1}{mp+1}.meta.fr_resolution(1,rc(mp+1)) = ...
 								X_fr{mp+1}.meta.resolution(kp);
-							X{m+1}{mp+1}.meta.fr_scale(:,rc(mp+1)) = ...
+							X{m+1}{mp+1}.meta.fr_j(:,rc(mp+1)) = ...
 								X_fr{mp+1}.meta.j(:,kp);
 							rc(mp+1) = rc(mp+1)+1;
 						end
@@ -120,9 +120,16 @@ function [S,U] = scatt_freq(X,cascade)
 	
 	for m = 0:length(S)-1
 		temp = flatten_scatt(S{m+1});
-		S{m+1} = temp{1};
+		temp = temp{1};
+		temp.meta.fr_order = temp.meta.order;
+		temp.meta = rmfield(temp.meta,'order');
+		S{m+1} = temp;
+		
 		temp = flatten_scatt(U{m+1});
-		U{m+1} = temp{1};
+		temp = temp{1};
+		temp.meta.fr_order = temp.meta.order;
+		temp.meta = rmfield(temp.meta,'order');
+		U{m+1} = temp;
 	end
 end
 
