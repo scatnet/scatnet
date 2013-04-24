@@ -11,5 +11,4 @@ addpath /path/to/scattlab;
 addpath_scattlab;
 
 
-salut
 
