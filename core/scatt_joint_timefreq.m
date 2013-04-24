@@ -96,15 +96,17 @@ function [S,U] = scatt_joint_timefreq(X,cascade)
 							X{m+1}{mp+1}.signal{rc(mp+1)} = ...
 								reshape(nsignal(j1,:,:),t_count,sz_orig(3));
 							X{m+1}{mp+1}.meta.bandwidth(1,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.bandwidth(2,kp)/2*pi* ...
 								Y{m+1}.meta.bandwidth(j1_inds(j1));
 							X{m+1}{mp+1}.meta.resolution(1,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.resolution(2,kp)+ ...
 								Y{m+1}.meta.resolution(j1_inds(j1));
 							X{m+1}{mp+1}.meta.j(:,rc(mp+1)) = ...
 								Y{m+1}.meta.j(:,j1_inds(j1));
-							X{m+1}{mp+1}.meta.tf_bandwidth(:,rc(mp+1)) = ...
-								X_fr{mp+1}.meta.bandwidth(:,kp);
-							X{m+1}{mp+1}.meta.tf_resolution(:,rc(mp+1)) = ...
-								X_fr{mp+1}.meta.resolution(:,kp);
+							X{m+1}{mp+1}.meta.fr_bandwidth(:,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.bandwidth(1,kp);
+							X{m+1}{mp+1}.meta.fr_resolution(:,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.resolution(1,kp);
 							X{m+1}{mp+1}.meta.tf_j1(:,rc(mp+1)) = ...
 								X_fr{mp+1}.meta.j1(:,kp);
 							X{m+1}{mp+1}.meta.tf_j2(:,rc(mp+1)) = ...
@@ -131,9 +133,15 @@ function [S,U] = scatt_joint_timefreq(X,cascade)
 	
 	for m = 0:length(S)-1
 		temp = flatten_scatt(S{m+1});
-		S{m+1} = temp{1};
+		temp = temp{1};
+		temp.meta.tf_order = temp.meta.order;
+		temp.meta = rmfield(temp.meta,'order');
+		S{m+1} = temp;
 		temp = flatten_scatt(U{m+1});
-		U{m+1} = temp{1};
+		temp = temp{1};
+		temp.meta.tf_order = temp.meta.order;
+		temp.meta = rmfield(temp.meta,'order');
+		U{m+1} = temp;
 	end
 end
 
