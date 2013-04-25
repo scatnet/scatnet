@@ -15,11 +15,12 @@ function src = phone_src(directory)
 	src.cluster = fold_mapping(I);
 end
 
-function segments = phone_segments_fun(file,original,mapping)
+function [segments,classes] = phone_objects_fun(file,original,mapping)
 	[path_str,name,ext] = fileparts(file);
 
 	if strcmp(name,'SA1') || strcmp(name,'SA2')
 		segments = [];
+		classes = {};
 
 		return;
 	end
@@ -28,6 +29,7 @@ function segments = phone_segments_fun(file,original,mapping)
 
 	if set == 3		% test but not in core, dev
 		segments = [];
+		classes = {};
 
 		return;
 	end
@@ -35,12 +37,14 @@ function segments = phone_segments_fun(file,original,mapping)
 	phn = parse_phn([path_str filesep name '.PHN'],original,mapping);
 	
 	segments = struct();
-	
+	classes = {};
+
 	for n = 1:length(phn)
-		segments(n).t1 = phn(n).t1;
-		segments(n).t2 = phn(n).t2;
-		segments(n).class = phn(n).phone;
+		segments(n).u1 = phn(n).t1;
+		segments(n).u2 = phn(n).t2;
+		%segments(n).class = phn(n).phone;
 		segments(n).subset = set;
+		classes{n} = original{phn(n).phone};
 	end
 end
 
@@ -124,7 +128,7 @@ function phn = parse_phn(filename,original,mapping)
 
 		phn(n).t1 = str2double(parts{1});
 		phn(n).t2 = str2double(parts{2});
-		phn(n).phone = original{phone};
+		phn(n).phone = phone;
 		n = n+1;
 	end
 end
