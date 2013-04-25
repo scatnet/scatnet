@@ -18,6 +18,8 @@
 
 \section{1D case}
 
+\subsection{Decomposing of $x$}
+
 Given a signal $x[n]$, defined for $n = 0,\ldots,N-1$, we can define the discrete cosine transform $Cx[k]$ as
 \[
 Cx[k] = 2\sum_{n=0}^{N-1}x(n)\cos\left(\frac{2\pi\left(n+\frac{1}{2}\right)k}{2N}\right)
@@ -39,6 +41,8 @@ Note that since the signal $y[n]$ is symmetric not about $n=0$, but $n=-1/2$, it
 \hat{y}[2N-k] = \overline{\hat{y}[k]},\quad k=1,\ldots,N-1
 \]
 and the fact that $\hat{y}[N] = 0$.
+
+\subsection{Filtering with a Hermitian filter}
 
 If we want to calculate the circular convolution of $x$ with a filter $h$ using symmetric boundary conditions, this can be obtained by filtering $y$ with $h$ using periodic boundary conditions, which is thus reduced to multiplication of Fourier transforms. For a general $h$, this breaks the symmetry of $y$ and required to calculate the convolution for all $n=0,\ldots,2N-1$. However, if $h$ possesses symmetry properties, for example conjugate symmetry about $n = 0$, we only need to compute transforms of size $N$.
 
@@ -78,5 +82,12 @@ Inverting the phase shift of $z_1$, we can now reconstruct $z$:
 z[n] = z_0[n]+e^{2\pi i n/2N}\left(e^{-\frac{2\pi i/2}{2N}}z_1[n]\right),
 \]
 for $n=0,\ldots,N-1$. Since $z$ is conjugate symmetric about $n=-1/2$, we don't need to calculate the second half.
+
+\subsection{Filtering with an even or odd filter}
+
+TODO! Instead of considering an analytic Hermitian filter, we can consider two (orthogonal) filters: the real and imaginary part. The real part is even, so can be decomposed with a DCT, while the imaginary part is odd, so can be decomposed with a DST. Computing the convolution of even and odd functions can be done by multiplying their DCTs/DSTs \cite{martucci}. The issue is then how to optimize the inversion so that the inverse DCT/DST can be computed without padding. To do this, we should be able to adapt the methods outlined in \cite{makhoul}.
+
+\bibliographystyle{IEEEtran}
+\bibliography{dct}
 
 \end{document}
