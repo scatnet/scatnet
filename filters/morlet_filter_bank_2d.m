@@ -34,7 +34,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	
 	options.null = 1;
 	
-	v = getoptions(options,        'v',        1); % number of scale per octave
+	v = getoptions(options, 'v', 1); % number of scale per octave
 	J = getoptions(options, 'J', 4); % total number of scales
 	nb_angle = getoptions(options, 'nb_angle', 8); % number of orientations
 	
@@ -44,15 +44,31 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	slant_psi  = getoptions(options, 'slant_psi',  0.5);
 	
 	res_max = floor(J/v);
+	% compute margin for padding
+	% make sure size_in is multiple of 2^res_max
+	if (sum(size_in/2^res_max == floor(size_in/2^res_max))~=2)
+		error('size_in must be multiple of downsampling');
+	end
+	margin_default = min(sigma_phi*2^((J-1)/v), size_in/2);
+	margin_default = 2^res_max * ceil(margin_default/2^res_max);
+	margin = ...
+		getoptions(options, 'margin', margin_default);
+	% make sure margin is multiple of 2^res_max
+	if (sum(margin/2^res_max == floor(margin/2^res_max))~=2)
+		error('margin must be multiple of downsampling');
+	end
+	size_filter = size_in + 2*margin;
 	
-	% compute low pass filters phi
 	phi.filter.type = 'fourier_multires';
 	
 	% compute all resolution of the filters
+	
 	for res = 0:res_max
 		
-		N = ceil(size_in(1) / 2^res);
-		M = ceil(size_in(2) / 2^res);
+		N = ceil(size_filter(1) / 2^res);
+		M = ceil(size_filter(2) / 2^res);
+		
+		% compute low pass filters phi
 		scale = 2^((J-1) / v - res);
 		filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
 		phi.filter.coefft{res+1} = fft2(filter_spatial);
@@ -115,5 +131,8 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	filters.meta.xi_psi = xi_psi;
 	filters.meta.slant_psi = slant_psi;
 	filters.meta.size_in = size_in;
+	filters.meta.size_filter = size_filter;
+	filters.meta.margin = margin;
+	
 	
 end

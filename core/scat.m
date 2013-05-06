@@ -1,7 +1,7 @@
-% scatt : Compute the scattering transform
+% scat : Compute the scattering transform
 %
 % Usage
-%    S = scatt(x, Wavelet) computes the scattering invariant coefficients S
+%    S = scat(x, Wavelet) computes the scattering invariant coefficients S
 %    [S, U] = scatt(x, Wavelet) computes the scattering invariant
 %    coefficients S and the intermediate covariant coefficients U
 % 
@@ -18,7 +18,7 @@
 %    corresponding to S{m}.signal{p}
 
 
-function [S, U] = scatt(x, Wavelet)
+function [S, U] = scat(x, Wavelet)
 	
 	% init signal and meta
 	U{1}.signal{1} = x;
