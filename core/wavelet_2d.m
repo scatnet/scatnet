@@ -1,4 +1,13 @@
+% wavelet_2d : Compute the wavelet transform of an image
+%
+% Usage
+%	[x_phi, x_psi] = wavelet_2d(x, filters)	
+
 function [x_phi, x_psi] = wavelet_2d(x, filters, options)
+	
+	if nargin<3
+		options = struc();
+	end
 	
 	% option retrieving
 	antialiasing = getoptions(options, 'antialiasing', 1);
