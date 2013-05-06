@@ -14,6 +14,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 	
 	% precomputation
+	% mirror padding and fft
 	xf = fft2(x);
 	lastres = log2(filters.meta.size_in(1)/size(x,1));
 	v = filters.meta.v;
