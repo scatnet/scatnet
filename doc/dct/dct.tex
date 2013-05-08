@@ -69,8 +69,8 @@ s[n] = z_0[n]+iz_1[n],
 \]
 where $z_0$ and $z_1$ are the inverse Fourier transforms of $\hat{z}_0$ and $\hat{z}_1$, respectively. Since $\hat{z}_0[k]$ and $\hat{z}_1[k]$ both have the phase $e^{\frac{2\pi i k/2}{N}}$, their inverses $z_0[k]$ and $z_1[k]$ are conjugate symmetric about $n=-1/2$. As a result, the real even and the imaginary odd parts of $s$ belong to $z_0$ while the real odd and the imaginary even parts of $s$ belong to $z_1$. Specifically, if we define
 \begin{align*}
-s_e[n] &= \frac{1}{2}\left(s[n]+s[N-1/2-n]\right) \\
-s_o[n] &= \frac{1}{2}\left(s[n]-s[N-1/2-n]\right),
+s_e[n] &= \frac{1}{2}\left(s[n]+s[N-1-n]\right) \\
+s_o[n] &= \frac{1}{2}\left(s[n]-s[N-1-n]\right),
 \end{align*}
 we obtain
 \begin{align*}
