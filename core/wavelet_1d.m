@@ -24,7 +24,9 @@ function [x_phi, x_psi] = wavelet_1d(x, filters, options)
 	[temp,psi_bw,phi_bw] = filter_freq(filters);
 	
 	% resolution of x - how much have we subsampled by?
-	j0 = log2(filters.N/N);
+	j0 = log2(filters.N/(2*N));
+	
+	x = pad_signal_1d(x, 2*N, 'symm');
 	
 	xf = fft(x,[],1);
 	
@@ -34,6 +36,7 @@ function [x_phi, x_psi] = wavelet_1d(x, filters, options)
 	ds = max(ds, 0);
 	
 	x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
+	x_phi = unpad_signal_1d(x_phi, ds, N);
 	
 	x_psi = cell(1, numel(filters.psi.filter));
 	for p1 = find(options.psi_mask)
@@ -43,5 +46,6 @@ function [x_phi, x_psi] = wavelet_1d(x, filters, options)
 		ds = max(ds, 0);
 		
 		x_psi{p1} = conv_sub_1d(xf, filters.psi.filter{p1}, ds);
+		x_psi{p1} = unpad_signal_1d(x_psi{p1}, ds, N);
 	end
 end
