@@ -23,6 +23,7 @@ function [x_phi, x_psi] = wavelet_1d(x, filters, options)
 	
 	[temp,psi_bw,phi_bw] = filter_freq(filters);
 	
+	% resolution of x - how much have we subsampled by?
 	j0 = log2(filters.N/N);
 	
 	xf = fft(x,[],1);

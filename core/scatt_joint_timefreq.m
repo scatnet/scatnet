@@ -23,6 +23,7 @@ function [S,U] = scatt_joint_timefreq(X,cascade)
 			signal = reshape(signal,[sz_orig(1) sz_orig(2)*sz_orig(3)]);
 			
 			if m > 0
+				% note that here scatt is 2d
 				[S_fr,U_fr] = scatt(signal,cascade);
 				
 				% needed for the case of U, are not init by scatt

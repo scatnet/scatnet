@@ -11,6 +11,7 @@ function [S,U] = scatt_freq(X,cascade)
 		U{m+1} = {};
 		
 		for k = 1:length(Y{m+1}.signal)
+			% note: here each signal is a table
 			signal = Y{m+1}.signal{k};
 			
 			sz_orig = size(signal);
