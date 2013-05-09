@@ -1,3 +1,4 @@
+
 % Reproduction of the Figure 4.2 of in the paper:
 % "Group Invariant Scattering", S. Mallat, 
 % Comm. in Pure and Applied Mathematics, Dec. 2012, Wiley
@@ -30,7 +31,7 @@ f1(posit) = 1;
 f1 = f1 - mean(f1);
 f1 = f1 /sqrt(var(f1));
 f1=f1';
-Scat1 = diracNormScatt(f1,cascade);
+Scat1 = diracnorm_scat(f1,cascade);
 P = length(Scat1);
 y = zeros(1,P);
 y(1:P) = (1:P);
@@ -45,7 +46,7 @@ z = 1000 * z/(P);
 
 figure(1);
 hold off;
-subplot(2,2,2), PlotSpectScat(y,Scat1); %Scattered representation at the scale 2^J
+subplot(2,2,2), plot_spect_scat(y,Scat1); %Scattered representation at the scale 2^J
 subplot(2,2,1), plot(z,f1); %Plot the scattering power spectrum
 hold off;
 
@@ -53,9 +54,9 @@ hold off;
 %Gaussian white noise
 f2 = randn(1,N);
 f2=f2';
-Scat2 = diracNormScatt(f2,cascade);
+Scat2 = diracnorm_scat(f2,cascade);
 hold off;
-subplot(2,2,4),PlotSpectScat(y,Scat2); 
+subplot(2,2,4),plot_spect_scat(y,Scat2); 
 subplot(2,2,3), plot(z,f2); %Scattered representation at the scale 2^J
 hold on;
 hold off;
