@@ -5,17 +5,17 @@ function src = phone_src(directory)
 	
 	[phones,original,mapping] = phone_list(0);
 	
-	src = create_src(directory,@(x)(phone_objects_fun(x,(original),mapping)));
+	src = create_src(directory,@(x)(phone_objects_fun(x,phones,original,mapping)));
 
 	[temp1,temp2,fold_mapping] = phone_list(1);
 
 	[temp,reorder] = sort(phones);
 
-	[temp,I] = ismember(reorder(1:length(src.classes)),mapping);
+	[temp,I] = ismember(reorder,mapping);
 	src.cluster = fold_mapping(I);
 end
 
-function [segments,classes] = phone_objects_fun(file,original,mapping)
+function [segments,classes] = phone_objects_fun(file,phones,original,mapping)
 	[path_str,name,ext] = fileparts(file);
 
 	if strcmp(name,'SA1') || strcmp(name,'SA2')
@@ -42,9 +42,8 @@ function [segments,classes] = phone_objects_fun(file,original,mapping)
 	for n = 1:length(phn)
 		segments(n).u1 = phn(n).t1;
 		segments(n).u2 = phn(n).t2;
-		%segments(n).class = phn(n).phone;
 		segments(n).subset = set;
-		classes{n} = original{phn(n).phone};
+		classes{n} = phones{phn(n).phone};
 	end
 end
 
