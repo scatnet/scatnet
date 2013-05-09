@@ -1,6 +1,6 @@
-% aggregate_scatt: Aggregate successive frames of a scattering transform.
+% aggregate_scat: Aggregate successive frames of a scattering transform.
 % Usage
-%    S = aggregage_scatt(S,N)
+%    S = aggregage_scat(S,N)
 % Input
 %    S: A scattering transform.
 %    N: The length of the window with which to aggregate.
@@ -8,7 +8,7 @@
 %    S: The scattering transform with successive frames within a window of
 %       length N aggregated into one frame, multiplying the number of paths.
 
-function Y = aggregate_scatt(X,N)
+function Y = aggregate_scat(X,N)
 	for m = 0:length(X)-1
 		Y{m+1}.signal = {};
 		% initialize target meta with same fields as source

@@ -34,22 +34,26 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options)
 	
 	r = 1;
 	for p1 = 1:length(U.signal)
-		options.psi_mask = calc_U&(U.meta.bandwidth(p1)>psi_xi);
+		psi_mask = calc_U&(U.meta.bandwidth(p1)>psi_xi);
 		
-		[x_phi, x_psi] = wavelet_1d(U.signal{p1}, filters, options);
+		options.x_resolution = U.meta.resolution(p1);
+		options.psi_mask = psi_mask;
+		[x_phi, x_psi, meta_phi, meta_psi] = ...
+			wavelet_1d(U.signal{p1}, filters, options);
 		
 		U_phi.signal{1,p1} = x_phi;
-		U_phi.meta.bandwidth(1,p1) = phi_bw;
-		U_phi.meta.resolution(1,p1) = log2(filters.N/size(x_phi,1));
+		U_phi.meta.bandwidth(1,p1) = meta_phi.bandwidth;
+		U_phi.meta.resolution(1,p1) = U.meta.resolution(p1)+...
+			meta_phi.resolution;
 		U_phi.meta.j(:,p1) = U.meta.j(:,p1);
 		
-		for p2 = find(~cellfun(@isempty,x_psi))
-			U_psi.signal{1,r} = x_psi{p2};
-			U_psi.meta.bandwidth(1,r) = psi_bw(p2);
-			U_psi.meta.resolution(1,r) = log2(filters.N/size(x_psi{p2},1));
-			U_psi.meta.j(:,r) = [U.meta.j(:,p1); p2-1];
+		ind = r:r+sum(psi_mask)-1;
+		U_psi.signal(1,ind) = x_psi(psi_mask);
+		U_psi.meta.bandwidth(1,ind) = meta_psi.bandwidth(psi_mask);
+		U_psi.meta.resolution(1,ind) = U.meta.resolution(p1)+meta_psi.resolution(psi_mask);
+		U_psi.meta.j(:,ind) = [U.meta.j(:,p1)*ones(1,length(ind)); ...
+			meta_psi.j(psi_mask)];
 			
-			r = r+1;
-		end
+		r = r+length(ind);
 	end
 end

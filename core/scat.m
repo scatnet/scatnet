@@ -2,7 +2,7 @@
 %
 % Usage
 %    S = scat(x, Wavelet) computes the scattering invariant coefficients S
-%    [S, U] = scatt(x, Wavelet) computes the scattering invariant
+%    [S, U] = scat(x, Wavelet) computes the scattering invariant
 %    coefficients S and the intermediate covariant coefficients U
 % 
 % Input

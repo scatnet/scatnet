@@ -1,6 +1,6 @@
-% flatten_scatt: Put scattering coefficients of all layers together
+% flatten_scat: Put scattering coefficients of all layers together
 % Usage
-%    S = flatten_scatt(S)
+%    S = flatten_scat(S)
 % Input
 %    S: A scattering transform.
 % Output
@@ -9,7 +9,7 @@
 %       
 
 
-function Y = flatten_scatt(X)
+function Y = flatten_scat(X)
 	Y.signal = {};
 	Y.meta = struct();
 	
