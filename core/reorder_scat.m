@@ -1,4 +1,4 @@
-function [oScatt order]=reorderScatt(Scatt)
+function [oScatt order]=reorder_scat(Scatt)
 %Provided a Scattering vector  Scatt and a scale J,this function returns an
 %array of length 2^(J) containing all the SJ[p]f arranged in a particular
 %order.
@@ -17,7 +17,7 @@ function [oScatt order]=reorderScatt(Scatt)
 
 %The array order contains the orders of  each of the SJ[p]f. 
 
-[fScatt Metax]=format_scatt(Scatt,'table');
+[fScatt Metax]=format_scat(Scatt,'table');
  J=length(Scatt{2}.signal); %the parameter J is the number of first order coefficients
  
  lsig=length(Scatt{1}.signal{1});
