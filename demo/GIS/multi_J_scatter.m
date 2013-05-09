@@ -1,4 +1,4 @@
-function mScatt=multi_J_Scatter(sig,fparam,options,Jmax)
+function mScatt=multi_J_scatter(sig,fparam,options,Jmax)
 %Compute the scattering vector for all the J such that 1<=J<=Jmax. Note
 %that no values of J has been defined in fparam (no fparam.J) and that the
 %filters used with these functions will most of the time be cubic spline
@@ -18,7 +18,7 @@ mScatt(1,1:N)=sig;
 
 for p=2:Jmax+1
    
-    tScatt=reorderScatt(scat(sig,cascades{p-1}));
+    tScatt=reorder_scat(scat(sig,cascades{p-1}));
   
   mScatt(p,:)=tScatt;
 end
