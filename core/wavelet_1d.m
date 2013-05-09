@@ -23,10 +23,12 @@ function [x_phi, x_psi] = wavelet_1d(x, filters, options)
 	
 	[temp,psi_bw,phi_bw] = filter_freq(filters);
 	
-	% resolution of x - how much have we subsampled by?
-	j0 = log2(filters.N/(2*N));
+	N_padded = filters.N/2^(floor(log2(filters.N/(2*N))));
 	
-	x = pad_signal_1d(x, 2*N, 'symm');
+	% resolution of x - how much have we subsampled by?
+	j0 = log2(filters.N/N_padded);
+	
+	x = pad_signal_1d(x, N_padded, 'symm');
 	
 	xf = fft(x,[],1);
 	
