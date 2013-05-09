@@ -1,6 +1,6 @@
 %TODO redo doc
 %FORMAT_SCATT Formats a scattering representation
-%   [out,meta] = format_scatt(X,fmt) formats the scattering output X (from
+%   [out,meta] = format_scat(X,fmt) formats the scattering output X (from
 %   the function scatt, or scatt_time with output set to 'raw') according
 %   to the format specified in fmt. The following formats are allowed:
 %
@@ -24,7 +24,7 @@
 %         would have meta.order(k) equal to 2, and meta.scale(k,:) equal to
 %         [j1 j2].
 
-function [out,meta] = format_scatt(X,fmt)
+function [out,meta] = format_scat(X,fmt)
 	if nargin < 2
 		fmt = 'table';
 	end
@@ -55,7 +55,7 @@ function [out,meta] = format_scatt(X,fmt)
 				end
 			end
 			
-			X = flatten_scatt(X);
+			X = flatten_scat(X);
 		end
 		
 		last = 0;

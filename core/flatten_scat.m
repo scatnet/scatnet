@@ -1,4 +1,15 @@
-function Y = flatten_scatt(X)
+% flatten_scat: Put scattering coefficients of all layers together
+% Usage
+%    S = flatten_scat(S)
+% Input
+%    S: A scattering transform.
+% Output
+%    S: The same scattering transform, but flattened into one layer. As a 
+%       result, meta fields that have different number of rows are set to
+%       
+
+
+function Y = flatten_scat(X)
 	Y.signal = {};
 	Y.meta = struct();
 	

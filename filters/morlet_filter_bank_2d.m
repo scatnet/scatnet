@@ -1,24 +1,26 @@
-% function filters = morlet_filter_bank_2d(size_in, options)
+% morlet_filter_bank_2d : Build a bank of Morlet wavelet filters
 %
-% builds a filter bank to compute littlewood-paley
-% wavelet transform.
+% Usage
+%	filters = morlet_filter_bank_2d(size_in, options)
 %
-% inputs :
+% Input 
 % - size_in : <1x2 int> size of the input of the scattering
 % - options : [optional] <1x1 struct> contains the following optional fields
-%   - v              : <1x1 int> the number of scale per octave
-%   - J       : <1x1 int> the total number of scale.
-%   - nb_angle       : <1x1 int> the number of orientations
-%   - sigma_phi      : <1x1 double> the width of the low pass phi_0
-%   - sigma_psi      : <1x1 double> the width of the envelope
+%   - v          : <1x1 int> the number of scale per octave
+%   - J          : <1x1 int> the total number of scale.
+%   - nb_angle   : <1x1 int> the number of orientations
+%   - sigma_phi  : <1x1 double> the width of the low pass phi_0
+%   - sigma_psi  : <1x1 double> the width of the envelope
 %                                   of the high pass psi_0
-%   - xi_psi         : <1x1 double> the frequency peak
+%   - xi_psi     : <1x1 double> the frequency peak
 %                                   of the high_pass psi_0
-%   - slant_psi      : <1x1 double> the excentricity of the elliptic
+%   - slant_psi  : <1x1 double> the excentricity of the elliptic
 %  enveloppe of the high_pass psi_0 (the smaller slant, the larger
 %                                      orientation resolution)
+%   - margins    : <1x2 int> the horizontal and vertical margin for 
+%                             mirror pading of signal
 %
-% outputs :
+% Output 
 % - filters : <1x1 struct> contains the following fields
 %   - psi.filter{p}.type : <string> 'fourier_multires'
 %   - psi.filter{p}.coefft{res+1} : <?x? double> the fourier transform
@@ -28,13 +30,13 @@
 %   - phi.filter.type     : <string>'fourier_multires'
 %   - phi.filter.coefft
 %   - phi.meta.k(p,1)
-
 %   - meta : <1x1 struct> global parameters of the filter bank
+
 function filters = morlet_filter_bank_2d(size_in, options)
 	
 	options.null = 1;
 	
-	v = getoptions(options,        'v',        1); % number of scale per octave
+	v = getoptions(options, 'v', 1); % number of scale per octave
 	J = getoptions(options, 'J', 4); % total number of scales
 	nb_angle = getoptions(options, 'nb_angle', 8); % number of orientations
 	
@@ -44,15 +46,31 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	slant_psi  = getoptions(options, 'slant_psi',  0.5);
 	
 	res_max = floor(J/v);
+	% compute margin for padding
+	% make sure size_in is multiple of 2^res_max
+	if (sum(size_in/2^res_max == floor(size_in/2^res_max))~=2)
+		error('size_in must be multiple of downsampling');
+	end
+	margins_default = min(sigma_phi*2^((J-1)/v), size_in/2);
+	margins_default = 2^res_max * ceil(margins_default/2^res_max);
+	margins = ...
+		getoptions(options, 'margins', margins_default);
+	% make sure margin is multiple of 2^res_max
+	if (sum(margins/2^res_max == floor(margins/2^res_max))~=2)
+		error('margin must be multiple of downsampling');
+	end
+	size_filter = size_in + 2*margins;
 	
-	% compute low pass filters phi
 	phi.filter.type = 'fourier_multires';
 	
 	% compute all resolution of the filters
+	
 	for res = 0:res_max
 		
-		N = ceil(size_in(1) / 2^res);
-		M = ceil(size_in(2) / 2^res);
+		N = ceil(size_filter(1) / 2^res);
+		M = ceil(size_filter(2) / 2^res);
+		
+		% compute low pass filters phi
 		scale = 2^((J-1) / v - res);
 		filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
 		phi.filter.coefft{res+1} = fft2(filter_spatial);
@@ -115,5 +133,8 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	filters.meta.xi_psi = xi_psi;
 	filters.meta.slant_psi = slant_psi;
 	filters.meta.size_in = size_in;
+	filters.meta.size_filter = size_filter;
+	filters.meta.margins = margins;
+	
 	
 end

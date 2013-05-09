@@ -1,7 +1,5 @@
-size_in = [512  , 512];
+size_in = [640, 480];
 
-clear options;
-options.null = 1;
 tic;
 filters = morlet_filter_bank_2d(size_in, options);
 toc;

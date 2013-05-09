@@ -1,4 +1,4 @@
-function [S,U] = scatt_joint_timefreq(X,cascade)
+function [S,U] = scat_joint_timefreq(X,cascade)
 	Y = concatenate_freq(X);
 	
 	S = {};
@@ -23,9 +23,10 @@ function [S,U] = scatt_joint_timefreq(X,cascade)
 			signal = reshape(signal,[sz_orig(1) sz_orig(2)*sz_orig(3)]);
 			
 			if m > 0
-				[S_fr,U_fr] = scatt(signal,cascade);
+				% note that here scat is 2d
+				[S_fr,U_fr] = scat(signal,cascade);
 				
-				% needed for the case of U, are not init by scatt
+				% needed for the case of U, are not init by scat
 				if ~isfield(U_fr{1}.meta,'bandwidth')
 					U_fr{1}.meta.bandwidth = 2*pi*ones(2,1);
 				end
@@ -132,12 +133,12 @@ function [S,U] = scatt_joint_timefreq(X,cascade)
 	end
 	
 	for m = 0:length(S)-1
-		temp = flatten_scatt(S{m+1});
+		temp = flatten_scat(S{m+1});
 		temp = temp{1};
 		temp.meta.tf_order = temp.meta.order;
 		temp.meta = rmfield(temp.meta,'order');
 		S{m+1} = temp;
-		temp = flatten_scatt(U{m+1});
+		temp = flatten_scat(U{m+1});
 		temp = temp{1};
 		temp.meta.tf_order = temp.meta.order;
 		temp.meta = rmfield(temp.meta,'order');

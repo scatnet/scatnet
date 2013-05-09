@@ -4,7 +4,11 @@ x = lena;
 
 tic;
 % compute filter bank
-filters = morlet_filter_bank_2d(size(x));
+clear options;
+%options.margins =  [0, 0];
+options.null = 1;
+filters = morlet_filter_bank_2d(size(x), options);
+
 toc;
 %%
 options.antialiasing = 0;

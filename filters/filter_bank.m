@@ -72,7 +72,9 @@ function filters = filter_bank(sig_length,options)
 	options = fill_struct(options, 'P', []);
 	options = fill_struct(options, 'spline_order', []);
 	options = fill_struct(options, 'precision', 'double');
+	% filter_format can be: 'fourier', 'fourier_multires', 'fourier_truncated'
 	options = fill_struct(options, 'filter_format', 'fourier_truncated');
+	
 	
 	if ~iscell(options.filter_type)
 		options.filter_type = {options.filter_type};

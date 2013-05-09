@@ -27,7 +27,7 @@
 %    filters : <struct> the filter bank used by the wavelet transform
 %
 
-function [cascade, filters] = cascade_factory_2d(size_in, options)
+function [operators, filters] = operators_factory_2d(size_in, options)
 	
 	options = fill_struct(options, 'nb_layer', 3);
 	options = fill_struct(options, 'J', 4);
@@ -42,9 +42,9 @@ function [cascade, filters] = cascade_factory_2d(size_in, options)
 	margin_in = getoptions(options, 'margin_in', default_margin);
 	margin_out = getoptions(options, 'margin_out', default_margin);
 	
-	cascade.pad = @(x)(padd_mirror_layer_2d(x, margin_in));
+	operators.pad = @(x)(padd_mirror_layer_2d(x, margin_in));
 	size_padded = size_in + 2*margin_in;
-	cascade.unpad = @(x)(unpadd_layer_2d(x, size_padded, margin_out));
+	operators.unpad = @(x)(unpadd_layer_2d(x, size_padded, margin_out));
 	
 	% filters :
 	filters = morlet_filter_bank_2d(size_padded, options);
