@@ -19,12 +19,14 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	options = fill_struct(options, 'antialiasing', 1);
 	options = fill_struct(options, ...
 		'psi_mask', true(1, numel(filters.psi.filter)));
+	options = fill_struct(options, 'x_resolution',0);
 	
 	N = size(x,1);
 	
 	[temp,psi_bw,phi_bw] = filter_freq(filters);
 	
-	N_padded = filters.N/2^(floor(log2(filters.N/(2*N))));
+	%N_padded = filters.N/2^(floor(log2(filters.N/(2*N))));
+	N_padded = filters.N/2^options.x_resolution;
 	
 	% resolution of x - how much have we subsampled by?
 	j0 = log2(filters.N/N_padded);

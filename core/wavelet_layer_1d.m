@@ -36,6 +36,7 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options)
 	for p1 = 1:length(U.signal)
 		psi_mask = calc_U&(U.meta.bandwidth(p1)>psi_xi);
 		
+		options.x_resolution = U.meta.resolution(p1);
 		options.psi_mask = psi_mask;
 		[x_phi, x_psi, meta_phi, meta_psi] = ...
 			wavelet_1d(U.signal{p1}, filters, options);
