@@ -1,4 +1,4 @@
-function plotSpectScat(x,nScatt)
+function plot_spect_scat(x,nScatt)
 % PlotSpectScat(x,nScatt)
 % Color plot of the scattering power spectrum
 % x gives the horizontal axis
