@@ -1,6 +1,6 @@
-% average_scatt: Average successive frames of a scattering transform.
+% average_scat: Average successive frames of a scattering transform.
 % Usage
-%    S = aggregage_scatt(S,T,step,window_fun)
+%    S = aggregage_scat(S,T,step,window_fun)
 % Input
 %    S: A scattering transform.
 %    T: The length of the window with which to average.
@@ -13,7 +13,7 @@
 
 % TODO make own hanning function, not dependent on signal processing tbx
 
-function X = average_scatt(X,T,step,window_fun)
+function X = average_scat(X,T,step,window_fun)
 	if nargin < 3
 		step = T/2;
 	end

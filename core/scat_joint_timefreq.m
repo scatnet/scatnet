@@ -1,4 +1,4 @@
-function [S,U] = scatt_freq(X,cascade)
+function [S,U] = scat_joint_timefreq(X,cascade)
 	Y = concatenate_freq(X);
 	
 	S = {};
@@ -11,7 +11,6 @@ function [S,U] = scatt_freq(X,cascade)
 		U{m+1} = {};
 		
 		for k = 1:length(Y{m+1}.signal)
-			% note: here each signal is a table
 			signal = Y{m+1}.signal{k};
 			
 			sz_orig = size(signal);
@@ -24,29 +23,38 @@ function [S,U] = scatt_freq(X,cascade)
 			signal = reshape(signal,[sz_orig(1) sz_orig(2)*sz_orig(3)]);
 			
 			if m > 0
-				[S_fr,U_fr] = scatt(signal,cascade);
+				% note that here scat is 2d
+				[S_fr,U_fr] = scat(signal,cascade);
 				
-				% needed for the case of U, are not init by scatt
+				% needed for the case of U, are not init by scat
 				if ~isfield(U_fr{1}.meta,'bandwidth')
-					U_fr{1}.meta.bandwidth = 2*pi;
+					U_fr{1}.meta.bandwidth = 2*pi*ones(2,1);
 				end
 				if ~isfield(U_fr{1}.meta,'resolution')
-					U_fr{1}.meta.resolution = 0;
+					U_fr{1}.meta.resolution = 0*ones(2,1);
+				end
+				if ~isfield(U_fr{1}.meta,'j1')
+					U_fr{1}.meta.j1 = -1*ones(2,1);
+				end
+				if ~isfield(U_fr{1}.meta,'j2')
+					U_fr{1}.meta.j2 = -1*ones(2,1);
 				end
 			else
 				S_fr = {};
 				
 				S_fr{1}.signal = {signal};
-				S_fr{1}.meta.bandwidth = 2*pi;
-				S_fr{1}.meta.resolution = 0;
-				S_fr{1}.meta.j = -1;
+				S_fr{1}.meta.bandwidth = 2*pi*ones(2,1);
+				S_fr{1}.meta.resolution = 0*ones(2,1);
+				S_fr{1}.meta.j1 = -1*ones(2,1);
+				S_fr{1}.meta.j2 = -1*ones(2,1);
 				
 				U_fr = {};
 
 				U_fr{1}.signal = {signal};
-				U_fr{1}.meta.bandwidth = 2*pi;
-				U_fr{1}.meta.resolution = 0;
-				U_fr{1}.meta.j = -1;
+				U_fr{1}.meta.bandwidth = 2*pi*ones(2,1);
+				U_fr{1}.meta.resolution = 0*ones(2,1);
+				U_fr{1}.meta.j1 = -1*ones(2,1);
+				U_fr{1}.meta.j2 = -1*ones(2,1);
 			end
 			
 			if isempty(S{m+1})
@@ -59,8 +67,8 @@ function [S,U] = scatt_freq(X,cascade)
 			end
 			
 			for mp = 0:length(S_fr)-1
-				S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},size(signal,1));
-				U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},size(signal,1));
+				S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},[size(signal,1), size(signal,2)]);
+				U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},[size(signal,1), size(signal,2)]);
 				
 				for kp = 1:length(S_fr{mp+1}.signal)
 					for t = 0:1
@@ -77,28 +85,33 @@ function [S,U] = scatt_freq(X,cascade)
 						nsignal = X_fr{mp+1}.signal{kp};
 					
 						j1_count = size(nsignal,1);
+						t_count = size(nsignal,2);
 					
-						ds = X_fr{mp+1}.meta.resolution(kp);
+						ds = X_fr{mp+1}.meta.resolution(:,kp);
 					
-						inds = ind(1:2^ds:end);
+						j1_inds = ind(1:2^ds(1):end);
 					
-						nsignal = reshape(nsignal,[j1_count sz_orig(2:3)]);
+						nsignal = reshape(nsignal,[j1_count t_count sz_orig(3)]);
 					
 						for j1 = 1:j1_count
 							X{m+1}{mp+1}.signal{rc(mp+1)} = ...
-								reshape(nsignal(j1,:,:),sz_orig(2:3));
+								reshape(nsignal(j1,:,:),t_count,sz_orig(3));
 							X{m+1}{mp+1}.meta.bandwidth(1,rc(mp+1)) = ...
-								Y{m+1}.meta.bandwidth(inds(j1));
+								X_fr{mp+1}.meta.bandwidth(2,kp)/2*pi* ...
+								Y{m+1}.meta.bandwidth(j1_inds(j1));
 							X{m+1}{mp+1}.meta.resolution(1,rc(mp+1)) = ...
-								Y{m+1}.meta.resolution(inds(j1));
+								X_fr{mp+1}.meta.resolution(2,kp)+ ...
+								Y{m+1}.meta.resolution(j1_inds(j1));
 							X{m+1}{mp+1}.meta.j(:,rc(mp+1)) = ...
-								Y{m+1}.meta.j(:,inds(j1));
-							X{m+1}{mp+1}.meta.fr_bandwidth(1,rc(mp+1)) = ...
-								X_fr{mp+1}.meta.bandwidth(kp);
-							X{m+1}{mp+1}.meta.fr_resolution(1,rc(mp+1)) = ...
-								X_fr{mp+1}.meta.resolution(kp);
-							X{m+1}{mp+1}.meta.fr_j(:,rc(mp+1)) = ...
-								X_fr{mp+1}.meta.j(:,kp);
+								Y{m+1}.meta.j(:,j1_inds(j1));
+							X{m+1}{mp+1}.meta.fr_bandwidth(:,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.bandwidth(1,kp);
+							X{m+1}{mp+1}.meta.fr_resolution(:,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.resolution(1,kp);
+							X{m+1}{mp+1}.meta.tf_j1(:,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.j1(:,kp);
+							X{m+1}{mp+1}.meta.tf_j2(:,rc(mp+1)) = ...
+								X_fr{mp+1}.meta.j2(:,kp);
 							rc(mp+1) = rc(mp+1)+1;
 						end
 						
@@ -120,15 +133,14 @@ function [S,U] = scatt_freq(X,cascade)
 	end
 	
 	for m = 0:length(S)-1
-		temp = flatten_scatt(S{m+1});
+		temp = flatten_scat(S{m+1});
 		temp = temp{1};
-		temp.meta.fr_order = temp.meta.order;
+		temp.meta.tf_order = temp.meta.order;
 		temp.meta = rmfield(temp.meta,'order');
 		S{m+1} = temp;
-		
-		temp = flatten_scatt(U{m+1});
+		temp = flatten_scat(U{m+1});
 		temp = temp{1};
-		temp.meta.fr_order = temp.meta.order;
+		temp.meta.tf_order = temp.meta.order;
 		temp.meta = rmfield(temp.meta,'order');
 		U{m+1} = temp;
 	end

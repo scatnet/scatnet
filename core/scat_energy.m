@@ -1,6 +1,6 @@
-% scatt_energy: Calculate scattering energy.
+% scat_energy: Calculate scattering energy.
 % Usage
-%    energy = scatt_energy(S, U)
+%    energy = scat_energy(S, U)
 % Input
 %    S: The scattering transform.
 %    U: The wavelet modulus coefficients (optional).
@@ -8,18 +8,18 @@
 %    energy: The energy of the scattering transform (the sum of the squares
 %    of the coefficients).
 
-function energy = scatt_energy(S, U)
+function energy = scat_energy(S, U)
 	if nargin < 2
 		U = [];
 	end
 	
 	if ~isempty(U)
-		energy = scatt_energy(S) + scatt_energy(U);
+		energy = scat_energy(S) + scat_energy(U);
 	else
 		if iscell(S)
 			energy = 0;
 			for m = 1:numel(S)
-				energy = energy + scatt_energy(S{m});
+				energy = energy + scat_energy(S{m});
 			end
 		else
 			energy = 0;
