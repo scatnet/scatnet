@@ -3,7 +3,7 @@
 % Comm. in Pure and Applied Mathematics, Dec. 2012, Wiley
 %
 % Fourier transforms and scattering transforms of 4 different signals.
-tic
+
 
 N = 8*1024; %signal size, power of two
 Jmax = log2(N); %Maximum number of scales
@@ -142,8 +142,7 @@ hold off;
 
 fprintf('Left graphs: each row gives an example of function fi(x). \n Middle graphs: modulus of the Fourier transform of each fi \n as a function of the frequency omega.\n Right graphs: normalized scattering transforms Sfi(R(omega))\n as a function of the frequency omega.\n');
 
-fprintf('\n finish the function \n');
-toc
+
 
 
 

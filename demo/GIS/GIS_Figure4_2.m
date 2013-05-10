@@ -1,10 +1,9 @@
 
 % Reproduction of the Figure 4.2 of in the paper:
-% "Group Invariant Scattering", S. Mallat, 
+% "Group Invariant Scattering", S. Mallat,
 % Comm. in Pure and Applied Mathematics, Dec. 2012, Wiley
 % Calculation the scattering transform of a Gaussain white noise and of
 % a Bernouilli process.
-
 
 N = 8*1024; %signal size, power of two
 Jmax = log2(N); %Maximum number of scales
@@ -56,14 +55,9 @@ f2 = randn(1,N);
 f2=f2';
 Scat2 = diracnorm_scat(f2,cascade);
 hold off;
-subplot(2,2,4),plot_spect_scat(y,Scat2); 
+subplot(2,2,4),plot_spect_scat(y,Scat2);
 subplot(2,2,3), plot(z,f2); %Scattered representation at the scale 2^J
 hold on;
 hold off;
 
 fprintf('Upper left: Realization of a Bernoulli process X1(x).\n Lower left: Realization of a Gaussian white noise X1(x).\n Upper and lower right: Scattering power spectrum PX(q(omega))\n where the path p is parameterized by the frequency omega.\n The values of PX(q) are displayed in red, green, blue, and violet\n for paths of lengths 1,2, 3, and 4, respectively.\n');
-
-
-
-
-

@@ -4,6 +4,7 @@ function mScatt=multi_J_scatter(sig,fparam,options,Jmax)
 %filters used with these functions will most of the time be cubic spline
 %wavelets.
 
+%tic
 N=length(sig);
 cascades=cell(Jmax,1);
 
@@ -17,8 +18,9 @@ mScatt(1,1:N)=sig;
 
 
 for p=2:Jmax+1
-   
+    
     tScatt=reorder_scat(scat(sig,cascades{p-1}));
-  
-  mScatt(p,:)=tScatt;
+    mScatt(p,:)=tScatt;
+    %mScatt(2:Jmax+1,:)=reorder_scat(scat(sig,cascades));
+end
 end

@@ -15,20 +15,18 @@ function nScatt = diracnorm_scat(x,cascade)
 	dirac = zeros(N,1);
 	dirac(N/2) = 1;
 	%Compute its scattering transform and output it in the form of a table
-	tic
+
 	Sdirac=scat(dirac, cascade);
 	%%
-	fprintf('scat time\n');
-	toc
+	%fprintf('scat time\n');
 	[Scatt order2]=reorder_scat(Sx);
-	tic
+
 	%%
 	nSdirac=reorder_scat(Sdirac);
 	
 	%%
-	fprintf('reordering time\n');
+	%fprintf('reordering time\n');
 	
-	toc
 	lsig=2*N/2^(length(Sx{2}.signal));
 	
 	
@@ -48,10 +46,10 @@ function nScatt = diracnorm_scat(x,cascade)
 	C=sum(nSdirac)/lsig;
 	
 	p=0;
-	for k=1:lsig:2*N
-		step=nSdirac(k) * 2 * N/C;
+	for k=0:lsig:2*N-lsig
+		step=nSdirac(k+1) * 2 * N/C;
 		
-		nScatt(floor(p+1):round(p+step))=Scatt(k);
+		nScatt(floor(p+1):round(p+step))=Scatt(k+1);
 		p=p+step;
 	end
 	

@@ -51,11 +51,11 @@ function [oScatt order]=reorder_scat(Scatt)
 	%			ind=s;
 	%		end
 	%	end
-		mo=Metax.order(ind);
+		
 		
 		if (p<lsig*2^J)
 			oScatt(1,p:p+lsig-1)=(fScatt(:,:,ind))';
-			order(1,p:p+lsig-1)=mo;
+			order(1,p:p+lsig-1)=Metax.order(ind);
 			p=p+lsig;
 		end
 		
