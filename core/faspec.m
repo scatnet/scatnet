@@ -46,9 +46,12 @@ function [out,meta] = faspec(in,filters,options)
 
 	out = permute(out,[3 1 2]);
 	
+	resolution = round(log2(N1))-options.antialiasing;
+
 	meta.order = ones(size(fs,2),1);
 	meta.scale = [0:size(fs,2)-1]';
 	meta.bandwidth = phi2_bw*ones(size(fs,2),1);
+	meta.resolution = resolution*ones(size(fs,2),1);
 	
 	X = cell(1,2);
 	X{1}.signal = {};
@@ -61,4 +64,6 @@ function [out,meta] = faspec(in,filters,options)
 	for k0 = 0:size(out,1)-1
 		X{2}.signal{k0+1} = reshape(out(k0+1,:,:),size(out,2),size(out,3));
 	end
+
+	out = X;
 end
