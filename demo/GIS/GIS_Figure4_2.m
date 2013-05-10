@@ -13,7 +13,7 @@ Jmax = log2(N); %Maximum number of scales
 fparam.filter_type = {'spline_1d'};
 fparam.spline_order=3;
 % Scale 2^J selected to display the scattering representation
-fparam.J = Jmax-1;
+fparam.J = Jmax-2;
 fparam.Q = 1;
 
 %options
@@ -35,8 +35,8 @@ Scat1 = diracnorm_scat(f1,cascade);
 P = length(Scat1);
 y = zeros(1,P);
 y(1:P) = (1:P);
-% y = 3.14 * y /(P);
-y = y /(P);
+y = 3.14 * y /(P);
+%y = y /(P);
 
 
 P = N;

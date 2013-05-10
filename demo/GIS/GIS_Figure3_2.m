@@ -3,7 +3,7 @@
 % Comm. in Pure and Applied Mathematics, Dec. 2012, Wiley
 %
 % Fourier transforms and scattering transforms of 4 different signals.
-
+tic
 
 N = 8*1024; %signal size, power of two
 Jmax = log2(N); %Maximum number of scales
@@ -13,7 +13,7 @@ fparam.filter_type = {'spline_1d'};
 fparam.spline_order=3;
 
 % Scale 2^J selected to display the scattering representation
-fparam.J = Jmax-1;
+fparam.J = Jmax-2;
 fparam.Q = 1;
 options = struct();
 cascade = cascade_factory_1d(N, fparam,options, fparam.J);
@@ -37,7 +37,7 @@ y(1:P) = (1:P);
 y = 10 * y* 2 * pi/(P);
 
 P = 8*R+1;
-w = zeros(1,R);
+w = zeros(1,P);
 w(1:P) = (1:P);
 w = (w-1)*8/(P)-4;
 
@@ -142,9 +142,8 @@ hold off;
 
 fprintf('Left graphs: each row gives an example of function fi(x). \n Middle graphs: modulus of the Fourier transform of each fi \n as a function of the frequency omega.\n Right graphs: normalized scattering transforms Sfi(R(omega))\n as a function of the frequency omega.\n');
 
-
-
-
+fprintf('\n finish the function \n');
+toc
 
 
 
