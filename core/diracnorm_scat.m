@@ -15,11 +15,16 @@ Sx=scat(x,cascade);
    dirac = zeros(N,1);
    dirac(N/2) = 1;
 %Compute its scattering transform and output it in the form of a table
+tic
 Sdirac=scat(dirac, cascade);
-
+fprintf('scat time\n');
+toc
 [Scatt order2]=reorder_scat(Sx);
+tic
    nSdirac=reorder_scat(Sdirac);
+ fprintf('reordering time\n');
    
+   toc
    lsig=2*N/2^(length(Sx{2}.signal));
 
     
