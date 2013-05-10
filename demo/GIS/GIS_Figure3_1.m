@@ -33,9 +33,9 @@ cascade1 = cascade_factory_1d(N, fparam1,options,6);
 cascade2 = cascade_factory_1d(N, fparam2,options,7);
 cascade3 = cascade_factory_1d(N, fparam3,options,8);
 
-nScatt1 = diracNormScatt(x, cascade1);
-nScatt2 = diracNormScatt(x, cascade2);
-nScatt3 = diracNormScatt(x, cascade3);
+nScatt1 = diracnorm_scat(x, cascade1);
+nScatt2 = diracnorm_scat(x, cascade2);
+nScatt3 = diracnorm_scat(x, cascade3);
  
  P = 2*N;
  y = zeros(1,P);
@@ -45,9 +45,9 @@ nScatt3 = diracNormScatt(x, cascade3);
 figure(1);
 hold off;
 % Plot in color at 3 scales 2^J
-subplot(2,2,2), PlotNormScat(y,nScatt1);
-subplot(2,2,3), PlotNormScat(y,nScatt2);
-subplot(2,2,4), PlotNormScat(y,nScatt3);
+subplot(2,2,2), plot_diracnorm_scat(y,nScatt1);
+subplot(2,2,3), plot_diracnorm_scat(y,nScatt2);
+subplot(2,2,4), plot_diracnorm_scat(y,nScatt3);
 
 xf = abs(fft(x));
 
