@@ -25,6 +25,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 	j0 = log2(filters{1}.N/N);
 
 	xf = fft(x,[],1);
+	xf = reshape(xf,[size(xf,1) size(xf,2)*size(xf,3)]);
 	
 	x1 = cell(numel(filters{1}.psi.filter)+1,1);
 	res1 = zeros(numel(filters{1}.psi.filter)+1,1);
@@ -35,7 +36,9 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		     options.antialiasing;
 		ds = max(ds, 0);
 	
-		x1{p1,1} = conv_sub_1d(xf, filters{1}.psi.filter{p1}, ds);
+		y = conv_sub_1d(xf, filters{1}.psi.filter{p1}, ds);
+		y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
+		x1{p1,1} = y;
 		res1(p1,1) = ds;
 		bw1(p1,1) = psi_bw(p1);
 	end
@@ -45,7 +48,9 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 	     options.antialiasing;
 	ds = max(ds, 0);
 
-	x1{end,1} = real(conv_sub_1d(xf, filters{1}.phi.filter, ds));
+	y = real(conv_sub_1d(xf, filters{1}.phi.filter, ds));
+	y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
+	x1{end,1} = y;
 	res1(end,1) = ds;
 	bw1(end,1) = phi_bw;
 	
@@ -69,6 +74,8 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		end
 		
 		xf = fft(x1{p1},[],2);
+		xf = permute(xf,[2 1 3]);
+		xf = reshape(xf,[size(xf,1) size(xf,2)*size(xf,3)]);
 		
 		for p2 = find(options.psi_mask{2})
 			ds = round(log2(2*pi/psi_bw(p2)/2)) - ...
@@ -76,7 +83,11 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 			     options.antialiasing;
 			ds = max(ds, 0);
 
-			x2{p1,p2} = permute(conv_sub_1d(permute(xf,[2 1 3]), filters{2}.psi.filter{p2}, ds),[2 1 3]);
+			y = conv_sub_1d(xf, filters{2}.psi.filter{p2}, ds);
+			y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
+			y = permute(y,[2 1 3]);
+			x2{p1,p2} = y;
+			%x2{p1,p2} = permute(conv_sub_1d(permute(xf,[2 1 3]), filters{2}.psi.filter{p2}, ds),[2 1 3]);
 			res2(1,p2) = ds;
 			bw2(1,p2) = psi_bw(p2);
 			x2{p1,p2} = unpad_signal_1d(x2{p1,p2}, [res1(p1) res2(p2)], N_orig);
@@ -91,7 +102,10 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		     options.antialiasing;
 		ds = max(ds, 0);
 
-		x2{p1,end} = permute(real(conv_sub_1d(permute(xf,[2 1 3]), filters{2}.phi.filter, ds)),[2 1 3]);
+		y = real(conv_sub_1d(xf, filters{2}.phi.filter, ds));
+		y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
+		y = permute(y,[2 1 3]);
+		x2{p1,end} = y;
 		res2(1,end) = ds;
 		bw2(1,end) = phi_bw;
 		x2{p1,end} = unpad_signal_1d(x2{p1,end}, [res1(p1) res2(end)], N_orig);
