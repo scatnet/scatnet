@@ -34,10 +34,10 @@ function [S,U] = scat_joint_timefreq(X,cascade)
 					U_fr{1}.meta.resolution = 0*ones(2,1);
 				end
 				if ~isfield(U_fr{1}.meta,'j1')
-					U_fr{1}.meta.j1 = -1*ones(2,1);
+					U_fr{1}.meta.j1 = -1*ones(1,1);
 				end
 				if ~isfield(U_fr{1}.meta,'j2')
-					U_fr{1}.meta.j2 = -1*ones(2,1);
+					U_fr{1}.meta.j2 = -1*ones(1,1);
 				end
 			else
 				S_fr = {};
@@ -45,16 +45,16 @@ function [S,U] = scat_joint_timefreq(X,cascade)
 				S_fr{1}.signal = {signal};
 				S_fr{1}.meta.bandwidth = 2*pi*ones(2,1);
 				S_fr{1}.meta.resolution = 0*ones(2,1);
-				S_fr{1}.meta.j1 = -1*ones(2,1);
-				S_fr{1}.meta.j2 = -1*ones(2,1);
+				S_fr{1}.meta.j1 = -1*ones(1,1);
+				S_fr{1}.meta.j2 = -1*ones(1,1);
 				
 				U_fr = {};
 
 				U_fr{1}.signal = {signal};
 				U_fr{1}.meta.bandwidth = 2*pi*ones(2,1);
 				U_fr{1}.meta.resolution = 0*ones(2,1);
-				U_fr{1}.meta.j1 = -1*ones(2,1);
-				U_fr{1}.meta.j2 = -1*ones(2,1);
+				U_fr{1}.meta.j1 = -1*ones(1,1);
+				U_fr{1}.meta.j2 = -1*ones(1,1);
 			end
 			
 			if isempty(S{m+1})
