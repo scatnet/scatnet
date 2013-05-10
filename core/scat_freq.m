@@ -59,8 +59,9 @@ function [S,U] = scat_freq(X,cascade)
 			end
 			
 			for mp = 0:length(S_fr)-1
-				S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},size(signal,1));
-				U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},size(signal,1));
+				% what do these do?
+				%S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},size(signal,1));
+				%U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},size(signal,1));
 				
 				for kp = 1:length(S_fr{mp+1}.signal)
 					for t = 0:1

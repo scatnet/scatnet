@@ -20,7 +20,7 @@ function [S,U] = scat_joint_timefreq(X,cascade)
 			
 			ind = r:r+size(signal,1)-1;
 			
-			signal = reshape(signal,[sz_orig(1) sz_orig(2)*sz_orig(3)]);
+			signal = reshape(signal,[sz_orig(1) sz_orig(2) sz_orig(3)]);
 			
 			if m > 0
 				% note that here scat is 2d
@@ -67,8 +67,9 @@ function [S,U] = scat_joint_timefreq(X,cascade)
 			end
 			
 			for mp = 0:length(S_fr)-1
-				S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},[size(signal,1), size(signal,2)]);
-				U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},[size(signal,1), size(signal,2)]);
+				% what do these do?
+				%S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},[size(signal,1), size(signal,2)]);
+				%U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},[size(signal,1), size(signal,2)]);
 				
 				for kp = 1:length(S_fr{mp+1}.signal)
 					for t = 0:1

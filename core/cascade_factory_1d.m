@@ -14,13 +14,9 @@
 function cascade = cascade_factory_1d(N, filter_options, scat_options, M)
 	filters = filter_bank(N,filter_options);
 	
-	%cascade.pad = @(X)(pad_layer_1d(X, 2*N, 'symm'));
-	%cascade.unpad = @(X)(unpad_layer_1d(X, N));
-	
 	for m = 0:M
 		filt_ind = min(numel(filters), m+1);
-		cascade{m+1} = @(X)(wavelet_layer_1d(X, ...
-			filters{filt_ind}, scat_options));
-		%cascade.modulus{m+1} = @modulus_layer;
+		cascade{m+1} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, ...
+			scat_options));
 	end
 end
