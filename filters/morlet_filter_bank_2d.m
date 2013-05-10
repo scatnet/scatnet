@@ -101,6 +101,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 						% fourier
 						psi.filter{p}.coefft{res+1} = ...
 							sum(extract_block(psi.filter{p}.coefft{1}, [2^res, 2^res]), 3) / 2^res;
+						
 					end
 					littlewood_final = littlewood_final + abs(psi.filter{p}.coefft{res+1}).^2;
 				end
