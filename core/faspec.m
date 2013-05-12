@@ -40,11 +40,8 @@ function [out,meta] = faspec(in,filters,options)
 		
 	frame_fm = abs(fft(frames,[],1));
 		
-	out = sum(bsxfun(@times,frame_fm,reshape(fs,[size(fs,1) 1 1 size(fs,2)])),1);
-
-	out = reshape(out,[size(out,2), size(out,3) size(out,4)]);
-
-	out = permute(out,[3 1 2]);
+	out = fs.'*reshape(frame_fm,[size(frame_fm,1) size(frame_fm,2)*size(frame_fm,3)]);
+	out = reshape(out,[size(fs,2) size(frame_fm,2) size(frame_fm,3)]);
 	
 	resolution = round(log2(N1))-options.antialiasing;
 
