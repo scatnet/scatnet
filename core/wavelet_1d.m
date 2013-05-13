@@ -31,7 +31,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	% resolution of x - how much have we subsampled by?
 	j0 = log2(filters.N/N_padded);
 	
-	x = pad_signal_1d(x, N_padded, 'symm');
+	x = pad_signal_1d(x, N_padded, filters.boundary);
 	
 	xf = fft(x,[],1);
 	

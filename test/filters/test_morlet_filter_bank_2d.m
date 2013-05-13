@@ -1,7 +1,7 @@
 size_in = [640, 480];
 
 tic;
-filters = morlet_filter_bank_2d(size_in, options);
+filters = morlet_filter_bank_2d(size_in);
 toc;
 figure(1);
 display_filter_bank_2d(filters, 32, 1);
