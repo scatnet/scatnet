@@ -17,8 +17,18 @@ function x = pad_signal_1d(x,N1,boundary)
 		ind(N1(d):-1:N0+floor((N1(d)-N0)/2)+1) = ...
 			ind0(mod([1:ceil((N1(d)-N0)/2)]-1,length(ind0))+1);
 	
-		x = shiftdim(x,d-1);
-		x = x(ind,:);
-		x = shiftdim(x,ndims(x)-d+1);
+		%x = shiftdim(x,d-1);
+		%sz = size(x);
+		%x = reshape(x,[sz(1) prod(sz(2:end))]);
+		%x = x(ind,:);
+		%x = reshape(x,[length(ind) sz(2:end)]);
+		%x = shiftdim(x,dims-d+1);
+		
+		% MATLAB is stupid; easier to do manually
+		if d == 1
+			x = x(ind,:,:);
+		elseif d == 2
+			x = x(:,ind,:);
+		end
 	end
 end

@@ -30,13 +30,13 @@ for ifn = 1:numel(fns)
     end
     
     
-    for i = 1:size(vec,2)
+    for i = 1:size(vec,1)
       if (nonumber)
         nb = '';
       else
         nb =int2str(i) ;
       end
-      str = [str,fn,nb,'=',int2str(vec(ind,i)),endline_str];
+      str = [str,fn,nb,'=',int2str(vec(i,ind)),endline_str];
     end
     
   end

@@ -57,7 +57,7 @@ We can exploit the fact that $\hat{z}[k]$ is real times a linear phase, reducing
 Let us divide $\hat{z}$ into its even-numbered coefficients $\hat{z}_0$ and its odd-numbered coefficients $\hat{z}_1$ (shifted in phase):
 \begin{align*}
 \hat{z}_0[k] &= \hat{z}[2k] & k=0,\ldots,N-1 \\
-\hat{z}_1[k] &= e^{\frac{-2\pi i/2}{2N}}\hat{z}[2k+1] & k=0,\ldots,N-1
+\hat{z}_1[k] &= e^{-\frac{2\pi i/2}{2N}}\hat{z}[2k+1] & k=0,\ldots,N-1
 \end{align*}
 We can now create a signal $\hat{s}[k]$, defined by
 \[
@@ -74,12 +74,12 @@ s_o[n] &= \frac{1}{2}\left(s[n]-s[N-1-n]\right),
 \end{align*}
 we obtain
 \begin{align*}
-z_0[n] &= \mathrm{Re}\{s_e\}+i\mathrm{Im}\{s_o\}
+z_0[n] &= \mathrm{Re}\{s_e\}+i\mathrm{Im}\{s_o\} \\
 z_1[n] &= \mathrm{Im}\{s_e\}-i\mathrm{Re}\{s_o\}.
 \end{align*}
 Inverting the phase shift of $z_1$, we can now reconstruct $z$:
 \[
-z[n] = z_0[n]+e^{2\pi i n/2N}\left(e^{-\frac{2\pi i/2}{2N}}z_1[n]\right),
+z[n] = \frac{1}{2}\left(z_0[n]+e^{2\pi i (n+1/2)/2N}z_1[n]\right),
 \]
 for $n=0,\ldots,N-1$. Since $z$ is conjugate symmetric about $n=-1/2$, we don't need to calculate the second half.
 

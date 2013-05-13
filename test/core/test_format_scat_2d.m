@@ -1,10 +1,8 @@
 x = lena;
 
-options.J = 4;
-cascade = cascade_factory_2d(size(x), options);
-
-Sx = scatt(x, cascade);
-sx = format_scatt(Sx,'table');
+wavelet = wavelet_factory_2d(size(x));
+S = scat(x, wavelet);
+s = format_scat(S);
 
 %% with mnist
 x = retrieve_mnist(1,1,1);
@@ -13,9 +11,9 @@ x = x{1}{1};
 
 options.J = 3;
 options.nb_angle = 6;
-options.antialiasing = 0;
-[cascade, filters] = cascade_factory_2d(size(x), options);
+options.antialiasing = 2;
+[wavelet, filters] = wavelet_factory_2d(size(x), options);
 
 
-Sx = scatt(x, cascade);
-[sx , meta] = format_scatt(Sx,'table');
+S = scat(x, wavelet);
+[s , meta] = format_scat(S);
