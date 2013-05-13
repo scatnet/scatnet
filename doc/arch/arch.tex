@@ -121,7 +121,7 @@ In the next section, we see how this can be automated.
 
 By alternating wavelet transforms and modulus operators, we obtain the scattering transform. Specifically, the \mcode{scatt} function takes a signal, an options structure, a structure defining the wavelet cascade, and returns the scattering coefficients (or wavelet modulus coefficients, if desired). The scattering coefficients are output as a cell array of layers \mcode{S}.
 
-To create this cascade structure, a factory function, \mcode{cascade_factory_1d} or \mcode{cascade_factory_2d} is used, which takes as input the signal size, a filter parameter structure, a scattering options structure, and the order of the transform. The scattering transform could be used like the following
+To create this cascade structure, a factory function, \mcode{wavelet_factory_1d} or \mcode{cascade_factory_2d} is used, which takes as input the signal size, a filter parameter structure, a scattering options structure, and the order of the transform. The scattering transform could be used like the following
 \begin{lstlisting}
 	fparam.filter_type = {'gabor_1d', 'morlet_1d'};
 	fparam.Q = [8 1];
@@ -129,7 +129,7 @@ To create this cascade structure, a factory function, \mcode{cascade_factory_1d}
 	
 	options = struct();
 	
-	cascade = cascade_factory_1d(N, fparam, options, 2);
+	cascade = wavelet_factory_1d(N, fparam, options, 2);
 	
 	S = scatt(x,cascade);
 \end{lstlisting}
@@ -220,7 +220,7 @@ fparam.J = T_to_J(8192,fparam.Q);
 
 options = struct();
 
-cascade = cascade_factory_1d(N, fparam, options, 2);
+cascade = wavelet_factory_1d(N, fparam, options, 2);
 
 feature_fun = {@(x)(format_scatt( ...
 	log_scatt(renorm_scatt(scatt(x, cascade)))))};

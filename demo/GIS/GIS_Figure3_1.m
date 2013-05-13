@@ -29,9 +29,9 @@ fparam.Q = 1;
 
 options = struct();
 
-cascade1 = cascade_factory_1d(N, fparam1,options,6);
-cascade2 = cascade_factory_1d(N, fparam2,options,7);
-cascade3 = cascade_factory_1d(N, fparam3,options,8);
+cascade1 = wavelet_factory_1d(N, fparam1,options,6);
+cascade2 = wavelet_factory_1d(N, fparam2,options,7);
+cascade3 = wavelet_factory_1d(N, fparam3,options,8);
 
 nScatt1 = diracnorm_scat(x, cascade1);
 nScatt2 = diracnorm_scat(x, cascade2);

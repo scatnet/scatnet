@@ -13,10 +13,10 @@ fparam.filter_type = {'spline_1d'};
 fparam.spline_order=3;
 
 % Scale 2^J selected to display the scattering representation
-fparam.J = Jmax-2;
+fparam.J = Jmax-1;
 fparam.Q = 1;
 options = struct();
-cascade = cascade_factory_1d(N, fparam,options, fparam.J);
+cascade = wavelet_factory_1d(N, fparam,options, fparam.J);
 
 
 % Examples of signals
@@ -29,7 +29,7 @@ f1 = f1 ./sum(abs(f1));
 f1=f1';
 % Scattering transform
 % tic
- Scat1 = diracnorm_scat(f1,cascade);
+ Scat1 = diracNormScatt(f1,cascade);
 % toc
 P = length(Scat1);
 y = zeros(1,P);
@@ -37,7 +37,7 @@ y(1:P) = (1:P);
 y = 10 * y* 2 * pi/(P);
 
 P = 8*R+1;
-w = zeros(1,P);
+w = zeros(1,R);
 w(1:P) = (1:P);
 w = (w-1)*8/(P)-4;
 
@@ -71,7 +71,7 @@ R = 20;
   f1(1:N) = exp(-((1:N)-N/2).^2/(2 * (1024/32).^2)) .* cos(pi * (1:N)*0.90/3);
 f1 = f1 ./sum(abs(f1));
 f1=f1';
-Scat1 = diracnorm_scat(f1,cascade);
+Scat1 = diracNormScatt(f1,cascade);
 P = length(Scat1);
 y = zeros(1,P);
 y(1:P) = (1:P);
@@ -98,7 +98,7 @@ R = 20;
 f2 = f2 ./sum(abs(f2));
 f2=f2';
 subplot(4,3,7), plot(w,f2(N/2-8*R:N/2+8*R)); 
-Scat2 = diracnorm_scat(f2,cascade);
+Scat2 = diracNormScatt(f2,cascade);
 %Scat2 = NormScatter(f2,wavelet_name,Jmax,'White');
 %Scat = Scatter(f2,wavelet_name,Jmax,'White');
 %figure(2);
@@ -121,7 +121,7 @@ R = 20;
 f4 = f4 ./sum(abs(f4));
 
 f4=f4';
-Scat4 = diracnorm_scat(f4,cascade);
+Scat4 = diracNormScatt(f4,cascade);
 P = length(Scat4);
 y = zeros(1,P);
 y(1:P) = (1:P);
@@ -140,7 +140,9 @@ subplot(4,3,11), plot(z,A4(1:N/2));
 %plot(Scat4(:,J-1),'g'); 
 hold off;
 
-fprintf('Left graphs: each row gives an example of function fi(x). \n Middle graphs: modulus of the Fourier transform of each fi \n as a function of the frequency omega.\n Right graphs: normalized scattering transforms Sfi(R(omega))\n as a function of the frequency omega.\n');
+fprintf('Left graphs: each row gives an example of function fi(x). \n Middle graphs: modulus of the Fourier transform of each fi \n as a function of the freRuency omega.\n Right graphs: normalized scattering transforms Sfi(R(omega))\n as a function of the freRuency omega.\n');
+
+
 
 
 
