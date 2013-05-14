@@ -23,7 +23,9 @@
 %    collapse: If true, collapses the time/space dimension into one vector,
 %       otherwise leaves this dimension intact (default false).
 % Output
-%    duration: The log-duration of the objects.
+%    feature: An PxNxK array where P is the feature dimension, N is the 
+%       space/time dimension and K is the signal index, if multiple objects
+%       are given as input.
 
 function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	obj_normalize,collapse)
