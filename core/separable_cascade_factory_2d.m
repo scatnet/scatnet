@@ -1,4 +1,4 @@
-function cascade = separable_cascade_factory_2d(N, filter_options, scat_options, M)
+function cascade = separable_wavelet_factory_2d(N, filter_options, scat_options, M)
 	filters{1} = filter_bank(N(1),filter_options{1});
 	filters{2} = filter_bank(N(2),filter_options{2});
 	
