@@ -163,38 +163,3 @@ function Y = concatenate_freq(X)
 		end
 	end
 end
-
-function Z = separate_freq(Y)
-	Z = {};
-	
-	for m = 0:length(Y)-1
-		Z{m+1}.signal = {};
-		Z{m+1}.meta.bandwidth = Y{m+1}.meta.bandwidth;
-		Z{m+1}.meta.j = Y{m+1}.meta.j;
-		
-		r = 1;
-		for k = 1:length(Y{m+1}.signal)
-			% because matlab is stupid and ignores last dim if 1
-			sz_orig = size(Y{m+1}.signal{k});
-			if numel(sz_orig) == 2
-				sz_orig(3) = 1;
-			end
-			
-			for l = 1:size(Y{m+1}.signal{k},1)
-				nsignal = Y{m+1}.signal{k}(l,:);
-				
-				nsignal = reshape(nsignal,[sz_orig(2) sz_orig(3)]);
-				
-				Z{m+1}.signal{r} = nsignal;
-				
-				r = r+1;
-			end
-		end
-		
-		[temp,I] = sort(Z{m+1}.meta.j(1:min(1,m),:));
-		
-		Z{m+1}.signal = Z{m+1}.signal(I);
-		Z{m+1}.meta.bandwidth = Z{m+1}.meta.bandwidth(I);
-		Z{m+1}.meta.j = Z{m+1}.meta.j(:,I);
-	end
-end
