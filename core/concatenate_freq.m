@@ -1,28 +1,42 @@
 function Y = concatenate_freq(X)
-	Y = {};
+	if iscell(X)
+		Y = {};
 	
-	for m = 0:length(X)-1
-		[suffixes,temp,assigned] = unique(X{m+1}.meta.j(2:end,:).','rows');
+		for m = 0:length(X)-1
+			Y{m+1} = concatenate_freq(X{m+1});
+		end
 		
-		sz_orig = size(X{m+1}.signal{1});
+		return;
+	end
+	
+	[suffixes,temp,assigned] = unique(X.meta.j(2:end,:).','rows');
+	
+	sz_orig = size(X.signal{1});
+	
+	Y.signal = {};
+	Y.meta = struct();
+	field_names = fieldnames(X.meta);
+	for n = 1:length(field_names)
+		sz = size(getfield(X.meta,field_names{n}));
+		Y.meta = setfield(Y.meta,field_names{n},zeros(sz(1),0));
+	end
+	
+	for k = 1:size(suffixes,1)
+		ind = find(assigned==k);
 		
-		Y{m+1}.signal = {};
-		Y{m+1}.meta.bandwidth = [];
-		Y{m+1}.meta.resolution = [];
-		Y{m+1}.meta.j = [];
+		nsignal = [X.signal{ind}];
 		
-		for k = 1:size(suffixes,1)
-			ind = find(assigned==k);
-			
-			nsignal = [X{m+1}.signal{ind}];
-			
-			nsignal = reshape(nsignal,[sz_orig(1) sz_orig(2) length(ind)]);
-			nsignal = permute(nsignal,[3 1 2]);
-			
-			Y{m+1}.signal{k} = nsignal;
-			Y{m+1}.meta.bandwidth = [Y{m+1}.meta.bandwidth X{m+1}.meta.bandwidth(ind)];
-			Y{m+1}.meta.resolution = [Y{m+1}.meta.resolution X{m+1}.meta.resolution(ind)];
-			Y{m+1}.meta.j = [Y{m+1}.meta.j X{m+1}.meta.j(:,ind)];
+		% need to extract the signal index dimension (2nd here)
+		nsignal = reshape(nsignal,[size(nsignal,1) sz_orig(2) length(ind)]);
+		nsignal = permute(nsignal,[3 1 2]);
+		
+		Y.signal{k} = nsignal;
+		
+		for n = 1:length(field_names)
+			src_value = getfield(X.meta,field_names{n});
+			dst_value = getfield(Y.meta,field_names{n});
+			dst_value = [dst_value src_value(:,ind)];
+			Y.meta = setfield(Y.meta,field_names{n},dst_value);
 		end
 	end
 end
