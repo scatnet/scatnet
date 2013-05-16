@@ -11,8 +11,12 @@ options_rot.filter_format = 'fourier_multires';
 options_rot.J = 3;
 options_rot.P = 0;
 filters_rot = morlet_filter_bank_1d(sz, options_rot);
-
-plot_littlewood_1d(filters_rot);
+close all;
+subplot(121);
+lw=littlewood_paley_2d(filters);
+imagesc(fftshift(lw{1}));
+subplot(122);
+%plot_littlewood_1d(filters_rot);
 %% aply 2d wavelet transform
 [x_phi, x_psi] = wavelet_2d(x, filters);
 
@@ -60,4 +64,6 @@ imagesc(ycut);
 title('y * psi psi');
 
 
-%% energy
+%% check energy 
+energ_in = sum(abs(y(:).^2))
+energ_out = scat_energy(y_Phi, y_Psi)

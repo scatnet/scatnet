@@ -1,5 +1,4 @@
 function [] = plot_littlewood_1d( filters )
-	clf;
 	hold on;
 	for j = 1:numel(filters.psi.filter)
 		psi = realize_filter(filters.psi.filter{j});

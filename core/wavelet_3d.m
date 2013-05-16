@@ -76,7 +76,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 	end
 	
 	if (y_half_angle) % recopy thanks to (PROPERTY_1)
-		y_phi = cat(3, y_phi, y_phi);
+		y_phi = cat(3, y_phi, y_phi) / sqrt(2); % for energy preservation
 	end
 	% fourier angle
 	y_phi_f = fft(y_phi, [], 3);
@@ -139,7 +139,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		end
 		
 		if (y_half_angle) % thanks to PROPERTY_1
-			y_psi = cat(3, y_psi, conj(y_psi));
+			y_psi = cat(3, y_psi, conj(y_psi)) / sqrt(2); % for energy preservation
 		end
 		
 		% fourier angle
@@ -175,7 +175,7 @@ function z_conv_filter = sub_conv_1d_along_third_dim_simple(zf, filter, ds)
 		[size(zf,1),size(zf,2),1]);
 	z_conv_filter = ifft(zf.* filter_rs,[],3);
 	if (ds>0) % optimization
-		z_conv_filter = z_conv_filter(:,:,1:2^ds:end);
+		z_conv_filter = 2^(ds/2)*z_conv_filter(:,:,1:2^ds:end);
 	end
 end
 
