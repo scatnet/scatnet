@@ -6,7 +6,7 @@
 function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	
 	if nargin<3
-		options = struc();
+		options = struct();
 	end
 	
 	% option retrieving
