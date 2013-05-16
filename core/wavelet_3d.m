@@ -3,9 +3,13 @@
 % Usage
 %	[y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 %		compute the roto-translation convolution of a three dimensional
-%		signal y, with roto-translation wavelets Psi defined
-%		as the separable product
-%		Psi(u,v,theta) = psi(u,v) *
+%		signal y, with roto-translation wavelets defined as the separable product
+%		low pass :
+%		PHI(U,V) * PHI(THETA)
+%		high pass :
+%		PHI(U,V) * PHI(THETA) 
+%		PSI(U,V) * PHI(THETA)
+%		PSI(U,V) * PSI(THETA)
 %
 % Ref
 %	Rotation, Scaling and Deformation Invariant Scattering for Texture

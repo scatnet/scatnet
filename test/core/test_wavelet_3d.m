@@ -13,22 +13,21 @@ options_rot.P = 0;
 filters_rot = morlet_filter_bank_1d(sz, options_rot);
 
 plot_littlewood_1d(filters_rot);
-%% aplly 2d wavelet transform
+%% aply 2d wavelet transform
 [x_phi, x_psi] = wavelet_2d(x, filters);
 
-%%
-
-%%
+%% aply and profile 3d wavelet transform
 profile on;
 options.psi_mask = ones(1,numel(filters.psi.filter));
 options.psi_mask(1:8) = 0;
-options.antialiasing = 1;
+options.antialiasing = 0;
 y = reshape(abs(cell2mat({x_psi{1:8}})),[sz_in, 8]);
 [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options);
 profile off;
 profile viewer;
 plot_meta_layer(y_Psi.meta)
 
+%% check number of coefficient
 K = filters_rot.J;
 J = filters.meta.J;
 L = filters.meta.nb_angle;
@@ -38,3 +37,27 @@ nb_psi_psi = (J-1)*L;
 nb_phi_phi = K*(J-1)*L;
 nb_total = nb_phi_psi + nb_psi_psi + nb_phi_phi;
 assert( numel(y_Psi.signal) == nb_total);
+
+%% display cut of different signals
+close all;
+
+subplot(131);
+ycut = abs(y_Psi.signal{1});
+ycut = squeeze(ycut(32,:,:));
+imagesc(ycut);
+title('y * phi psi');
+
+subplot(132);
+ycut = abs(y_Psi.signal{4});
+ycut = squeeze(ycut(32,:,:));
+imagesc(ycut);
+title('y * psi phi');
+
+subplot(133);
+ycut = abs(y_Psi.signal{5});
+ycut = squeeze(ycut(32,:,:));
+imagesc(ycut);
+title('y * psi psi');
+
+
+%% energy
