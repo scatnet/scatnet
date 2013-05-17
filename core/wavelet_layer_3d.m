@@ -32,22 +32,27 @@ function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 		options.psi_mask = calculate_psi & ...
 			(filters.psi.meta.j >= j + filters.meta.v);
 		
-		% compute wavelet transform
-		[y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options);
+		if (calculate_psi)
+			% compute wavelet transform
+			[y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options);
+		else
+			y_Phi = wavelet_3d(y, filters, filters_rot, options);
+		end
 		
 		% copy signal and meta for phi
 		U_Phi.signal{p} = y_Phi.signal{1};
 		U_Phi.meta.j(:,p) = [U.meta.j(:,p); y_Phi.meta.J];
 		
-		
-		% copy signal and meta for psi
-		for p_psi = 1:numel(y_Psi.signal)
-			U_Psi.signal{p2} = y_Psi.signal{p_psi};
-			U_Psi.meta.j(:,p2) = [U.meta.j(:,p);...
-				y_Psi.meta.j2(p_psi)];
-			U_Psi.meta.theta2(:,p2) = y_Psi.meta.theta2(p_psi);
-			U_Psi.meta.k2(:,p2) =  y_Psi.meta.k2(p_psi);
-			p2 = p2 +1;
+		if (calculate_psi)
+			% copy signal and meta for psi
+			for p_psi = 1:numel(y_Psi.signal)
+				U_Psi.signal{p2} = y_Psi.signal{p_psi};
+				U_Psi.meta.j(:,p2) = [U.meta.j(:,p);...
+					y_Psi.meta.j2(p_psi)];
+				U_Psi.meta.theta2(:,p2) = y_Psi.meta.theta2(p_psi);
+				U_Psi.meta.k2(:,p2) =  y_Psi.meta.k2(p_psi);
+				p2 = p2 +1;
+			end
 		end
 		
 	end
