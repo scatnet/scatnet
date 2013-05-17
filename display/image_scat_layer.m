@@ -142,10 +142,10 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 						curr_y = curr_y + size(curr_sig,1);
 					end
 					
-					try
+					if (isstruct(Scatt) && isfield(Scatt,'meta'))
 						str_legend = meta2str(Scatt.meta,p);
 						str_legend_split = textscan(str_legend,'%s','delimiter',' ');
-					catch %% error means no meta to display
+					else % no meta to display
 						str_legend_split{1}={};
 					end
 					if (dsp_legend ==0)

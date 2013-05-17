@@ -42,6 +42,12 @@ function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 		% copy signal and meta for phi
 		U_Phi.signal{p} = y_Phi.signal{1};
 		U_Phi.meta.j(:,p) = [U.meta.j(:,p); y_Phi.meta.J];
+		if (isfield(U.meta,'theta2'))
+			U_Phi.meta.theta2(:,p) = U.meta.theta2(:,p);
+		end
+		if (isfield(U.meta,'k2'))
+			U_Phi.meta.k2(:,p) = U.meta.k2(:,p);
+		end
 		
 		if (calculate_psi)
 			% copy signal and meta for psi

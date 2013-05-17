@@ -4,7 +4,6 @@ x = lena;
 sz_in = size(x);
 filters = morlet_filter_bank_2d(sz_in);
 
-
 sz = 16;
 options_rot.boundary = 'per';
 options_rot.filter_format = 'fourier_multires';
