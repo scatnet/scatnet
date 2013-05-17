@@ -16,7 +16,7 @@ subplot(121);
 lw=littlewood_paley_2d(filters);
 imagesc(fftshift(lw{1}));
 subplot(122);
-%plot_littlewood_1d(filters_rot);
+plot_littlewood_1d(filters_rot);
 %% aply 2d wavelet transform
 [x_phi, x_psi] = wavelet_2d(x, filters);
 

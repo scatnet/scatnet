@@ -7,7 +7,7 @@
 %		low pass :
 %		PHI(U,V) * PHI(THETA)
 %		high pass :
-%		PHI(U,V) * PHI(THETA) 
+%		PHI(U,V) * PHI(THETA)
 %		PSI(U,V) * PHI(THETA)
 %		PSI(U,V) * PSI(THETA)
 %
@@ -78,16 +78,22 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 	if (y_half_angle) % recopy thanks to (PROPERTY_1)
 		y_phi = cat(3, y_phi, y_phi) / sqrt(2); % for energy preservation
 	end
-	% fourier angle
-	y_phi_f = fft(y_phi, [], 3);
+	
 	
 	
 	% low pass angle to obtain
 	% ------- PHI(U,V) * PHI(THETA) -------
 	phi_angle = filters_rot.phi.filter;
 	ds = max(filters_rot.J/filters_rot.Q - antialiasing_rot, 0);
-	y_Phi.signal{1} = real(...
-		sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
+	if (ds == size(y_phi,3)) % if there is one coefft left, compute the sum
+		% is faster than convolving with a constant filter
+		y_Phi.signal{1} = sum(y_phi,3) / 2^(ds/2); 
+	else
+		% fourier angle
+		y_phi_f = fft(y_phi, [], 3);
+		y_Phi.signal{1} = real(...
+			sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
+	end
 	y_Phi.meta.J(1) = ...
 		filters.phi.meta.J;
 	
@@ -98,6 +104,10 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 	
 	% high pass angle to obtain
 	% ------- PHI(U,V) * PSI(THETA) -------
+	if ~exist('y_phi_f', 'var')
+		% fourier angle
+		y_phi_f = fft(y_phi, [], 3);
+	end
 	for k2 = 0:numel(filters_rot.psi.filter)-1
 		psi_angle = filters_rot.psi.filter{k2+1};
 		y_Psi.signal{p} = ...
