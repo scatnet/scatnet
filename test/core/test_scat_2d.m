@@ -1,11 +1,12 @@
 x = lena
-x = x(1:256, 1:256);
+%x = x(1:256, 1:256);
 %%
-x = imreadBW('ens.png');
+%x = imreadBW('ens.png');
 %%
 clear options;
 %options.margins = [0, 0];
 options.J = 4;
+options.precision_4byte = 1;
 [Wavelet, filters] = wavelet_factory_2d(size(x), options);
 
 %%

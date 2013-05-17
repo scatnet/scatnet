@@ -14,7 +14,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 		for j = 0:max(U.meta.j)
 			orbit = U.meta.j == j;
 			y = {U.signal{orbit}};
-			y = reshape(cell2mat(y),[size(y{1},1),size(y{1},1),numel(y)]);
+			y = reshape(cell2mat(y),[size(y{1},1),size(y{1},2),numel(y)]);
 			Uorb.signal{p_orb} = y;
 			Uorb.meta.j(p_orb) = j;
 			p_orb = p_orb + 1;

@@ -6,6 +6,28 @@
 %	with their meta in the upper left hand corner
 
 function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
+	if (numel(size(Scatt.signal{1})) == 3)
+		p2 = 1;
+		for p = 1:numel(Scatt.signal)
+			for theta = 1:size(Scatt.signal{1},3)
+				ScattBis.signal{p2} = Scatt.signal{p}(:,:,theta);
+				ScattBis.meta.j(:,p2) = Scatt.meta.j(:,p);
+				ScattBis.meta.theta2(:,p2) = Scatt.meta.theta2(:,p);
+				ScattBis.meta.theta(:,p2) = theta;
+				ScattBis.meta.k2(:,p2) = Scatt.meta.k2(:,p);
+				p2 = p2 + 1;
+			end
+		end
+		
+		if ~exist('renorm','var');
+			renorm  = 1;
+		end
+		if ~exist('dsp_legend','var');
+			dsp_legend  = 1
+		end
+		big_img = image_scat_layer(ScattBis, renorm, dsp_legend);
+		return
+	end
 	if ~exist('renorm','var');
 		renorm  = 1;
 	end

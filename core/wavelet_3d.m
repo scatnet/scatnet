@@ -22,6 +22,8 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		options = struct();
 	end
 	
+	precision_4byte = getoptions(options, 'precision_4byte', 1);
+	
 	calculate_psi = (nargout>=2); % do not compute any convolution
 	% with high pass
 	
@@ -73,7 +75,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		margins = filters.meta.margins / 2^lastres;
 		tmp = fft2(pad_mirror_2d(y_phi_angle, margins));
 		margins = filters.meta.margins / 2^(lastres+ds);
-		y_Phi.signal{1} = conv_sub_unpad_2d(tmp, filters.phi.filter, ds, margins);
+		y_Phi.signal{1} = real(conv_sub_unpad_2d(tmp, filters.phi.filter, ds, margins));
 		y_Phi.meta.J(1) = filters.phi.meta.J;
 		
 	else
@@ -92,7 +94,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 			ds = max(floor(J/v)- lastres - antialiasing, 0);
 			margins = filters.meta.margins / 2^(lastres+ds);
 			tmp = ...
-				conv_sub_unpad_2d(yf(:,:,theta), filters.phi.filter, ds, margins);
+				real(conv_sub_unpad_2d(yf(:,:,theta), filters.phi.filter, ds, margins));
 			if (theta == 1) % prealocate when we know the size
 				y_phi = zeros([size(tmp), nb_angle_in]);
 			end
@@ -180,7 +182,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 			phi_angle = filters_rot.phi.filter;
 			y_Psi.signal{p} = ...
 				sub_conv_1d_along_third_dim_simple(y_psi_f, phi_angle, 0);
-			y_Psi.meta.j2(p) = filters.phi.meta.J;
+			y_Psi.meta.j2(p) = j2;
 			y_Psi.meta.theta2(p) = -1;
 			y_Psi.meta.k2(p) = -1;
 			p = p+1;
@@ -199,8 +201,13 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		end
 	end
 	
-	
-	
+	% convert into single precision float 
+	if(precision_4byte)
+		y_Phi.signal = cellfun(@single, y_Phi.signal, 'UniformOutput', 0);
+		if (calculate_psi)
+			y_Psi.signal = cellfun(@single, y_Psi.signal, 'UniformOutput', 0);
+		end
+	end
 	
 end
 

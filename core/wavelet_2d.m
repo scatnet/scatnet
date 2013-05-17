@@ -9,6 +9,8 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 		options = struct();
 	end
 	
+	precision_4byte = getoptions(options, 'precision_4byte', 1);
+	
 	% option retrieving
 	antialiasing = getoptions(options, 'antialiasing', 1);
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
@@ -34,6 +36,11 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 		ds = max(floor(j/v)- lastres - antialiasing, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
 		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, margins);
+	end
+	
+	if(precision_4byte)
+		x_phi = single(x_phi);
+		x_psi = cellfun(@single, x_psi, 'UniformOutput', 0);
 	end
 	
 end
