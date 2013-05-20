@@ -1,6 +1,17 @@
 
+N = 256;
+x = zeros(N,N);
+
+step_grid = 64;
+for i = 1:step_grid:N
+	x(:,i) = 1;
+	x(i,:) = 1;
+end
+
+
+%%
 %x = imreadBW('ens.png');
-x = uiuc_sample;
+%x = uiuc_sample;
 %x  = x(1:end/2, 1:end/2);
 options.antialiasing = 1;
 options.precision_4byte = 1;

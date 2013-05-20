@@ -4,9 +4,9 @@
 % Input
 %    S: A scattering transform.
 % Output
-%    S: The same scattering transform, but flattened into one layer. As a 
+%    S: The same scattering transform, but flattened into one layer. As a
 %       result, meta fields that have different number of rows are set to
-%       
+%
 
 
 function Y = flatten_scat(X)
@@ -15,7 +15,8 @@ function Y = flatten_scat(X)
 	
 	Y.meta.order = [];
 	
-	meta_fields = fieldnames(X{1}.meta);
+	meta_fields = fieldnames(X{end}.meta);
+	
 	
 	r = 1;
 	for m = 0:length(X)-1
@@ -31,14 +32,20 @@ function Y = flatten_scat(X)
 			else
 				value = [];
 			end
-			new_value = getfield(X{m+1}.meta,field);
+			
+			if isfield(X{m+1}.meta,field) % : handle the case where 
+				% different layer have different
+				new_value = getfield(X{m+1}.meta,field);
+			else
+				new_value = [];
+			end
 			
 			if size(value,1) < size(new_value,1)
 				value = [value; ...
 					-ones(size(new_value,1)-size(value,1),size(value,2))];
 			elseif size(value,1) > size(new_value,1)
 				new_value = [new_value; ...
-				 	-ones(size(value,1)-size(new_value,1),size(new_value,2))];
+					-ones(size(value,1)-size(new_value,1),size(new_value,2))];
 			end
 			
 			value = [value new_value];

@@ -1,9 +1,17 @@
 % image_scat_layer : return scattering outputs images next to each other
 %
-% Usage:
+% Usage
 %	image_scat_layer(S{3}) return all the images of the third layer
 %	of scattering S embeded next to each other in a large image
 %	with their meta in the upper left hand corner
+%	
+% Input
+%	Scatt : <struct> a layer of a scattering (either U or S)
+%	renorm : <1x1 int> [default = 1] if 1 renormalize each path by its max
+%	dsp_legend <1x1 int> [default = 1] if 1 display legend
+%
+% Output
+%	big_img : <?x? double> a large image where all path are concatenated
 
 function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 	if (numel(size(Scatt.signal{1})) == 3)
@@ -144,7 +152,11 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 					
 					if (isstruct(Scatt) && isfield(Scatt,'meta'))
 						str_legend = meta2str(Scatt.meta,p);
-						str_legend_split = textscan(str_legend,'%s','delimiter',' ');
+						if (numel(str_legend)>0)
+							str_legend_split = textscan(str_legend,'%s','delimiter',' ');
+						else
+							str_legend_split{1} ={};
+						end
 					else % no meta to display
 						str_legend_split{1}={};
 					end

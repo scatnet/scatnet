@@ -6,3 +6,4 @@ doc/*/*.bbl
 doc/*/*.blg
 *.mat
 *.swp
+*.png
