@@ -183,7 +183,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 			y_Psi.signal{p} = ...
 				sub_conv_1d_along_third_dim_simple(y_psi_f, phi_angle, 0);
 			y_Psi.meta.j2(p) = j2;
-			y_Psi.meta.theta2(p) = -1;
+			y_Psi.meta.theta2(p) = theta2;
 			y_Psi.meta.k2(p) = -1;
 			p = p+1;
 			

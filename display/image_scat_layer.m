@@ -129,10 +129,10 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 			
 		end
 		
-		% renormalize
-		m = min(big_img(:));
-		M = max(big_img(:));
-		big_img =  (big_img-m)/(M-m);
+		% compute min and max for future renormalization of legend
+		img_min = min(big_img(:));
+		img_max = max(big_img(:));
+		%big_img =  (big_img-m)/(M-m);
 		
 		
 		% last pass for legend
@@ -170,6 +170,8 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 						str = str_legend_split{jl};
 						
 						imstr = str2imfast(str);
+						% renormalize imstr
+						imstr = img_min + (img_max-img_min)*imstr;
 						[n,m] = size(imstr);
 						
 						y_min =   n*(jl-1) + 1 +  curr_y;
