@@ -1,7 +1,7 @@
 function filters = meyer_filter_bank_1d_16()
 	
 	N = 16;
-	filters.phi.filter = [1,zeros(1,N-1)];
+	filters.phi.filter = [1,1/sqrt(2),zeros(1,N-3),1/sqrt(2)];
 	filters.psi.filter{3} = sqrt(2)*...
 		[0,1/sqrt(2),1,1/sqrt(2), zeros(1,N-4) ];
 	filters.psi.filter{2} = sqrt(2)*...
