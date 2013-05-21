@@ -212,7 +212,10 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 end
 
 function z_conv_filter = sub_conv_1d_along_third_dim_simple(zf, filter, ds)
-	filter_rs = repmat(reshape(filter.coefft{1},[1,1,numel(filter.coefft{1})]),...
+	if (isstruct(filter))
+		filter = filter.coefft{1};
+	end
+	filter_rs = repmat(reshape(filter,[1,1,numel(filter)]),...
 		[size(zf,1),size(zf,2),1]);
 	z_conv_filter = ifft(zf.* filter_rs,[],3);
 	if (ds>0) % optimization
