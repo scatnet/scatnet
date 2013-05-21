@@ -2,7 +2,7 @@
 % of roto-translation scattering
 
 x = lena;
-x = x(1:256, 1:256);
+x = x(128:128+255, 128:128+255);
 
 options.null = 1;
 options.antialiasing = 10;
@@ -40,7 +40,6 @@ norm_per_path = squeeze(sqrt(sum(sum((S_format-S_format_rot_back).^2,1),2)));
 
 %%
 for p = 1:209
-	
 	imagesc([S_format(:,:,p),S_format_rot_back(:,:,p)])
 	pause(0.1);
 end

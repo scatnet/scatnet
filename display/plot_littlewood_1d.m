@@ -9,8 +9,11 @@ function [] = plot_littlewood_1d( filters )
 		else
 			litllewood = litllewood + psi_squared;
 		end
+		psi_squared_flip(1) = psi_squared(1);
+		psi_squared_flip(2:numel(psi_squared)) = psi_squared(end:-1:2);
+		litllewood = litllewood + psi_squared_flip;
 	end
-	phi = filters.phi.filter.coefft{1};
+	phi = realize_filter(filters.phi.filter);
 	phi_squared = abs(phi).^2;
 	litllewood = litllewood + phi_squared;
 	plot(phi_squared, 'Color', [0, 0.8, 0]);
