@@ -38,7 +38,7 @@ for k=1:R
     f1 = f1 /sqrt(sum(f1.^2));
     f1=f1';
     
-    Scat1=multi_J_Scatter(f1,fparam,options,Jmax);
+    Scat1=multi_J_scatter(f1,fparam,options,Jmax);
     
     Scat1=Scat1';
     A1(k,1:C,1:(D)) = Scat1(:,:);
