@@ -28,7 +28,7 @@ imagesc(x);
 
 %% define scattering options
 options.antialiasing = 10;
-options.J = 6;
+options.J = 4;
 
 %% translation scattering
 tic;
@@ -47,7 +47,8 @@ toc;
 options.null = 1;
 options_rot.meyer_rot = 1;
 tic;
-W_rt_meyer = wavelet_factory_3d(size(x), options, options_rot);
+[W_rt_meyer,f2, f3] = wavelet_factory_3d(size(x), options, options_rot);
+
 S_rt_meyer = scat(x, W_rt_meyer);
 toc;
 
@@ -68,6 +69,12 @@ S_trans_l1 = sum(abs(S_trans_f(:)))
 S_rt_l1 = sum(abs(S_rt_f(:)))
 S_rt_meyer_l1 = sum(abs(S_rt_meyer_f(:)))
 
+
+%% order 3 only
+So3_rt = cell2mat(S_rt{3}.signal);
+So3_rt_meyer = cell2mat(S_rt_meyer{3}.signal);
+
+
 %% histogram of log values
 clf;
 subplot(311);
@@ -81,9 +88,43 @@ hist(log(S_rt_meyer_f(:)+0.0001),100);
 clf;
 subplot(121);
 imagesc([image_scat_layer(S_trans{3},0,0)]);
+
+
+var_y{1}.name = 'j';
+var_y{1}.index = 1;
+var_y{2}.name = 'j';
+var_y{2}.index = 2;
+
+var_x{1}.name = 'theta';
+var_x{1}.index = 1;
+var_x{2}.name = 'theta';
+var_x{2}.index = 2;
+tmp0=image_scat_layer_order(S_trans{3},var_x,var_y,0);
+imagesc(tmp0)
+immac(tmp0)
+
+%%
+
 subplot(122);
 %imagesc([image_scat_layer(S_rt{3},1,0),image_scat_layer(S_rt_meyer{3},0,0)]);
 
-imagesc([image_scat_layer(S_rt{3},0,1),image_scat_layer(S_rt_meyer{3},0,1)]);
+imagesc([image_scat_layer(S_rt{3},0,0),image_scat_layer(S_rt_meyer{3},0,0)]);
 
+
+var_y{1}.name = 'j';
+var_y{1}.index = 1;
+var_y{2}.name = 'j';
+var_y{2}.index = 2;
+
+var_x{1}.name = 'k2';
+var_x{1}.index = 1;
+var_x{2}.name = 'theta2';
+var_x{2}.index = 1;
+
+%tmp = [image_scat_layer(S_rt{3},0,0),image_scat_layer(S_rt_meyer{3},0,0)];
+tmp = image_scat_layer_order(S_rt{3},var_x, var_y,0);
+tmp2 = image_scat_layer_order(S_rt_meyer{3},var_x, var_y,0);
+
+%imagesc([tmp, tmp2]);
+immac([tmp; tmp2]);
 %image_scat_layer(S_rt_meyer{3},0,0)]);

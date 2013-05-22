@@ -13,9 +13,14 @@ tic;
 S_rt_meyer = scat(x, W_rt_meyer);
 toc;
 img_s_line = image_scat_layer(S_rt_meyer{3},0,0);
+
+%%
+
+%%
 for radius = 1:N/2
 	%% circle
 	
+	radius = 32;
 	sigma_radius = 1;
 	x = draw_circle([N,N], [N/2, N/2], radius, sigma_radius);
 	imagesc(x);
