@@ -34,7 +34,7 @@ function db = prepare_database(src,feature_fun,opt)
 		tm0 = tic;
 		x = data_read(src.files{k});
 		
-		if isempty(opt.file_normalize)
+		if ~isempty(opt.file_normalize)
 			if opt.file_normalize == 1
 				x = x/sum(abs(x(:)));
 			elseif opt.file_normalize == 2
