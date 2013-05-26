@@ -21,5 +21,9 @@ function [psi_xi,psi_bw,phi_bw] = morlet_freq_1d(filters)
 	% convert (spatial) sigmas to (frequential) bws
 	psi_xi = psi_center;
 	psi_bw = pi/2*sigma0./psi_sigma;
-	phi_bw = pi/2*sigma0./phi_sigma;
+	if ~filters.phi_dirac
+		phi_bw = pi/2*sigma0./phi_sigma;
+	else
+		phi_bw = 2*pi;
+	end
 end

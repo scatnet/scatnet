@@ -45,7 +45,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	end
 	
 	parameter_fields = {'filter_type','Q','B','J','P','xi_psi','sigma_psi', ...
-		'sigma_phi', 'boundary'};
+		'sigma_phi', 'boundary', 'phi_dirac'};
 	
 	% If we are given a two-dimensional size, take first dimension
 	sig_length = sig_length(1);
@@ -77,6 +77,8 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 		'filter_format', 'fourier_truncated');
 	options = fill_struct(options, ...
 		'boundary', 'symm');
+	options = fill_struct(options, ...
+		'phi_dirac', 0);
 	
 	if ~strcmp(options.filter_type,'morlet_1d') && ...
 			~strcmp(options.filter_type,'gabor_1d')
@@ -143,7 +145,12 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	end
 	
 	% Calculate the associated low-pass filter
-	filters.phi.filter = gabor(N, 0, phi_sigma, options.precision);
+	if ~options.phi_dirac
+		filters.phi.filter = gabor(N, 0, phi_sigma, options.precision);
+	else
+		filters.phi.filter = ones(N,1,options.precision);
+	end
+	
 	filters.phi.filter = optimize_filter(filters.phi.filter,1,options);
 	filters.phi.meta.k(1,1) = options.J+options.P;
 end
