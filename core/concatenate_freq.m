@@ -9,9 +9,11 @@ function Y = concatenate_freq(X)
 		return;
 	end
 	
-	[suffixes,temp,assigned] = unique(X.meta.j(2:end,:).','rows');
-	
-	sz_orig = size(X.signal{1});
+	if isfield(X.meta,'fr_j')
+		[temp1,temp2,assigned] = unique([X.meta.fr_j; X.meta.j(2:end,:)].','rows');
+	else
+		[temp1,temp2,assigned] = unique(X.meta.j(2:end,:).','rows');
+	end
 	
 	Y.signal = {};
 	Y.meta = struct();
@@ -21,7 +23,9 @@ function Y = concatenate_freq(X)
 		Y.meta = setfield(Y.meta,field_names{n},zeros(sz(1),0));
 	end
 	
-	for k = 1:size(suffixes,1)
+	for k = 1:max(assigned)
+		sz_orig = size(X.signal{1});
+		
 		ind = find(assigned==k);
 		
 		nsignal = [X.signal{ind}];
