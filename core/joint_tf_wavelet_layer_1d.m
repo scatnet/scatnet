@@ -66,7 +66,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 			
 			if s == 1
 				ds = meta_phi.resolution;
-				ind0 = r0:2^ds:r0+size(Z.signal{p1})-1;
+				ind0 = r0:2^ds:r0+size(Z.signal{p1},1)-1;
 				fr_count = size(Z_phi,1);
 				U_phi.signal{p1} = Z_phi;
 				ind_phi = r_phi:r_phi+fr_count-1;
@@ -74,7 +74,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				U_phi.meta = map_meta(Z.meta,ind0,U_phi.meta,ind_phi);
 				U_phi.meta.fr_resolution(1,ind_phi) = Z.meta.fr_resolution(p1)+ds*ones(1,fr_count);
 			
-				r_phi = r_phi+length(r_phi);
+				r_phi = r_phi+length(ind_phi);
 			else
 				Z_psi = [Z_psi Z_phi];
 				psi_mask = [psi_mask length(Z_psi)];
@@ -99,7 +99,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				p2 = p2+1;
 			end
 			
-			r0 = r0+size(Z.signal{p1});
+			r0 = r0+size(Z.signal{p1},1);
 		end
 	end	
 
