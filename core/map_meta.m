@@ -1,0 +1,26 @@
+function to_meta = map_meta(from_meta,from_ind,to_meta,to_ind,except)
+	if nargin < 5
+		except = {};
+	end
+	
+	field_names = fieldnames(from_meta);
+	
+	for k = 1:length(field_names)
+		if any(strcmp(field_names{k},except))
+			continue;
+		end
+		from_value = getfield(from_meta,field_names{k});
+		if isfield(to_meta,field_names{k})
+			to_value = getfield(to_meta,field_names{k});
+		else
+			to_value = zeros(size(from_value,1),0);
+		end
+		%if all(size(to_value)==[0 0])
+		%	to_value = zeros(0,length(from_ind));
+		%else
+			to_value(:,to_ind) = repmat(from_value(:,from_ind), ...
+				[1 length(to_ind)/length(from_ind)]);
+		%end
+		to_meta = setfield(to_meta,field_names{k},to_value);
+	end
+end
