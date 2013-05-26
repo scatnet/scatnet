@@ -1,10 +1,34 @@
 % wavelet_3d : Compute the wavelet transform of a roto-translation orbit
 %
 % Usage
-%	[x_phi, x_psi] = wavelet_3d(x, filters, filters_rot)
-function [y_Phi, y_psi] = wavelet_3d(y, filters, filters_rot, options)
+%	[y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
+%		compute the roto-translation convolution of a three dimensional
+%		signal y, with roto-translation wavelets defined as the separable product
+%		low pass :
+%		PHI(U,V) * PHI(THETA)
+%		high pass :
+%		PHI(U,V) * PHI(THETA)
+%		PSI(U,V) * PHI(THETA)
+%		PSI(U,V) * PSI(THETA)
+%
+% Ref
+%	Rotation, Scaling and Deformation Invariant Scattering for Texture
+%	Discrimination, Laurent Sifre, Stephane Mallat
+%	Proc of CVPR 2013
+%	http://www.cmapx.polytechnique.fr/~sifre/research/cvpr_13_sifre_mallat_final.pdf
+
+function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
+	if (nargin<4)
+		options = struct();
+	end
 	
-	nb_angle = filters_rot.meta.N;
+	precision_4byte = getoptions(options, 'precision_4byte', 1);
+	
+	calculate_psi = (nargout>=2); % do not compute any convolution
+	% with high pass
+	
+	nb_angle = filters_rot.N;
+	L = nb_angle/2;
 	nb_angle_in = size(y,3);
 	y_half_angle = nb_angle_in == nb_angle/2;
 	% if only half of the signal is input, the roto-translation
@@ -22,68 +46,204 @@ function [y_Phi, y_psi] = wavelet_3d(y, filters, filters_rot, options)
 	end
 	
 	v = filters.meta.v;
+	J = filters.meta.J;
 	
 	% option retrieving
 	antialiasing = getoptions(options, 'antialiasing', 1);
+	antialiasing_rot = getoptions(options, 'antialiasing_rot', -1);
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 	
 	% precomputation
 	lastres = log2(filters.meta.size_in(1)/size(y,1));
-	margins = filters.meta.margins / 2^lastres;
 	
 	
-	% mirror padding and fft
-	yf = zeros(size(y));
-	for theta = 1:nb_angle_in
-		yf(:,:,theta) = fft2(pad_mirror_2d(y(:,:,theta), margins));
+	
+	
+	
+	% ------- LOW PASS -------
+	% ------- PHI(U,V) * PHI(THETA) -------
+	phi_angle = filters_rot.phi.filter;
+	ds_angle = max(filters_rot.J/filters_rot.Q - antialiasing_rot, 0);
+	if (~calculate_psi && 2^ds_angle == size(y,3))
+		% if there is one coefft left along angle, compute the sum
+		% along angle first is more efficient
+		
+		% low pass angle
+		y_phi_angle =  sum(y, 3) / 2^(ds_angle/2);
+		% low pass spatial
+		ds = max(floor(J/v)- lastres - antialiasing, 0);
+		margins = filters.meta.margins / 2^lastres;
+		tmp = fft2(pad_mirror_2d(y_phi_angle, margins));
+		margins = filters.meta.margins / 2^(lastres+ds);
+		y_Phi.signal{1} = real(conv_sub_unpad_2d(tmp, filters.phi.filter, ds, margins));
+		y_Phi.meta.J(1) = filters.phi.meta.J;
+		
+	else
+		% spatial mirror padding and fft
+		margins = filters.meta.margins / 2^lastres;
+		for theta = 1:nb_angle_in
+			tmp = fft2(pad_mirror_2d(y(:,:,theta), margins));
+			if (theta==1) % prealocate when we know the size
+				yf = zeros([size(tmp), nb_angle_in]);
+			end
+			yf(:,:,theta) = tmp;
+		end
+		
+		% low pass spatial (filter along first two dimension)
+		for theta = 1:nb_angle_in
+			ds = max(floor(J/v)- lastres - antialiasing, 0);
+			margins = filters.meta.margins / 2^(lastres+ds);
+			tmp = ...
+				real(conv_sub_unpad_2d(yf(:,:,theta), filters.phi.filter, ds, margins));
+			if (theta == 1) % prealocate when we know the size
+				y_phi = zeros([size(tmp), nb_angle_in]);
+			end
+			y_phi(:,:,theta) = tmp;
+		end
+		
+		if (y_half_angle) % recopy thanks to (PROPERTY_1)
+			y_phi = cat(3, y_phi, y_phi) / sqrt(2); % for energy preservation
+		end
+		
+		% low pass angle 
+		phi_angle = filters_rot.phi.filter;
+		ds = max(filters_rot.J/filters_rot.Q - antialiasing_rot, 0);
+		if (2^ds == size(y_phi,3)) % if there is one coefft left, compute the sum
+			% is faster than convolving with a constant filter
+			y_Phi.signal{1} = sum(y_phi,3) / 2^(ds/2);
+		else
+			% fourier angle
+			y_phi_f = fft(y_phi, [], 3);
+			y_Phi.signal{1} = real(...
+				sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
+		end
+		y_Phi.meta.J(1) = filters.phi.meta.J;
 	end
 	
-	% low pass spatial (filter along first two dimension)
-	y_phi = zeros(size(y));
-	for theta = 1:nb_angle_in
-		y_phi(:,:,theta) = ...
-			conv_sub_unpad_2d(yf(:,:,theta), filters.phi);
+	if (calculate_psi)
+		% ------- HIGH PASS -------
+		p = 1;
+		
+		% high pass angle to obtain
+		% ------- PHI(U,V) * PSI(THETA) -------
+		if ~exist('y_phi_f', 'var')
+			% fourier angle
+			y_phi_f = fft(y_phi, [], 3);
+		end
+		for k2 = 0:numel(filters_rot.psi.filter)-1
+			psi_angle = filters_rot.psi.filter{k2+1};
+			y_Psi.signal{p} = ...
+				sub_conv_1d_along_third_dim_simple(y_phi_f, psi_angle, 0);
+			y_Psi.meta.theta2(p) = 0;
+			y_Psi.meta.j2(p) = filters.phi.meta.J;
+			y_Psi.meta.k2(p) = k2;
+			p = p + 1;
+		end
+		
+		
+		for lambda2 = find(psi_mask)
+			theta2 = filters.psi.meta.theta(lambda2);
+			j2 = filters.psi.meta.j(lambda2);
+			ds = max(floor(j2/v)- lastres - antialiasing, 0);
+			
+			% convolution with psi_{j1, theta + theta2}
+			for theta = 1:nb_angle_in
+				theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
+				theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
+				lambda2p1 = find(filters.psi.meta.theta == theta_sum_modL & ...
+					filters.psi.meta.j == j2);
+				psi = filters.psi.filter{lambda2p1};
+				margins = filters.meta.margins / 2^(lastres+ds);
+				tmp = ...
+					conv_sub_unpad_2d(yf(:,:,theta), psi, ds, margins);
+				
+				if (theta == 1) % prealocate when we know the size
+					y_psi = zeros([size(tmp), nb_angle_in]);
+				end
+				
+				% use PROPERTY_1 to compute convolution with filters that
+				% have an angle > pi
+				if (theta_sum_mod2L <= L)
+					y_psi(:,:, theta)  = tmp;
+				else
+					y_psi(:,:, theta) = conj(tmp);
+				end
+			end
+			
+			if (y_half_angle) % thanks to PROPERTY_1
+				y_psi = cat(3, y_psi, conj(y_psi)) / sqrt(2); % for energy preservation
+			end
+			
+			% fourier angle
+			y_psi_f = fft(y_psi,[],3);
+			
+			% low pass angle to obtain
+			% ------- PSI(U,V) * PHI(THETA) -------
+			phi_angle = filters_rot.phi.filter;
+			y_Psi.signal{p} = ...
+				sub_conv_1d_along_third_dim_simple(y_psi_f, phi_angle, 0);
+			y_Psi.meta.j2(p) = j2;
+			y_Psi.meta.theta2(p) = theta2;
+			y_Psi.meta.k2(p) = -1;
+			p = p+1;
+			
+			% high pass angle to obtain
+			% ------- PSI(U,V) * PSI(THETA) -------
+			for k2 = 0:numel(filters_rot.psi.filter)-1
+				psi_angle = filters_rot.psi.filter{k2+1};
+				y_Psi.signal{p} = ...
+					sub_conv_1d_along_third_dim_simple(y_psi_f, psi_angle, 0);
+				y_Psi.meta.theta2(p) = theta2;
+				y_Psi.meta.j2(p) = j2;
+				y_Psi.meta.k2(p) = k2;
+				p = p + 1;
+			end
+		end
 	end
 	
-	if (y_half_angle) % recopy thanks to (PROPERTY_1)
-		y_phi = cat(3, y_phi, y_phi);
+	% convert into single precision float 
+	if(precision_4byte)
+		y_Phi.signal = cellfun(@single, y_Phi.signal, 'UniformOutput', 0);
+		if (calculate_psi)
+			y_Psi.signal = cellfun(@single, y_Psi.signal, 'UniformOutput', 0);
+		end
 	end
 	
-	% low pass angle (filter along third dimension)
-	% reformat in matrix so that dim 3->1 and 1,2->2
-	N = size(y_phi, 1);
-	M = size(y_phi, 2);
-	y_phi = permute( y_phi, [3, 1 ,2]);
-	y_phi = reshape( y_phi, nb_angle, N*M);
-	% filter along dim 1
-	ds = 2^filters_rot.J;
-	y_Phi = conv_sub_1d( y_phi, filters_rot.phi.filter, ds);
-	% reformat in original 
-	y_Phi = reshape( y_Phi, size(y_Phi,1), N, M);
-	y_Phi = permute( y_Phi, [2, 3, 1]);
-	
-	
+end
+
+function z_conv_filter = sub_conv_1d_along_third_dim_simple(zf, filter, ds)
+	if (isstruct(filter))
+		filter = filter.coefft{1};
+	end
+	filter_rs = repmat(reshape(filter,[1,1,numel(filter)]),...
+		[size(zf,1),size(zf,2),1]);
+	z_conv_filter = ifft(zf.* filter_rs,[],3);
+	if (ds>0) % optimization
+		z_conv_filter = 2^(ds/2)*z_conv_filter(:,:,1:2^ds:end);
+	end
 end
 
 
 
 
+% slower than sub_conv_1d_along_third_dim_simple because of reshape and
+% sum overhead
+% function z_conv_filter = sub_conv_1d_along_third_dim(zf, filter, ds)
+% 	N = size(zf, 1);
+% 	M = size(zf, 2);
+% 	nb_angle = size(zf, 3);
+% 	% reformat z to be compatible with conv_sub_1d
+% 	% where filtering is along dimension 1
+% 	zf = permute( zf, [3, 1 ,2]);
+% 	zf = reshape( zf, nb_angle, N*M);
+%
+% 	z_conv_filter = conv_sub_1d( zf, filter, ds);
+% 	nb_angle_ds = size(z_conv_filter, 1);
+% 	% reformat in original format
+% 	z_conv_filter = reshape( z_conv_filter, nb_angle_ds, N, M);
+% 	z_conv_filter = permute( z_conv_filter, [2, 3, 1]);
+% end
 
 
 
 
-
-% low pass filter Phi Phi
-% low pass spatial
-for theta = 1:step_angle:nb_angle
-	xf2d = xf(:,:,theta);
-	filter = filters.phi;
-	ds = max(floor(J/v)- lastres - antialiasing, 0);
-	x_conv_phi(:,:,theta) = conv_sub_unpad_2d(xf(:,:,theta));
-end
-% low pass angle
-phi_rot = repmat(
-x_conv_Phi = ifft(x_conv_phi .* repm
-
-
-end

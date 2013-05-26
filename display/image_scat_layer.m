@@ -1,11 +1,41 @@
 % image_scat_layer : return scattering outputs images next to each other
 %
-% Usage:
+% Usage
 %	image_scat_layer(S{3}) return all the images of the third layer
 %	of scattering S embeded next to each other in a large image
 %	with their meta in the upper left hand corner
+%	
+% Input
+%	Scatt : <struct> a layer of a scattering (either U or S)
+%	renorm : <1x1 int> [default = 1] if 1 renormalize each path by its max
+%	dsp_legend <1x1 int> [default = 1] if 1 display legend
+%
+% Output
+%	big_img : <?x? double> a large image where all path are concatenated
 
 function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
+	if (numel(size(Scatt.signal{1})) == 3)
+		p2 = 1;
+		for p = 1:numel(Scatt.signal)
+			for theta = 1:size(Scatt.signal{1},3)
+				ScattBis.signal{p2} = Scatt.signal{p}(:,:,theta);
+				ScattBis.meta.j(:,p2) = Scatt.meta.j(:,p);
+				ScattBis.meta.theta2(:,p2) = Scatt.meta.theta2(:,p);
+				ScattBis.meta.theta(:,p2) = theta;
+				ScattBis.meta.k2(:,p2) = Scatt.meta.k2(:,p);
+				p2 = p2 + 1;
+			end
+		end
+		
+		if ~exist('renorm','var');
+			renorm  = 1;
+		end
+		if ~exist('dsp_legend','var');
+			dsp_legend  = 1
+		end
+		big_img = image_scat_layer(ScattBis, renorm, dsp_legend);
+		return
+	end
 	if ~exist('renorm','var');
 		renorm  = 1;
 	end
@@ -99,10 +129,10 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 			
 		end
 		
-		% renormalize
-		m = min(big_img(:));
-		M = max(big_img(:));
-		big_img =  (big_img-m)/(M-m);
+		% compute min and max for future renormalization of legend
+		img_min = min(big_img(:));
+		img_max = max(big_img(:));
+		%big_img =  (big_img-m)/(M-m);
 		
 		
 		% last pass for legend
@@ -120,10 +150,14 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 						curr_y = curr_y + size(curr_sig,1);
 					end
 					
-					try
+					if (isstruct(Scatt) && isfield(Scatt,'meta'))
 						str_legend = meta2str(Scatt.meta,p);
-						str_legend_split = textscan(str_legend,'%s','delimiter',' ');
-					catch %% error means no meta to display
+						if (numel(str_legend)>0)
+							str_legend_split = textscan(str_legend,'%s','delimiter',' ');
+						else
+							str_legend_split{1} ={};
+						end
+					else % no meta to display
 						str_legend_split{1}={};
 					end
 					if (dsp_legend ==0)
@@ -136,6 +170,8 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 						str = str_legend_split{jl};
 						
 						imstr = str2imfast(str);
+						% renormalize imstr
+						imstr = img_min + (img_max-img_min)*imstr;
 						[n,m] = size(imstr);
 						
 						y_min =   n*(jl-1) + 1 +  curr_y;
