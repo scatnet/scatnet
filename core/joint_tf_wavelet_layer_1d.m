@@ -56,7 +56,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 		
 		for p1 = 1:length(Z.signal)
 			% actually use fr_bw to calc psi_mask etc.
-			psi_mask = find(calc_U&true(size(filters{1}.psi.filter)));
+			psi_mask = calc_U&true(size(filters{1}.psi.filter));
 		
 			options.x_resolution = Z.meta.fr_resolution(p1);
 			options.psi_mask = psi_mask;
@@ -77,11 +77,11 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				r_phi = r_phi+length(ind_phi);
 			else
 				Z_psi = [Z_psi Z_phi];
-				psi_mask = [psi_mask length(Z_psi)];
+				psi_mask = [psi_mask true];
 				meta_psi = map_meta(meta_phi,1,meta_psi,length(Z_psi));
 			end
 		
-			for k = psi_mask
+			for k = find(psi_mask)
 				U_psi.signal{p2} = Z_psi{k};
 				ds = meta_psi.resolution(k);
 				ind0 = r0:2^ds:r0+size(Z.signal{p1},1)-1;
