@@ -20,6 +20,8 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	options = fill_struct(options, ...
 		'psi_mask', true(1, numel(filters.psi.filter)));
 	options = fill_struct(options, 'x_resolution',0);
+	options = fill_struct(options, 'phi_renormalize',0);
+	options = fill_struct(options, 'renormalize_epsilon',2^(-20));
 	
 	N = size(x,1);
 	
@@ -45,6 +47,12 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	meta_phi.j = -1;
 	meta_phi.bandwidth = phi_bw;
 	meta_phi.resolution = ds;
+	
+	if options.phi_renormalize
+		x_renorm = real(conv_sub_1d(xf, filters.phi.filter, 0));
+		x = x./(x_renorm+options.renormalize_epsilon*2^(j0/2));
+		xf = fft(x,[],1);
+	end
 	
 	x_psi = cell(1, numel(filters.psi.filter));
 	meta_psi.j = -1*ones(1, numel(filters.psi.filter));
