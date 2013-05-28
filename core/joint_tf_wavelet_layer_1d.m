@@ -58,11 +58,13 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 			% actually use fr_bw to calc psi_mask etc.
 			psi_mask = calc_U&true(size(filters{1}.psi.filter));
 		
-			options.x_resolution = Z.meta.fr_resolution(p1);
-			options.psi_mask = psi_mask;
-		
+			options1 = options;
+			options1.x_resolution = Z.meta.fr_resolution(p1);
+			options1.psi_mask = psi_mask;
+			options1.phi_renormalize = 0;
+
 			[Z_phi, Z_psi, meta_phi, meta_psi] = ...
-				wavelet_1d(Z.signal{p1}, filters{1}, options);
+				wavelet_1d(Z.signal{p1}, filters{1}, options1);
 			
 			if s == 1
 				ds = meta_phi.resolution;
