@@ -1,9 +1,13 @@
-function Y = concatenate_freq(X)
+function Y = concatenate_freq(X,fmt)
+	if nargin < 2
+		fmt = 'table';
+	end
+	
 	if iscell(X)
 		Y = {};
 	
 		for m = 0:length(X)-1
-			Y{m+1} = concatenate_freq(X{m+1});
+			Y{m+1} = concatenate_freq(X{m+1},fmt);
 		end
 		
 		return;
@@ -28,11 +32,15 @@ function Y = concatenate_freq(X)
 		
 		ind = find(assigned==k);
 		
-		nsignal = [X.signal{ind}];
-		
-		% need to extract the signal index dimension (2nd here)
-		nsignal = reshape(nsignal,[size(nsignal,1) sz_orig(2) length(ind)]);
-		nsignal = permute(nsignal,[3 1 2]);
+		if strcmp(fmt,'table')
+			nsignal = [X.signal{ind}];
+			
+			% need to extract the signal index dimension (2nd here)
+			nsignal = reshape(nsignal,[size(nsignal,1) sz_orig(2) length(ind)]);
+			nsignal = permute(nsignal,[3 1 2]);
+		else
+			nsignal = X.signal(ind);
+		end
 		
 		Y.signal{k} = nsignal;
 		

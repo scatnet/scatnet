@@ -14,16 +14,24 @@ function Z = separate_freq(Y)
 
 	r = 1;
 	for k = 1:length(Y.signal)
-		% because matlab is stupid and ignores last dim if 1
-		sz_orig = size(Y.signal{k});
-		if numel(sz_orig) == 2
-			sz_orig(3) = 1;
-		end
+		if ~iscell(Y.signal{k})
+			% because matlab is stupid and ignores last dim if 1
+			sz_orig = size(Y.signal{k});
+			if numel(sz_orig) == 2
+				sz_orig(3) = 1;
+			end
+		else
+			sz_orig = [length(Y.signal{k}) 0 size(Y.signal{k}{1},2)];
+		end	
+		
+		for l = 1:sz_orig(1)
+			if ~iscell(Y.signal{k})
+				nsignal = Y.signal{k}(l,:);
+			else
+				nsignal = Y.signal{k}{l};
+			end
 
-		for l = 1:size(Y.signal{k},1)
-			nsignal = Y.signal{k}(l,:);
-
-			nsignal = reshape(nsignal,[sz_orig(2) sz_orig(3)]);
+			nsignal = reshape(nsignal,[numel(nsignal)/sz_orig(3) sz_orig(3)]);
 
 			Z.signal{r} = nsignal;
 
