@@ -6,6 +6,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 	calc_U = (nargout>=2);
 	
 	options = fill_struct(options,'time_renormalize',0);
+	options = fill_struct(options,'time_renormalize_epsilon',2^(-20));
 	
 	if ~isfield(U.meta, 'bandwidth'), U.meta.bandwidth = 2*pi; end
 	if ~isfield(U.meta, 'resolution'), U.meta.resolution = 0; end
@@ -40,7 +41,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				options1.phi_renormalize = 0;
 				options1.antialiasing = 100;
 				nsignal_phi = wavelet_1d(nsignal, filters{1}, options1);
-				nsignal = nsignal./nsignal_phi;
+				nsignal = nsignal./(nsignal_phi+options.time_renormalize_epsilon);
 				for r = 1:length(valid)
 					res1 = Up.meta.resolution(ind0(valid(r)));
 					mask1 = ((mask-1)/2^res1+1);
