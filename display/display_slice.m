@@ -1,4 +1,4 @@
-function display_scatt_slice(S,t,scale,options)
+function [sc1, sc2] = display_slice(S,t,scale,options)
 	if nargin < 2
 		t = [];
 	end
@@ -22,15 +22,15 @@ function display_scatt_slice(S,t,scale,options)
 		mask1 = true(size(S{m0+2}.signal));
 		mask2 = true(size(S{m0+3}.signal));
 	else
-		mask1 = all(bsxfun(@eq,S{m0+2}.meta.scale(:,1:m0),scale),2);
-		mask2 = all(bsxfun(@eq,S{m0+3}.meta.scale(:,1:m0),scale),2);
+		mask1 = all(bsxfun(@eq,S{m0+2}.meta.j(1:m0,:),scale),1);
+		mask2 = all(bsxfun(@eq,S{m0+3}.meta.j(1:m0,:),scale),1);
 	end
 	
 	% Get min and max scales to make sure images line up
-	min_scale1 = min(S{m0+2}.meta.scale(mask1,m0+1));
-	min_scale2 = min(S{m0+3}.meta.scale(mask2,m0+2));
-	max_scale1 = max(S{m0+2}.meta.scale(mask1,m0+1));
-	max_scale2 = max(S{m0+3}.meta.scale(mask2,m0+2));
+	min_scale1 = min(S{m0+2}.meta.j(m0+1,mask1));
+	min_scale2 = min(S{m0+3}.meta.j(m0+2,mask2));
+	max_scale1 = max(S{m0+2}.meta.j(m0+1,mask1));
+	max_scale2 = max(S{m0+3}.meta.j(m0+2,mask2));
 	
 	sc1 = [S{m0+2}.signal{:}].';
 	sc2 = [S{m0+3}.signal{:}].';
@@ -50,8 +50,8 @@ function display_scatt_slice(S,t,scale,options)
 	
 	sc2_matrix = -Inf*ones(max_scale1-min_scale1+1,max_scale2-min_scale2+1);
 	matrix_ind = sub2ind(size(sc2_matrix), ...
-		S{m0+3}.meta.scale(mask2,m0+1)-min_scale1+1, ...
-		S{m0+3}.meta.scale(mask2,m0+2)-min_scale2+1);
+		S{m0+3}.meta.j(m0+1,mask2)-min_scale1+1, ...
+		S{m0+3}.meta.j(m0+2,mask2)-min_scale2+1);
 	sc2_matrix(matrix_ind) = sc2;
 	subplot(1,8,2:8);
 	imagesc(sc2_matrix,clim);
@@ -61,4 +61,6 @@ function display_scatt_slice(S,t,scale,options)
 	set(gca,'XDir','reverse');
 	xlabel(sprintf('\\omega_%d',m0+2));
 	title(sprintf('m=%d',m0+2));
+	
+	sc2 = sc2_matrix;
 end
