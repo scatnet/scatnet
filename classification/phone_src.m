@@ -16,8 +16,6 @@
 %    [1] K.F. Lee and H-W. Hon, "Speaker-Independent Phone Recognition Using 
 %       Hidden Markov Models," IEEE TASSP 1989
 
-
-
 function src = phone_src(directory)
 	if nargin < 1
 		directory = 'timit';

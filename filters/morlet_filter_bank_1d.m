@@ -1,51 +1,43 @@
-%TODO redo doc
-%MORLET_FILTER_BANK Calculates a Morlet/Gabor filter bank
-%   filters = morlet_filter_bank(sig_length,options) generates a Morlet or
-%   Gabor filter bank for signals of length sig_length using parameters
-%   contained in options. If the number of wavelets per octave specified
-%   exceeds 1, the convential (logarithimically spaced, constant-Q) wavelets
-%   will be supplemented by linarly spaced, contant-bandwidth filters in
-%   the low frequencies in order to adequately cover the frequency domain
-%   without increasing the temporal support of the filters.
+% morlet_filter_bank_1d: Creates a Morlet/Gabor filter bank.
+% Usage
+%    filters = morlet_filter_bank_1d(sz, options)
+% Input
+%    sz: The size of the input data.
+%    options (optional): Filter parameters.
+% Output
+%    filters: The Morlet/Gabor filter bank corresponding to the data size sz
+%       and the filter parameters in options.
+% Description
+%    Depending on the value of options.filter_type, the functions either
+%    creates a Morlet filter bank (for filter_type 'morlet_1d') or a Gabor
+%    filter bank (for filter_type 'gabor_1d'). The former is obtained from 
+%    the latter by, for each filter, subtracting a constant times its enve-
+%    lopes uch that the mean of the resulting function is zero.
 %
-%   The following options can be specified:
-%      options.Q - The number of wavelets per octave at critical sampling in
-%         frequency. [Default 1]
-%      options.a - The dilation factor between adjacent wavelets. The factor
-%         2^(1/Q) corresponds to critical sampling. More redundant frequency
-%         sampling can be obtained by decreasing a. [Default 2^(1/Q)]
-%      options.J - The number of logarithmically spaced wavelets. This
-%         controls the minimum frequency bandwidth of the wavelets and
-%         consequently the maximum temporal bandwidth. For a filter bank
-%         with parameters Q, a, J, the maximum temporal bandwidth is Q*a^J.
-%         [Default log(sig_length/Q)/log(a)]
-%      options.gabor - If 0, Morlet wavelets are used, whereas if 1, Gabor
-%         filters are used. Since the former have a vanishing moment, they are
-%         highly recommended. For audio signals, however, energy at very low
-%         frequencies is often small, so Gabor filters can be used in the
-%         first-order filter bank. [Default 0]
-%      options.precision - The precision, 'double' or 'single', used to define
-%         the filters. [Default 'double']
-%      options.optimize - The optimization technique used to store the
-%         filters. If set to 'none', filters are stored using their full
-%         Fourier transform. If 'periodize', filters are periodized to create
-%         Fourier transform at lower resolutions. Finally, if 'truncate',
-%         the Fourier transform of the filter is truncated and its support is
-%         stored. [Default 'truncate']
-%
-%   The output, a structure, contains the wavelet filters (psi) in a cell
-%   array and lowpass filter (phi). Each filter is stored according to the
-%   optimization technique specified in options.optimize. In addition, the
-%   parameters used to define filters are stored, as well as information on
-%   the center and bandwidth of each filter.
+%    The following parameters can be specified in options:
+%       options.filter_type: See above (default 'morlet_1d').
+%       options.Q: The number of wavelets per octave (default 1).
+%       options.B: The per-octave bandwidth of the wavelets (default Q).
+%       options.J: The number of logarithmically spaced wavelets. For Q=1, 
+%          this corresponds to the total number of wavelets since there are no 
+%          linearly spaced ones. Together with Q, this controls the maximum 
+%          extent the mother wavelet is dilated to obtain the rest of the
+%          filter bank. Specifically, the largest filter has a bandwidth
+%          2^(J/Q) times that of the mother wavelet (default 
+%          T_to_J(sz, options)).
+%       options.phi_bw_multiplier: The ratio between the bandwidth of the 
+%          lowpass filter phi and the lowest-frequency wavelet (default 2 if
+%          Q = 1, otherwise 1).
+%       options.boundary, options.precision, and options.filter_format: 
+%          See documentation for filter_bank function.
 
 function filters = morlet_filter_bank_1d(sig_length,options)
 	if nargin < 2
 		options = struct();
 	end
 	
-	parameter_fields = {'filter_type','Q','B','J','P','xi_psi','sigma_psi', ...
-		'sigma_phi', 'boundary', 'phi_dirac'};
+	parameter_fields = {'filter_type','Q','B','J','P','xi_psi', ...
+		'sigma_psi', 'sigma_phi', 'boundary', 'phi_dirac'};
 	
 	% If we are given a two-dimensional size, take first dimension
 	sig_length = sig_length(1);
@@ -68,7 +60,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	options = fill_struct(options, ...
 		'sigma_phi', options.sigma_psi/options.phi_bw_multiplier);
 	options = fill_struct(options, ...
-		'J', floor(log2(sig_length/(options.sigma_psi/sigma0))*options.Q));
+		'J', T_to_J(sig_length, options));
 	options = fill_struct(options, ...
 		'P', round(2^(-1/options.Q)/(1-2^(-1/options.Q))-1/2*options.sigma_phi/(1/2*sigma0/(1-2^(-1/options.Q)))));
 	options = fill_struct(options, ...
