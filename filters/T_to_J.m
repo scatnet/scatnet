@@ -1,8 +1,16 @@
-%TODO redo doc
-%T_TO_J Calculates the maximal wavelet scale for a filter bank
-%   J = T_to_J(T,Q,a) calculates the closest integer J corresponding to T
-%   gives Q, a such that T = Q*a^J. By default a = 2^(1/Q) if Q is specified,
-%   otherwise Q = 1, a = 2.
+% T_to_J: Calculates the maximal wavelet scale J from T
+% Usage
+%    J = T_to_J(T, options)
+% Input
+%    T: A time interval T.
+%    options: A structure containing the parameters of a filter bank.
+% Output
+%    J: The maximal wavelet scale J such that, for a filter bank created with
+%       the parameters in options and this J, the largest wavelet is of band-
+%       width approximately T.
+% Description
+%    J is calculated using the formula T = 4B/phi_bw_multiplier*2^((J-1)/Q), 
+%    where B, phi_bw_multiplier and Q are taken from the options structure.
 
 function J = T_to_J(T, Q, B, phi_bw_multiplier)
 	if nargin < 2 || isempty(Q)
@@ -15,6 +23,14 @@ function J = T_to_J(T, Q, B, phi_bw_multiplier)
 	
 	if nargin < 4 || isempty(phi_bw_multiplier)
 		phi_bw_multiplier = 1+(Q==1);
+	end
+	
+	if isstruct(Q)
+		options = Q;
+		
+		Q = options.Q;
+		B = options.B;
+		phi_bw_multiplier = options.phi_bw_multiplier;
 	end
 	
 	J = round(log2(T./(4*B./phi_bw_multiplier)).*Q)+1;
