@@ -1,31 +1,39 @@
-%TODO: redo doc
-%SPLINE_FILTER_BANK Create a filter bank of spline wavelets
-%   filters = spline_filter_bank(sig_length,options) generates a 
-%   spline wavelet (linear,cubic) filterbank for signals of length sig_length 
-%   using parameters contained in options.
+% morlet_filter_bank_1d: Creates a spline wavelet filter bank.
+% Usage
+%    filters = spline_filter_bank_1d(sz, options)
+% Input
+%    sz: The size of the input data.
+%    options (optional): Filter parameters.
+% Output
+%    filters: The spline wavelet filter bank corresponding to the data size sz
+%       and the filter parameters in options.
+% Description
+%    Spline wavelet filters are defined for orders 1 (linera) and 3 (cubic) 
+%    according to formulas in [1], except that the filters are chosen to be
+%    symmetric around 0.
 %
-%   The following options can be specified
-%      options.J - The maximal scale of the filters, giving a maximal temporal
-%         support of 2^(J-1) [default 4]
-%      options.spline_order - If 1, generates linear splines and if 3
-%         generates cubic splines [default 3]
-%      options.precision - The precision, 'double' or 'single', used to define 
-%         the filters. [Default 'double']
-%      options.optimize - The optimization technique used to store the
-%         filters. If set to 'none', filters are stored using their full
-%         Fourier transform. If 'periodize', filters are periodized to create
-%         Fourier transform at lower resolutions. Finally, if 'truncate', 
-%         the Fourier transform of the filter is truncated and its support is
-%         stored. [Default 'truncate']
+%    The following options can be specified:
+%       options.J: The number of filters to generate. This controls the maxi-
+%          mum size of the wavelets according to the formula 2^J (default 
+%          log2(sz))
+%       options.spline_order: Either 1 or 3. The former gives linear spline
+%          wavelets while the latter gives cubic spline wavelets (default 3).
+%       options.boundary, options.precision, and options.filter_format: 
+%          See documentation for filter_bank function.
+% References
+%    [1] S. Mallat, "A wavelet tour of signal processing: the sparse way." 
+%       Academic Press, 2008, pp. 291-292
 
 function filters = spline_filter_bank_1d(sig_length,options)
 	if nargin < 2
 		options = struct();
 	end
 	
+	sig_length = sig_length(1);
+	
 	options = fill_struct(options,'Q',1);
 	options = fill_struct(options,'B',1);
-	options = fill_struct(options,'J',floor(log2(sig_length)*options.Q+1e-6));
+	options = fill_struct(options,'J',round(log2(sig_length)));
 	options = fill_struct(options,'P',0);
 	options = fill_struct(options,'spline_order',3);
 	options = fill_struct(options,'precision','double');
@@ -87,12 +95,12 @@ function filters = spline_filter_bank_1d(sig_length,options)
 		support = 1:N;
 		omega1 = 2^(j1+1)*omega(support);
 		filter_f = zeros(N,1,precision);
-		filter_f(support) = sqrt(2)*exp(-i*omega1/2)./omega1.^(spline_order+1).* ...
+		filter_f(support) = sqrt(2)*1./omega1.^(spline_order+1).* ...
 			sqrt(S(omega1/2+pi)./(S(omega1).*S(omega1/2)));
 
 		% Take care of Inf/Inf
 		ind = N/2^(j1+1)+1:N/2^j1:N;
-		filter_f(ind) = sqrt(2)*exp(-i*omega1(ind)/2)./omega1(ind).^(spline_order+1).* ...
+		filter_f(ind) = sqrt(2)*1./omega1(ind).^(spline_order+1).* ...
 			sqrt(2^(2*spline_order+2)./S(omega1(ind)/2));
 		
 		% Take care of 1/Inf

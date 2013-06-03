@@ -24,7 +24,11 @@ function X = average_scat(X,T,step,window_fun)
 	
 	for m = length(X)-1:-1:0
 		for p1 = 1:length(X{m+1}.signal)
-			res = X{m+1}.meta.resolution(p1);
+			if ~isfield(X{m+1}.meta,'resolution')
+				res = 0;
+			else
+				res = X{m+1}.meta.resolution(p1);
+			end
 			N0 = size(X{m+1}.signal{p1},1);
 			% calculate the T and step at current resolution
 			real_T = T/2^res;

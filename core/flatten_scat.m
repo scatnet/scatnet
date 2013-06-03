@@ -5,9 +5,9 @@
 %    S: A scattering transform.
 % Output
 %    S: The same scattering transform, but flattened into one layer. As a
-%       result, meta fields that have different number of rows are set to
-%
-
+%       result, meta fields from different orders have been concatenated.
+%       Since different orders have different size meta fields, they have been
+%       augmented with -1 where necessary (for example, the field j).
 
 function Y = flatten_scat(X)
 	Y.signal = {};

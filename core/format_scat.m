@@ -1,28 +1,30 @@
-%TODO redo doc
-%FORMAT_SCATT Formats a scattering representation
-%   [out,meta] = format_scat(X,fmt) formats the scattering output X (from
-%   the function scatt, or scatt_time with output set to 'raw') according
-%   to the format specified in fmt. The following formats are allowed:
-%
-%      'raw' - No formatting is done and the original object is returned
-%      'table' - The scattering coefficients are arranged into a 2D table,
-%         with the scattering coefficient index running along the first
-%         dimension and time running along the second dimension. This is only
-%         possible if the scattering coefficients of different orders are of
-%         the same resolution, which is the case when the lowpass filters phi
-%         of the filter banks coincide. The signals are ordered by increasing
-%         order, increasing first scale, increasing second scale, etc. Their
-%         meta-information (order, scale, etc) are stored in the accompanying
-%         meta structure. These correspond to the meta structures of X,
-%         concatenated, and complemented by -1 when no value is available.
-%         In addition, an order field is provided to give the order of the
-%         coefficient. For example, if we have ascattering transform of order 
-%         2, and the coefficient at index k is the first-order coefficient 
-%         with scale j1, it would have meta.order(k) equal to 1 and
-%         meta.scale(k,:) equal to [j1 -1]. Likewise if the kth coefficient is
-%         a second-order coefficient corresponding to scales j1 and j2, it 
-%         would have meta.order(k) equal to 2, and meta.scale(k,:) equal to
-%         [j1 j2].
+% format_scat: Formats a scattering transform
+% Usage
+%    [out, meta] = format_scat(S, fmt)
+% Input
+%    S: The scattering transform to be formatted.
+%    fmt (optional): The desired format. Can be one of 'raw', 'order_table' or
+%       'table' (default 'table').
+% Output
+%    out: The scattering transform in the desired format (see below).
+%    meta: If needed, a meta structure containing the properties of the sig-
+%       nals in out.
+% Description
+%    Three different formats are available for the scattering transform:
+%       'raw': Do nothing, just return S. The meta structure is empty.
+%       'order_table': For each order, create a table of scattering 
+%          coefficients with scattering index running along the first dimen-
+%          sion, time/space along the second, and signal index along the 
+%          third. The out variable is then a cell array of tables, while
+%          the meta variable is a cell array of meta structures, each 
+%          corresponding to the meta structure for the given order. 
+%       'table': Same as 'order_table', but with the tables for each order
+%          concatenated into one table, which is returned as out. Note that
+%          this requires that each order is of the same resolution, that is
+%          that the lowpass filter phi of each filter bank is of the same
+%          bandwidth. The meta variable is one meta structure formed by con-
+%          catenating the meta structure of each order and filling out with
+%          -1 where necessary (the j field, for example).
 
 function [out,meta] = format_scat(X,fmt)
 	if nargin < 2
@@ -64,13 +66,13 @@ function [out,meta] = format_scat(X,fmt)
 				tables{m+1} = [];
 			else
 				tables{m+1} = zeros( ...
-					[size(X{m+1}.signal{1},1), ...
-					size(X{m+1}.signal{1},2), ...
-					length(X{m+1}.signal)], ...
+					[length(X{m+1}.signal), ...
+					size(X{m+1}.signal{1},1), ...
+					size(X{m+1}.signal{1},2)], ...
 					class(X{m+1}.signal{1}));
 				
 				for j1 = 0:length(X{m+1}.signal)-1
-					tables{m+1}(:,:,j1+1) = X{m+1}.signal{j1+1};
+					tables{m+1}(j1+1,:,:) = X{m+1}.signal{j1+1};
 				end
 				
 				last = m;

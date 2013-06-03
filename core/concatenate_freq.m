@@ -1,17 +1,23 @@
-function Y = concatenate_freq(X)
+function Y = concatenate_freq(X,fmt)
+	if nargin < 2
+		fmt = 'table';
+	end
+	
 	if iscell(X)
 		Y = {};
 	
 		for m = 0:length(X)-1
-			Y{m+1} = concatenate_freq(X{m+1});
+			Y{m+1} = concatenate_freq(X{m+1},fmt);
 		end
 		
 		return;
 	end
 	
-	[suffixes,temp,assigned] = unique(X.meta.j(2:end,:).','rows');
-	
-	sz_orig = size(X.signal{1});
+	if isfield(X.meta,'fr_j')
+		[temp1,temp2,assigned] = unique([X.meta.fr_j; X.meta.j(2:end,:)].','rows');
+	else
+		[temp1,temp2,assigned] = unique(X.meta.j(2:end,:).','rows');
+	end
 	
 	Y.signal = {};
 	Y.meta = struct();
@@ -21,14 +27,20 @@ function Y = concatenate_freq(X)
 		Y.meta = setfield(Y.meta,field_names{n},zeros(sz(1),0));
 	end
 	
-	for k = 1:size(suffixes,1)
+	for k = 1:max(assigned)
+		sz_orig = size(X.signal{1});
+		
 		ind = find(assigned==k);
 		
-		nsignal = [X.signal{ind}];
-		
-		% need to extract the signal index dimension (2nd here)
-		nsignal = reshape(nsignal,[size(nsignal,1) sz_orig(2) length(ind)]);
-		nsignal = permute(nsignal,[3 1 2]);
+		if strcmp(fmt,'table')
+			nsignal = [X.signal{ind}];
+			
+			% need to extract the signal index dimension (2nd here)
+			nsignal = reshape(nsignal,[size(nsignal,1) sz_orig(2) length(ind)]);
+			nsignal = permute(nsignal,[3 1 2]);
+		else
+			nsignal = X.signal(ind);
+		end
 		
 		Y.signal{k} = nsignal;
 		

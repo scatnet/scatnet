@@ -35,18 +35,3 @@ function Y = aggregate_scat(X,N)
 		end
 	end
 end
-
-function to_meta = map_meta(from_meta,from_ind,to_meta,to_ind)
-	field_names = fieldnames(from_meta);
-	
-	for k = 1:length(field_names)
-		from_value = getfield(from_meta,field_names{k});
-		to_value = getfield(to_meta,field_names{k});
-		if all(size(to_value)==[0 0])
-			to_value = zeros(0,length(from_ind));
-		else
-			to_value(:,to_ind) = repmat(from_value(:,from_ind),[1 length(to_ind)]);
-		end
-		to_meta = setfield(to_meta,field_names{k},to_value);
-	end
-end

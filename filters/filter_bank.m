@@ -1,65 +1,57 @@
-%TODO update doc
-%FILTER_BANK Creates a filter bank
-%   filters = filter_bank(sig_length,options) generates a filter bank for 
-%   signals of length sig_length using the options specified in options.
-%   
-%   The following options can be specified:
-%      options.wavelet_type - The type of wavelet filter to create. Can be
-%         either 'morlet', 'gabor', or 'spline', for a Morlet filter bank,
-%         a Gabor filter bank or a wavelet spline filter bank, respectively. 
-%         Since the Morlet and spline filter banks have a vanishing moment, 
-%         they are highly recommended. For audio signals, however, energy at 
-%         very low frequencies is often small, so Gabor filters can be used 
-%         in the first-order filter bank. [Default 'morlet']
-%      options.boundary - The boundary conditions for filter convolutions. Can
-%         be 'symm' or 'per', corresponding to symmetric and periodic
-%         boundary conditions, respectively. For 'symm', the filters will be
-%         created to cover twice the length of the signal. [Default 'symm']
-%      options.Q - Parameter for the Morlet filter bank. Specifies the 
-%         number of wavelets per octave at critical sampling in frequency. 
-%         Q = 1 gives the traditional dyadic wavelet filter bank. [Default 1]
-%      options.a - Parameter for the Morlet filter bank. Specifies the 
-%         dilation factor between adjacent wavelets. The factor
-%         2^(1/Q) corresponds to critical sampling. More redundant frequency
-%         sampling can be obtained by decreasing a. [Default 2^(1/Q)]
-%      options.J - Parameter for the Morlet filter bank. Specifies the number 
-%         of logarithmically spaced wavelets. This controls the minimum 
-%         frequency bandwidth of the wavelets and consequently the maximum 
-%         temporal bandwidth. For a filter bank with parameters Q, a, J, the 
-%         maximum temporal bandwidth is Q*a^J.
-%         [Default log(sig_length/Q)/log(a)]
-%      options.gabor - Parameter for the Morlet filter bank. If 0, Morlet
-%         wavelets are used, whereas if 1, Gabor filters are used. Since the 
-%         former have a vanishing moment, they are highly recommended. For 
-%         audio signals, however, energy at very low frequencies is often 
-%         small, so Gabor filters can be used in the first-order filter bank.
-%         [Default 0]
-%      options.spline_order - Parameter for the spline filter bank. Specifies
-%         the order of the spline wavelets. Allowed values are 1 (for linear
-%         splines) and 3 (for cubic splines). [Default 3]
+% filter_bank: Creates a filter bank
+% Usage
+%    filters = filter_bank(sz, options)
+% Input
+%    sz: The size of the input data.
+%    options (optional): Filter parameters.
+% Output
+%    filters: A cell array of filter bank corresponding to the data size sz
+%       and the filter parameters in options.
+% Description
+%    The behavior of the function depends on the value of options.filter_type,
+%    which can have the following values:
+%       'morlet_1d', 'gabor_1d': Calls morlet_filter_bank_1d.
+%       'spline_1d': Calls spline_filter_bank_1d.
+%    The filter parameters in options are then passed on to these functions.
+%    If multiple filter banks are desired, multiple parameters can be supplied
+%    by providing a vector of parameter values instead of a scalar (in the 
+%    case of filter_type and filter_format, these have to be cell arrays).
+%    The function will then split the options structure up into several 
+%    parameter sets and call the appropriate filter bank function for each one
+%    returning the result as a cell array. If a given field does not have 
+%    enough values to specify parameters for all filter banks, the last ele-
+%    ment is used to extend the field as needed.
 %
-%   To create multiple filter banks, it suffices to specify a vector of values
-%   instead of a scalar for any of the above parameters. The output will then
-%   consist of a structure array where the k:th filter bank is defined by
-%   the k:th (or last) element of each parameter vector. These multiple filter
-%   banks can then be used to calculate scattering coefficients with differing
-%   filters for different orders. For example, we can define
-%
-%      filt_opt.wavelet_type = {'gabor','morlet'};
-%      filt_opt.Q = [8 1];
-%      filt_opt.J = T_to_J(8192,filt_opt.Q);
-%      filters = filter_bank(65536,filt_opt);
-%
-%    Now filters{1} contains a Gabor filter bank with Q=8 and filters{2}
-%    contains a Morlet fitler bank with Q=1, both with a lowpass filter
-%    of duration 8192 samples. Both filter banks are defined for signals of
-%    length 65536.
-
+%    The specific parameters vary between filter bank types, but the follow-
+%    ing are common to all types:
+%       options.filter_type: Can be 'morlet_1d', 'gabor_1d', or 'spline_1d'
+%          (default 'morlet_1d').
+%       options.boundary: Sets the boundary conditions of the wavelet trans-
+%          form. If 'symm', symmetric boundaries will be used, if 'per', per-
+%          iodic boundaries will be used (default 'symm').
+%       options.precision: Either 'double', or 'single'. Determines the preci-
+%          sion of the filters stored and consequently that of the resulting
+%          wavelet and scattering transform (default 'double').
+%       options.filter_format: Specifies the format in which the filters are 
+%          stored. Three formats are available:
+%             'fourier': Filters are stored as Fourier transforms defined
+%                 over the whole frequency domain of the signal.
+%             'fourier_multires': Filters are stored as Fourier transforms 
+%                 defined over the frequency domain of the signal at all
+%                 resolutions. This requires much more memory, but speeds up
+%                 calculations significantly.
+%              'fourier_truncated': Stores the Fourier coefficients of each
+%                 filter on the support of the filter, reducing memory
+%                 consumption and increasing speed of calculations (default).
 
 function filters = filter_bank(sig_length,options)
 	parameter_fields = {'filter_type','Q','B','xi_psi','sigma_psi', ...
 		'phi_bw_multiplier','sigma_phi','J','P','spline_order', ...
-		'precision','filter_format'};
+		'filter_format'};
+		
+	if nargin < 2
+		options = struct();
+	end
 	
 	options = fill_struct(options, 'filter_type', 'morlet_1d');
 	options = fill_struct(options, 'Q', []);
@@ -78,10 +70,6 @@ function filters = filter_bank(sig_length,options)
 	
 	if ~iscell(options.filter_type)
 		options.filter_type = {options.filter_type};
-	end
-	
-	if ~iscell(options.precision)
-		options.precision = {options.precision};
 	end
 	
 	if ~iscell(options.filter_format)

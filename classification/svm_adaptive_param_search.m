@@ -1,4 +1,7 @@
 function [err,C,gamma] = svm_adaptive_param_search(db,prt_train,prt_dev,opt)
+	opt = fill_struct(opt,'gamma',1e-4);
+	opt = fill_struct(opt,'C',8);
+
 	opt = fill_struct(opt,'search_depth',2);
 
 	gamma0 = opt.gamma;
@@ -9,11 +12,15 @@ function [err,C,gamma] = svm_adaptive_param_search(db,prt_train,prt_dev,opt)
 	
 		[temp,ind] = min(mean(err{k},2));
 		
-		step = exp(1/2*mean(log(C0(2:end))-log(C0(1:end-1))));
-		C0 = [step^(-1) 1 step]*C{k}(ind);
+		if length(C0) > 1
+			step = exp(1/2*mean(log(C0(2:end))-log(C0(1:end-1))));
+			C0 = [step^(-1) 1 step]*C{k}(ind);
+		end
 		
-		step = exp(1/2*mean(log(gamma0(2:end))-log(gamma0(1:end-1))));
-		gamma0 = [step^(-1) 1 step]*gamma{k}(ind);
+		if length(gamma0) > 1
+			step = exp(1/2*mean(log(gamma0(2:end))-log(gamma0(1:end-1))));
+			gamma0 = [step^(-1) 1 step]*gamma{k}(ind);
+		end
 
 		opt.C = C0;
 		opt.gamma = gamma0;
