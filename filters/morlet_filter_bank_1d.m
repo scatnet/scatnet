@@ -17,7 +17,8 @@
 %    The following parameters can be specified in options:
 %       options.filter_type: See above (default 'morlet_1d').
 %       options.Q: The number of wavelets per octave (default 1).
-%       options.B: The per-octave bandwidth of the wavelets (default Q).
+%       options.B: The reciprocal per-octave bandwidth of the wavelets 
+%          (default Q).
 %       options.J: The number of logarithmically spaced wavelets. For Q=1, 
 %          this corresponds to the total number of wavelets since there are no 
 %          linearly spaced ones. Together with Q, this controls the maximum 
