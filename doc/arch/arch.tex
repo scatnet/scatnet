@@ -99,7 +99,9 @@ This transform can also be applied on a layer of coefficients, representing laye
 	\item \mcode{layer.signal}: A cell array of signals.
 	\item \mcode{layer.meta}: The meta information on the signals, such as their path, their resolutions, etc.
 \end{itemize}
-The signals are one-dimensional or two-dimensional arrays while \mcode{meta} contains the fields \mcode{meta.j} and \mcode{meta.theta}, which are two-dimensional arrays. The first dimension has length corresponding \mcode{layer.signal} while the second dimension as length corresponding to the order of the coefficients. The path of the $p$th coefficient is thus encoded in \mcode{meta.j(p,:)} and \mcode{meta.theta(p,:)}, respectively.
+The signals are one-dimensional or two-dimensional arrays while \mcode{meta} contains the fields \mcode{meta.j} and \mcode{meta.theta}, which are two-dimensional
+arrays. The first dimension has length corresponding \mcode{layer.signal} while the second dimension as length corresponding to the order of the coefficients.
+The path of the $p$th coefficient is thus encoded in \mcode{meta.j(:,p)} and \mcode{meta.theta(:,p)}, respectively.
 
 The corresponding layer transforms are \mcode{wavelet_layer_1d} and \mcode{wavelet_layer_2d}, the former being applied to the layer \mcode{U} by calling
 \begin{lstlisting}
@@ -108,7 +110,8 @@ The corresponding layer transforms are \mcode{wavelet_layer_1d} and \mcode{wavel
 
 In addition, there is a function \mcode{modulus_layer}, which computes the complex modulus of the coefficients in the layer.
 
-Combining the wavelet transform with the modulus operator, we can construct a scattering transform. First, we initialize $U\{1\}$ with the input signal, then iterate the following calls:
+Combining the wavelet transform with the modulus operator, we can construct a scattering transform. First, we initialize $U\{1\}$ with the input signal, then 
+iterate the following calls:
 \begin{lstlisting}
 	[S{m}, W] = wavelet_layer_1d(U{m}, filters, options);
 	U{m+1} = modulus_layer(W);
@@ -119,9 +122,13 @@ In the next section, we see how this can be automated.
 
 \subsection{Scattering Transform}
 
-By alternating wavelet transforms and modulus operators, we obtain the scattering transform. Specifically, the \mcode{scatt} function takes a signal, an options structure, a structure defining the wavelet cascade, and returns the scattering coefficients (or wavelet modulus coefficients, if desired). The scattering coefficients are output as a cell array of layers \mcode{S}.
+By alternating wavelet transforms and modulus operators, we obtain the scattering transform. Specifically, the \mcode{scat} function takes a signal, an options 
+structure, a structure defining the wavelet cascade, and returns the scattering coefficients (or wavelet modulus coefficients, if desired). The scattering 
+coefficients are output as a cell array of layers \mcode{S}.
 
-To create this cascade structure, a factory function, \mcode{wavelet_factory_1d} or \mcode{cascade_factory_2d} is used, which takes as input the signal size, a filter parameter structure, a scattering options structure, and the order of the transform. The scattering transform could be used like the following
+To create this cascade structure, a factory function, \mcode{wavelet_factory_1d} or \mcode{wavelet_factory_2d} is used, which takes as input the signal size, a
+ filter parameter structure, a scattering options structure, and the order of the transform. The scattering transform could be used like the following
+
 \begin{lstlisting}
 	fparam.filter_type = {'gabor_1d', 'morlet_1d'};
 	fparam.Q = [8 1];
@@ -131,34 +138,45 @@ To create this cascade structure, a factory function, \mcode{wavelet_factory_1d}
 	
 	cascade = wavelet_factory_1d(N, fparam, options, 2);
 	
-	S = scatt(x,cascade);
+	S = scat(x,cascade);
 \end{lstlisting}
-The above code will compute a filter bank for signals of length $N$, with the first filter bank consisting of $8$ filters per octave. The second filter bank will only have one wavelet per octave, with the corresponding bandwidth, and $13$ octaves of wavelets. The averaging scale of both filter banks is set to $T = 8192$. These filters are then used to specify the wavelet transforms that are stored in the cascade structure.
 
-To obtain the wavelet modulus coefficients \mcode{U}, \mcode{scatt} is called for two outputs, as in
+The above code will compute a filter bank for signals of length $N$, with the first filter bank consisting of $8$ filters per octave. The second filter bank 
+will only have one wavelet per octave, with the corresponding bandwidth, and $13$ octaves of wavelets. The averaging scale of both filter banks is set to $T = 8192$.
+These filters are then used to specify the wavelet transforms that are stored in the cascade structure.
+
+To obtain the wavelet modulus coefficients \mcode{U}, \mcode{scat} is called for two outputs, as in
 \begin{lstlisting}
-[S, U] = scatt(x,wavemod);
+[S, U] = scat(x,wavemod);
 \end{lstlisting}
-The structure of \mcode{U} follows that of \mcode{S}. That is it consists of a cell array representing each layer of wavelet modulus coefficients. The first layer corresponds to the zeroth-order wavelet modulus coefficients, which is the original signal. The second layer contains the first-order wavelet modulus coefficients, which are the signal convolved with the filters with the modulus applied, and so on. The coefficients in \mcode{S\{m+1\}} are thus the $m$th-order scattering coefficients obtained from smoothing the coefficients in \mcode{U\{m+1\}}.
+The structure of \mcode{U} follows that of \mcode{S}. That is it consists of a cell array representing each layer of wavelet modulus coefficients. The first layer 
+corresponds to the zeroth-order wavelet modulus coefficients, which is the original signal. The second layer contains the first-order wavelet modulus coefficients, 
+which are the signal convolved with the filters with the modulus applied, and so on. The coefficients in \mcode{S\{m+1\}} are thus the $m$th-order scattering 
+coefficients obtained from smoothing the coefficients in \mcode{U\{m+1\}}.
 
 \section{Manipulating, Displaying, Formatting}
 
 \subsection{Renormalization and Logarithm}
-Often, second- and higher-order coefficients will reproduce information from their parent coefficients. That is, they will be highly correlated. To reduce this, the \mcode{renorm\_scatt} function renormalizes each coefficient by dividing it by its parent coefficient. Similarly, the \mcode{log\_scatt} function calculates the logarithm of each coefficient.
+Often, second- and higher-order coefficients will reproduce information from their parent coefficients. That is, they will be highly correlated. To reduce this, 
+the \mcode{renorm\_scat} function renormalizes each coefficient by dividing it by its parent coefficient. Similarly, the \mcode{log\_scat} function calculates 
+the logarithm of each coefficient.
 
-These functions both act on the output of \mcode{scatt}, and so can be called on the scattering transform \mcode{S} like:
+These functions both act on the output of \mcode{scat}, and so can be called on the scattering transform \mcode{S} like:
 \begin{lstlisting}
-	S_renorm = renorm_scatt(S);
-	S_renorm_log = log_scatt(S_renorm);
+	S_renorm = renorm_scat(S);
+	S_renorm_log = log_scat(S_renorm);
 \end{lstlisting}
 
 \subsection{Display}
 Two functions are available to display scattering coefficients, \mcode{display_slice} and \mcode{display_multifractal}. They both take as input a scattering transform \mcode{S} and a time point \mcode{t}.
 
 \subsection{Formatting}
-In order to use the scattering coefficients for classification, they need to be in a vector format. This is obtained using the function \mcode{format_scatt}, which arranges scattering coefficients into a two-dimensional table, the first dimension corresponding to a scattering coefficient index and the second dimension corresponding to time/space. It also returns a meta structure that specifies the order, scale, etc. of each scattering coefficient. The following example illustrates its usage:
+In order to use the scattering coefficients for classification, they need to be in a vector format. This is obtained using the function \mcode{format_scat}, which 
+arranges scattering coefficients into a two-dimensional table, the first dimension corresponding to a scattering coefficient index and the second dimension corresponding 
+to time/space. It also returns a meta structure that specifies the order, scale, etc. of each scattering coefficient. The following example illustrates its usage:
+
 \begin{lstlisting}
-	[sc_table, meta] = format_scatt(S);
+	[sc_table, meta] = format_scat(S);
 	
 	% plot the 2nd-order coefficients
 	% corresponding to scale (3, 7)
@@ -222,8 +240,8 @@ options = struct();
 
 cascade = wavelet_factory_1d(N, fparam, options, 2);
 
-feature_fun = {@(x)(format_scatt( ...
-	log_scatt(renorm_scatt(scatt(x, cascade)))))};
+feature_fun = {@(x)(format_scat( ...
+	log_scat(renorm_scat(scat(x, cascade)))))};
 \end{lstlisting}
 
 The feature vectors are then computed by calling \mcode{prepare_database}, as in:
