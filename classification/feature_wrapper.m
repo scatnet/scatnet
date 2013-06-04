@@ -15,20 +15,20 @@
 %       wise takes the rectangle of size input_sz centered on the object (de-
 %       fault empty).
 %    output_sz: The desired size of the data covered by the feature vector. If
-%       empty, keeps the output from feature_fun, otherwise extracts the 
-%       time/space rectangle of size output_sz centered on the original data, 
+%       empty, keeps the output from feature_fun, otherwise extracts the
+%       time/space rectangle of size output_sz centered on the original data,
 %       taking into account any subsampling by feature_fun (default empty).
-%    obj_normalize: The normalization of the input vectors before being 
+%    obj_normalize: The normalization of the input vectors before being
 %       given to feature_fun. Can be empty, 1, 2, or Inf (default Inf).
 %    collapse: If true, collapses the time/space dimension into one vector,
 %       otherwise leaves this dimension intact (default false).
 % Output
-%    feature: An PxNxK array where P is the feature dimension, N is the 
+%    feature: An PxNxK array where P is the feature dimension, N is the
 %       space/time dimension and K is the signal index, if multiple objects
 %       are given as input.
 
 function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
-	obj_normalize,collapse)
+		obj_normalize,collapse)
 	if nargin < 4
 		input_sz = [];
 	end
@@ -38,7 +38,7 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	end
 	
 	if nargin < 6
-		obj_normalize = Inf;
+		obj_normalize = [];
 	end
 	
 	if nargin < 7
@@ -46,24 +46,33 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	end
 	
 	if isempty(input_sz)
-		buf = zeros(objects(1).u2-objects(1).u1+ones(size(objects(1).u1)), ...
-			length(objects));
+		
+		buf = zeros([objects(1).u2-objects(1).u1+ones(size(objects(1).u1)), ...
+			length(objects)]);
 		
 		u1 = [objects.u1];
 		u2 = [objects.u2];
 	else
-		buf = zeros(input_sz,length(objects));
-
+		buf = zeros([input_sz,length(objects)]);
+		
 		u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz/2);
 		u2 = u1+input_sz-1;
 	end
-
+	
+	% extract objects with bounding box
 	for l = 1:length(objects)
-		ind = max(u1(l),1):min(u2(l),length(x));
-
-		buf(:,l) = [zeros(max(0,1-u1(l)),1); x(ind); zeros(max(0,u2(l)-length(x)),1)];
+		n_dim = sum(size(x)>1);
+		switch n_dim
+			case 1
+				ind = max(u1(l),1):min(u2(l),length(x));
+				buf(:,l) = [zeros(max(0,1-u1(l)),1); x(ind); zeros(max(0,u2(l)-length(x)),1)];
+			case 2
+				buf = x;
+				% TODO : extract bounding box
+		end
 	end
 	
+	% normalize
 	if ~isempty(obj_normalize)
 		if obj_normalize == 1
 			n = sum(abs(buf),1);
@@ -75,9 +84,9 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 		
 		buf = bsxfun(@times,buf,1./n);
 	end
-
+	
 	t = fun(buf);
-
+	
 	if ~isempty(output_sz)
 		N = size(t,2);
 		extent = floor(output_sz/(2*input_sz)*N);

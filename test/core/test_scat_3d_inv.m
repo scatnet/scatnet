@@ -1,45 +1,29 @@
-% this script demonstrates the rotation covariance-invariance properties
-% of roto-translation scattering
-
 x = lena;
 x = x(128:128+255, 128:128+255);
 
 options.null = 1;
+% antialiasing must be set to infty
+% so that scattering of original and rotated
+% image will be sampled at exactly the same points
 options.antialiasing = 10;
 
-[ wavelet, filters, filters_rot ] = ...
-	wavelet_factory_3d(size(x), options);
-%%
-tic;
-[S, U] = scat(x, wavelet);
-toc;
-%%
+wavelet = wavelet_factory_3d(size(x), options);
 
+% compute scattering of x
+sx = scat(x, wavelet);
+sx_raw = format_scat(sx);
+
+% compute scattering of x rotated by pi/2
 x_rot = rot90(x,1);
-[S_rot, U_rot] = scat(x_rot, wavelet);
+sx_rot = scat(x_rot, wavelet);
+sx_rot_raw = format_scat(sx_rot);
 
-%%
-
-[S_format, meta] = format_scat(S);
-
-S_format_rot = format_scat(S_rot);
-
-%%
-clear S_format_rot_back
-for p = 1:size(S_format_rot,3)
-	S_format_rot_back(:,:,p) = rot90(S_format_rot(:,:,p), -1);
+% rotate back every layer of output
+for p = 1:size(sx_rot_raw,3)
+	sx_rot_raw_back(:,:,p) = rot90(sx_rot_raw(:,:,p), -1);
 end
 
-%%
-norm_diff = sqrt(sum((S_format(:)-S_format_rot_back(:)).^2));
-norm_s = sqrt(sum((S_format(:)).^2));
+% compute norm ratio
+norm_diff = sqrt(sum((sx_rot_raw_back(:)-sx_raw(:)).^2));
+norm_s = sqrt(sum((sx_raw(:)).^2));
 norm_ratio = norm_diff/norm_s
-
-%%
-norm_per_path = squeeze(sqrt(sum(sum((S_format-S_format_rot_back).^2,1),2)));
-
-%%
-for p = 1:209
-	imagesc([S_format(:,:,p),S_format_rot_back(:,:,p)])
-	pause(0.1);
-end
