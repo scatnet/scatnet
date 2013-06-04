@@ -12,7 +12,7 @@ function S = log_scat(S, epsilon)
 		epsilon = 2^(-20);		% ~1e-6
 	end
 
-	if iscell(X)
+	if iscell(S)
 		for m = 0:length(S)-1
 			S{m+1} = log_scat(S{m+1}, epsilon);
 		end
