@@ -21,7 +21,11 @@ function S = log_scat(S, epsilon)
 	end
 	
 	for p1 = 1:length(S.signal)
-		sub_multiplier = 2^(S.meta.resolution(p1)/2);
+		res = 0;
+		if isfield(S.meta,'resolution')
+			res = S.meta.resolution(p1);
+		end
+		sub_multiplier = 2^(res/2);
 		S.signal{p1} = log(abs(S.signal{p1})+epsilon*sub_multiplier);
 	end
 end
