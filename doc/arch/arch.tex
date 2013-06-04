@@ -10,7 +10,7 @@
 
 \graphicspath{{figures/}}
 
-\title{ScattLab Architecture Document}
+\title{SCATNET Architecture Document}
 
 \begin{document}
 	
@@ -24,7 +24,7 @@ Filters are defined by a signal size \mcode{[N,M]}, a filter type (Morlet, Gabor
 
 Filter parameters are specified in a parameters structure, \mcode{fparam}, containing the following fields:
 \begin{itemize}
-	\item \mcode{fparam.filter_type}: The wavelet type, such as `morlet\_1d', `gabor\_2d', `spline\_1d', for example.
+	\item \mcode{fparam.filter_type}: The wavelet type, such as `morlet\_1d', `morlet\_2d', `spline\_1d', for example.
 	\item \mcode{fparam.precision}: The numeric precision of the filters. Either \mcode{'double'} or \mcode{'single'}.
 \end{itemize}
 In addition, the \mcode{fparam} structure would contain parameters specific to the wavelet type chosen (see below).
@@ -136,9 +136,9 @@ To create this cascade structure, a factory function, \mcode{wavelet_factory_1d}
 	
 	options = struct();
 	
-	cascade = wavelet_factory_1d(N, fparam, options, 2);
+	wavelet = wavelet_factory_1d(N, fparam, options, 2);
 	
-	S = scat(x,cascade);
+	S = scat(x, wavelet);
 \end{lstlisting}
 
 The above code will compute a filter bank for signals of length $N$, with the first filter bank consisting of $8$ filters per octave. The second filter bank 
@@ -147,7 +147,7 @@ These filters are then used to specify the wavelet transforms that are stored in
 
 To obtain the wavelet modulus coefficients \mcode{U}, \mcode{scat} is called for two outputs, as in
 \begin{lstlisting}
-[S, U] = scat(x,wavemod);
+[S, U] = scat(x, wavelet);
 \end{lstlisting}
 The structure of \mcode{U} follows that of \mcode{S}. That is it consists of a cell array representing each layer of wavelet modulus coefficients. The first layer 
 corresponds to the zeroth-order wavelet modulus coefficients, which is the original signal. The second layer contains the first-order wavelet modulus coefficients, 
@@ -167,13 +167,43 @@ These functions both act on the output of \mcode{scat}, and so can be called on 
 	S_renorm_log = log_scat(S_renorm);
 \end{lstlisting}
 
-\subsection{Display}
+\subsection{Display (1D)}
 Two functions are available to display scattering coefficients, \mcode{display_slice} and \mcode{display_multifractal}. They both take as input a scattering transform \mcode{S} and a time point \mcode{t}.
 
+\subsection{Display (2D)}
+To display the scattering of 2d functions, 
+\begin{lstlisting}
+image_scat(sx);
+\end{lstlisting}
+opens one figure per layer. In each figure, images corresponding to each node of the layer are concatenated.
+
+To display only coefficients of a certain order \mcode{m}, one can use \mcode{image_scat_layer}
+\begin{lstlisting}
+m = 2;
+image_scat_layer(sx{m+1});
+\end{lstlisting}
+
+To arrange the coefficients in a specified order (lexicographic order on $j$ for rows and lexicographic order on $\theta$ for columns), one can also use \mcode{image_scat_layer_order}
+\begin{lstlisting}
+var_y{1}.name = 'j';
+var_y{1}.index = 1;
+var_y{2}.name = 'j';
+var_y{2}.index = 2;
+var_x{1}.name = 'theta';
+var_x{1}.index = 1;
+var_x{2}.name = 'theta';
+var_x{2}.index = 2;
+big_img = image_scat_layer_order(S{3},var_x, var_y,1);
+\end{lstlisting}
+
 \subsection{Formatting}
-In order to use the scattering coefficients for classification, they need to be in a vector format. This is obtained using the function \mcode{format_scat}, which 
-arranges scattering coefficients into a two-dimensional table, the first dimension corresponding to a scattering coefficient index and the second dimension corresponding 
-to time/space. It also returns a meta structure that specifies the order, scale, etc. of each scattering coefficient. The following example illustrates its usage:
+In order to use the scattering coefficients for classification, they need to
+be in a vector format. This is obtained using the function
+\mcode{format_scat}, which arranges scattering coefficients into a
+two-dimensional table, the first dimension corresponding to a scattering
+coefficient index and the second dimension corresponding to time/space. It
+also returns a meta structure that specifies the order, scale, etc. of each
+scattering coefficient. The following example illustrates its usage:
 
 \begin{lstlisting}
 	[sc_table, meta] = format_scat(S);
@@ -181,12 +211,12 @@ to time/space. It also returns a meta structure that specifies the order, scale,
 	% plot the 2nd-order coefficients
 	% corresponding to scale (3, 7)
 	ind = find(meta.order==2 & meta.j(1,:)==3 & meta.j(2,:)==7);
-	plot(sc_table(ind, :));
+	plot(sc_table(:,ind));
 	
 	% calculate the energy of 1st-order
 	% coefficients
 	ind = find(meta.order==1);
-	E2 = norm(sc_table(ind,:),'fro')^2;
+	E2 = norm(sc_table(:,ind),'fro')^2;
 \end{lstlisting}
 
 Note that if two or more filter banks are used when calculating \mcode{S}, formatting is only possible if the lowpass filters $\phi$ have the same bandwidth, since otherwise scattering coefficients of different orders will have different resolutions and so cannot be fitted into the same matrix without resampling. Using the \mcode{T_to_J} function will ensure that this is always the case.
