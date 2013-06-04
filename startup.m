@@ -1,2 +1,0 @@
-addpath_scattlab;
-
