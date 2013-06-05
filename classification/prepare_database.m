@@ -121,6 +121,9 @@ function db = prepare_database(src,feature_fun,opt)
 end
 
 function out = apply_features(x,objects,feature_fun,opt)
+	if ~iscell(feature_fun)
+		feature_fun = {feature_fun};
+	end
 	out = {};
 	for k = 1:length(feature_fun)
 		if nargin(feature_fun{k}) == 2
