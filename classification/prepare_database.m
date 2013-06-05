@@ -16,6 +16,8 @@ function db = prepare_database(src,feature_fun,opt)
 	
 	opt = fill_struct(opt,'feature_sampling',1);
 	opt = fill_struct(opt,'file_normalize',[]);
+	opt = fill_struct(opt, 'parallel', 1);
+	
 	
 	features = cell(1,length(src.files));
 	obj_ind = cell(1,length(src.files));
@@ -24,40 +26,79 @@ function db = prepare_database(src,feature_fun,opt)
 	cols = 0;
 	precision = 'double';
 	
-	parfor k = 1:length(src.files)
-		file_objects = find([src.objects.ind]==k);
-		
-		if length(file_objects) == 0
-			continue;
-		end
-		
-		tm0 = tic;
-		x = data_read(src.files{k});
-		
-		if ~isempty(opt.file_normalize)
-			if opt.file_normalize == 1
-				x = x/sum(abs(x(:)));
-			elseif opt.file_normalize == 2
-				x = x/sqrt(sum(abs(x(:)).^2));
-			elseif opt.file_normalize == Inf
-				x = x/max(abs(x(:)));
+	
+	if (opt.parallel)
+		% parfor loop
+		parfor k = 1:length(src.files)
+			file_objects = find([src.objects.ind]==k);
+			
+			if length(file_objects) == 0
+				continue;
 			end
+			
+			tm0 = tic;
+			x = data_read(src.files{k});
+			
+			if ~isempty(opt.file_normalize)
+				if opt.file_normalize == 1
+					x = x/sum(abs(x(:)));
+				elseif opt.file_normalize == 2
+					x = x/sqrt(sum(abs(x(:)).^2));
+				elseif opt.file_normalize == Inf
+					x = x/max(abs(x(:)));
+				end
+			end
+			
+			features{k} = cell(1,length(file_objects));
+			obj_ind{k} = file_objects;
+			
+			buf = apply_features(x,src.objects(file_objects),feature_fun,opt);
+			
+			for l = 1:length(file_objects)
+				features{k}{l} = buf(:,1:opt.feature_sampling:end,l);
+			end
+			
+			fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
 		end
-		
-		features{k} = cell(1,length(file_objects));
-		obj_ind{k} = file_objects;
-		
-		buf = apply_features(x,src.objects(file_objects),feature_fun,opt);
-		
-		for l = 1:length(file_objects)
-			features{k}{l} = buf(:,1:opt.feature_sampling:end,l);
+	else
+		time_start = clock;
+		for k = 1:length(src.files)
+			file_objects = find([src.objects.ind]==k);
+			
+			if length(file_objects) == 0
+				continue;
+			end
+			
+			tm0 = tic;
+			x = data_read(src.files{k});
+			
+			if ~isempty(opt.file_normalize)
+				if opt.file_normalize == 1
+					x = x/sum(abs(x(:)));
+				elseif opt.file_normalize == 2
+					x = x/sqrt(sum(abs(x(:)).^2));
+				elseif opt.file_normalize == Inf
+					x = x/max(abs(x(:)));
+				end
+			end
+			
+			features{k} = cell(1,length(file_objects));
+			obj_ind{k} = file_objects;
+			
+			buf = apply_features(x,src.objects(file_objects),feature_fun,opt);
+			
+			for l = 1:length(file_objects)
+				features{k}{l} = buf(:,1:opt.feature_sampling:end,l);
+			end
+			time_elapsed = etime(clock, time_start);
+			estimated_time_left = time_elapsed * (length(src.files)-k) / k;
+			fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
+			fprintf('%d / %d : estimated time left %d seconds\n',k,length(src.files),floor(estimated_time_left));
 		end
-		
-		fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
 	end
 	
 	nonempty = find(~cellfun(@isempty,features));
-
+	
 	rows = size(features{nonempty(1)}{1},1);
 	cols = sum(cellfun(@(x)(sum(cellfun(@(x)(size(x,2)),x))),features(nonempty)));
 	precision = class(features{nonempty(1)}{1});

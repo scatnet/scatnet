@@ -8,4 +8,5 @@ w = wavelet_factory_2d([480, 640], options);
 
 features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
 %%
-db = prepare_database(src, features);
+options.parallel = 0;
+db = prepare_database(src, features, options);
