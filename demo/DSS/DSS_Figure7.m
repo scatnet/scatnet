@@ -21,11 +21,14 @@ options.antialiasing=2;
 cascade = wavelet_factory_1d(length(v), fparam,options, 2);
 
 %[Compute the scattering vector with options.antialiasing set to 100
-[Sv, U]=scat(v,cascade);
+[S, U]=scat(v,cascade);
 
+S = renorm_scat(S,1e-2);
 
+S = log_scat(S,1e-4);
+U = log_scat(U,1e-4);
 
 %compute the scalograms for the orders 1 and 2(layerNb=1) and for j1=120
-scattergram(U,Sv,2,110,1e-1,1e-2,1e-2);
+scattergram(S,U,110);
 
 
