@@ -36,7 +36,7 @@ optt.full_test_kernel = 0;
 addpath('~/cpp/libsvm-dense-compact-3.12/matlab');
 
 for k = 1:10
-	[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,prt_train{k},[],optt);
+	[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,train_set{k},[],optt);
 
 	[dev_err(k),ind] = min(mean(dev_err_grid{end},2));
 	C(k) = C_grid{end}(ind);
@@ -46,9 +46,9 @@ for k = 1:10
 	optt1.C = C(k);
 	optt1.gamma = gamma(k);
 
-	model = svm_train(db,prt_train{k},optt1);
-	labels = svm_test(db,model,prt_test{k});
-	err(k) = classif_err(labels,prt_test{k},db.src);
+	model = svm_train(db,train_set{k},optt1);
+	labels = svm_test(db,model,test_set{k});
+	err(k) = classif_err(labels,test_set{k},db.src);
 
 	fprintf('dev err = %f, test err = %f\n',dev_err(k),err(k));
 

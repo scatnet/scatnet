@@ -17,7 +17,7 @@ scatt_fun = @(x)(format_scatt(log_scatt(renorm_scatt(scatt_fun(x))),'table'));
 
 db = prepare_database(src,{scatt_fun},struct('feature_sampling',8));
 
-[prt_train,prt_test] = create_partition(src);
+[train_set,test_set] = create_partition(src);
 
 optt.kernel_type = 'gaussian';
 optt.C = 2^4;
@@ -25,8 +25,8 @@ optt.gamma = 2^(-12);
 
 addpath('~/matlab/libsvm-3.1/matlab');
 
-model = svm_train(db,prt_train,optt);
-labels = svm_test(db,model,prt_test);
+model = svm_train(db,train_set,optt);
+labels = svm_test(db,model,test_set);
 
-err = classif_err(labels,prt_test,src);
+err = classif_err(labels,test_set,src);
 

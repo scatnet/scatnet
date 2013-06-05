@@ -1,17 +1,17 @@
 % svm_test: Calculate labels for an SVM model.
 % Usage
-%    [labels, votes, feature_labels] = svm_test(db, model, prt_test)
+%    [labels, votes, feature_labels] = svm_test(db, model, test_set)
 % Input
 %    db: The database containing the feature vector.
 %    model: The affine space model obtained from svm_train.
-%    prt_test: The object indices of the testing instances.
+%    test_set: The object indices of the testing instances.
 % Output
 %    labels: The assigned labels.
 %    votes: The number of votes for each testing instance and class pair.
 %    feature_labels: The labels assigned to the individual features.
 
-function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,prt_test)
-	ind_features = [db.indices{prt_test}];
+function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,test_set)
+	ind_features = [db.indices{test_set}];
 	
 	if ~model.full_test_kernel && ...
 		(model.svm.Parameters(2) == 4 || ...
@@ -25,8 +25,8 @@ function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,prt_tes
 
 	[feature_labels,temp,K,sv_coef,dec] = svm_feature_test(db,model.svm,ind_features,model.full_test_kernel);
 		
-	for l = 1:length(prt_test)
-		ind = find(ismember(ind_features,db.indices{prt_test(l)}));
+	for l = 1:length(test_set)
+		ind = find(ismember(ind_features,db.indices{test_set(l)}));
 		
 		votes(:,l) = histc(feature_labels(ind),1:length(db.src.classes));
 		

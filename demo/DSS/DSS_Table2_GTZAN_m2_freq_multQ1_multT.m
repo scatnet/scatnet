@@ -4,7 +4,7 @@ run_name = 'DSS_Table2_GTZAN_m2_freq_multQ1_multT';
 tic
 src = gtzan_src('/home/anden/GTZAN/gtzan');
 
-[prt_train,prt_test] = create_partition(src);
+[train_set,test_set] = create_partition(src);
 
 N = 5*2^17;
 
@@ -115,7 +115,7 @@ optt.gamma = 2.^[-16:4:-8];
 optt.search_depth = 3;
 optt.full_test_kernel = 0;
 
-[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,prt_train,[],optt);
+[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,train_set,[],optt);
 
 [dev_err,ind] = min(dev_err_grid{end});
 C = C_grid{end}(ind);
@@ -125,8 +125,8 @@ optt1 = optt;
 optt1.C = C;
 optt1.gamma = gamma;
 
-model = svm_train(db,prt_train,optt1);
-labels = svm_test(db,model,prt_test);
-err = classif_err(labels,prt_test,db.src);
+model = svm_train(db,train_set,optt1);
+labels = svm_test(db,model,test_set);
+err = classif_err(labels,test_set,db.src);
 toc
 save([run_name '.mat'],'err','C','gamma');

@@ -5,7 +5,7 @@ run_name = 'DSS_Table2_TIMIT_m2';
 
 src = phone_src('/home/anden/timit/TIMIT');
 
-[prt_train,prt_test,prt_dev] = phone_partition(src);
+[train_set,test_set,valid_set] = phone_partition(src);
 
 N = 2^13;
 T_s = 2560;
@@ -48,7 +48,7 @@ optt.gamma = 2.^[-14:2:-10];
 optt.C = 2.^[2:2:6];
 optt.search_depth = 2;
 
-[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,prt_train,prt_dev,optt);
+[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,train_set,valid_set,optt);
 
 [dev_err,ind] = min(dev_err_grid{end});
 C = C_grid{end}(ind);
@@ -58,9 +58,9 @@ optt1 = optt;
 optt1.C = C;
 optt1.gamma = gamma;
 
-model = svm_train(db,prt_train,optt1);
-labels = svm_test(db,model,prt_test);
-err = classif_err(labels,prt_test,db.src);
+model = svm_train(db,train_set,optt1);
+labels = svm_test(db,model,test_set);
+err = classif_err(labels,test_set,db.src);
 			
 save([run_name '.mat'],'err','C','gamma');
 

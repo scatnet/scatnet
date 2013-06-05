@@ -1,8 +1,8 @@
 function [arr1,arr2] = readidx(FILENAME,t1,t2)
 	
 	%[fid, message] = fopen(FILENAME,'r','ieee-be');
-	fid= fopen(FILENAME,'r','b')
-	[FILENAME,PERMISSION,MACHINEFORMAT,ENCODING] = fopen(fid)
+	fid= fopen(FILENAME,'r','b');
+	[FILENAME,PERMISSION,MACHINEFORMAT,ENCODING] = fopen(fid);
 	magic = fread(fid, 1, 'int32');
 	if magic==2051
 		num = fread(fid, 1, 'int32');

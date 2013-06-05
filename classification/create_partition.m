@@ -1,16 +1,21 @@
 % create_partition: Creates a train/test partition.
 % Usage
-%    [prt_train, prt_test] = create_partition(src, ratio)
+%    [train_set, test_set] = create_partition(src, ratio, shuffle)
 % Input
 %    src: The source structure describing the objects.
-%    ratio: The proportion of all instances selected for training.
+%    ratio: The proportion of all instances selected for training (default 
+%       0.8).
+%    shuffle: If 1, objects are shuffled before assigning partitions (default 
+%       1).
 % Output
-%    prt_train: The indices of objects in src.objects corresponding to 
+%    train_set: The indices of objects in src.objects corresponding to 
 %       training instances.
-%    prt_test: The indices of objects in src.objects corresponding to 
+%    test_set: The indices of objects in src.objects corresponding to 
 %       testing instances.
 
-function [prt_train,prt_test,prt_dev] = create_partition(obj_class,ratio,shuffle)
+function [train_set,test_set,valid_set] = create_partition(obj_class, ...
+	ratio,shuffle)
+	
 	if nargin < 1
 		error('Must specify a source or a list of object classes!');
 	end
@@ -40,9 +45,9 @@ function [prt_train,prt_test,prt_dev] = create_partition(obj_class,ratio,shuffle
 		error('Ratios must add up to 1!');
 	end
 	
-	prt_train = [];
-	prt_test = [];
-	prt_dev = [];
+	train_set = [];
+	test_set = [];
+	valid_set = [];
 	
 	for k = 1:max(obj_class)
 		ind = find(obj_class==k);
@@ -60,8 +65,8 @@ function [prt_train,prt_test,prt_dev] = create_partition(obj_class,ratio,shuffle
 			n_dev = length(ind)-n_train-n_test;
 		end
 		
-		prt_train = [prt_train ind(1:n_train)];
-		prt_test = [prt_test ind(n_train+1:n_train+n_test)];
-		prt_dev = [prt_dev ind(n_train+n_test+1:n_train+n_test+n_dev)];
+		train_set = [train_set ind(1:n_train)];
+		test_set = [test_set ind(n_train+1:n_train+n_test)];
+		valid_set = [valid_set ind(n_train+n_test+1:n_train+n_test+n_dev)];
 	end
 end

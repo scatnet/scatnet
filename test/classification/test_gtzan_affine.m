@@ -17,10 +17,10 @@ scatt_fun = @(x)(format_scatt(log_scatt(renorm_scatt(scatt_fun(x))),'table'));
 
 db = prepare_database(src,{scatt_fun});
 
-[prt_train,prt_test] = create_partition(src);
+[train_set,test_set] = create_partition(src);
 
-model = affine_train(db,prt_train);
-labels = affine_test(db,model,prt_test);
+model = affine_train(db,train_set);
+labels = affine_test(db,model,test_set);
 
-err = classif_err(labels,prt_test,src);
+err = classif_err(labels,test_set,src);
 

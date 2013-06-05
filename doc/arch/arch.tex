@@ -303,11 +303,11 @@ The structure \mcode{train_opt} contains various parameters for training the mod
 
 To test the model, the functions \mcode{affine_test} and \mcode{svm_test} are used. Here, we denote the testing function by \mcode{test}. The labels obtained for the testing instances specified by \mcode{test_set} are then obtained by:
 \begin{lstlisting}
-labels = test(database, model, prt_test);
+labels = test(database, model, test_set);
 \end{lstlisting}
 To calculate the classification error, the \mcode{classif_err} is used:
 \begin{lstlisting}
-err = classif_err(labels, prt_test, src);
+err = classif_err(labels, test_set, src);
 \end{lstlisting}
 Note that the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
 
@@ -320,9 +320,9 @@ Multiple dimensions can be specified in order to test the difference in performa
 The following code calculates the minimum error for an affine space classifier of dimension between $0$ and $160$:
 \begin{lstlisting}
 train_opt.dim = 0:160;
-model = affine_train(database, prt_train, train_opt);
-labels = affine_test(database, model, prt_test);
-err = classif_err(labels, prt_test, src);
+model = affine_train(database, train_set, train_opt);
+labels = affine_test(database, model, test_set);
+err = classif_err(labels, test_set, src);
 [min_err, dim_ind] = min(err);
 min_dim = train_opt.dim(dim_ind);
 \end{lstlisting}
@@ -344,9 +344,9 @@ The following code calculates the error for an SVM classifier with a linear kern
 \begin{lstlisting}
 train_opt.kernel_type = 'linear';
 train_opt.C = 8;
-model = svm_train(database, prt_train, train_opt);
-labels = svm_test(database, model, prt_test);
-err = classif_err(labels, prt_test, src);
+model = svm_train(database, train_set, train_opt);
+labels = svm_test(database, model, test_set);
+err = classif_err(labels, test_set, src);
 \end{lstlisting}
 
 If a linear kernel is used, we can extract the discriminant vector $w$ and bias $\rho$ from the model using the function \mcode{svm_extract_w}. The function takes as input the database \mcode{database} and the SVM model \mcode{model}. It outputs the $w$s corresponding to each pair of classes in the model, arranged in the order $1$vs$2$,$1$vs$3$,\ldots$1$vs$N$,$2$vs$3$,\ldots,$2$vs$N$,\ldots,$(N-1)$vs$N$, where $N$ is the number of classes. The function is called as in:

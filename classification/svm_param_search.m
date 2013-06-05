@@ -1,19 +1,19 @@
 % svm_param_search: Parameter search for SVM classifier.
 % Usage
-%    [err,C,gamma] = svm_param_search(db, prt_train, prt_dev, options)
+%    [err,C,gamma] = svm_param_search(db, train_set, valid_set, options)
 % Input
 %    db: The database containing the feature vector.
-%    prt_train: The object indices of the training instances.
-%    prt_dev: The object indices of the validation instances.
+%    train_set: The object indices of the training instances.
+%    valid_set: The object indices of the validation instances.
 %    options: The training options passed to svm_train.
 % Output
 %    err: The errors for the parameters (C,gamma).
 %    C: The slack factors tested.
 %    gamma: The gammas tested (for Gaussian kernel).
 
-function [err,C,gamma] = svm_param_search(db,prt_train,prt_dev,opt)
+function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	if nargin < 3
-		prt_dev = [];
+		valid_set = [];
 	end
 	
 	if nargin < 4
@@ -24,21 +24,21 @@ function [err,C,gamma] = svm_param_search(db,prt_train,prt_dev,opt)
 	opt = fill_struct(opt,'C',8);
 	opt = fill_struct(opt,'cv_folds',5);
 	
-	if isempty(prt_dev)
-		obj_class = [db.src.objects(prt_train).class];
+	if isempty(valid_set)
+		obj_class = [db.src.objects(train_set).class];
 		
 		ratio = (opt.cv_folds-1)/opt.cv_folds;
 		
-		[prt_cvtrain,prt_cvdev] = create_partition(obj_class,ratio,0);
-		prt_cvtrain = prt_cvtrain;
-		prt_cvdev = prt_cvdev;
+		[cvtrain_set,cvvalid_set] = create_partition(obj_class,ratio,0);
+		cvtrain_set = cvtrain_set;
+		cvvalid_set = cvvalid_set;
 		
 		for f = 1:opt.cv_folds
 			[err(:,f),C,gamma] = svm_param_search(db, ...
-				prt_train(prt_cvtrain),prt_train(prt_cvdev),opt);
+				train_set(cvtrain_set),train_set(cvvalid_set),opt);
 			
-			[prt_cvtrain,prt_cvdev] = ...
-				next_fold(prt_cvtrain,prt_cvdev,obj_class);
+			[cvtrain_set,cvvalid_set] = ...
+				next_fold(cvtrain_set,cvvalid_set,obj_class);
 		end
 	else
 		r = 1;
@@ -53,10 +53,10 @@ function [err,C,gamma] = svm_param_search(db,prt_train,prt_dev,opt)
 			fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
 
 			tm0 = tic;
-			model = svm_train(db,prt_train,opt1);
-			labels = svm_test(db,model,prt_dev);
+			model = svm_train(db,train_set,opt1);
+			labels = svm_test(db,model,valid_set);
 
-			err(r,1) = classif_err(labels,prt_dev,db.src);
+			err(r,1) = classif_err(labels,valid_set,db.src);
 
 			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
 		end

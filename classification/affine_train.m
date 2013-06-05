@@ -1,22 +1,22 @@
 % affine_train: Train an affine space classifier.
 % Usage
-%    model = affine_train(db, prt_train, options)
+%    model = affine_train(db, train_set, options)
 % Input
 %    db: The database containing the feature vector.
-%    prt_train: The object indices of the training instances.
+%    train_set: The object indices of the training instances.
 %    options: The training options. options.dim specifies the dimensionality
 %        of the affine spaces modeling each class.
 % Output
 %    model: The affine space model.
 
-function model = affine_train(db,prt_train,opt)
+function model = affine_train(db,train_set,opt)
 	if nargin < 3
 		opt = struct();
 	end
 	
 	opt = fill_struct(opt,'dim',80);
 	
-	train_mask = ismember(1:length(db.src.objects),prt_train);
+	train_mask = ismember(1:length(db.src.objects),train_set);
 	
 	for k = 1:length(db.src.classes)
 		ind_obj = find([db.src.objects.class]==k&train_mask);

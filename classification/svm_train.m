@@ -1,9 +1,9 @@
 % svm_train: Train an SVM classifier.
 % Usage
-%    model = svm_train(db, prt_train, options)
+%    model = svm_train(db, train_set, options)
 % Input
 %    db: The database containing the feature vector.
-%    prt_train: The object indices of the training instances.
+%    train_set: The object indices of the training instances.
 %    options: The training options. options.kernel_type specifies the kernel
 %       type ('linear' or 'gaussian'), options.C specified the slack factor,
 %       and options.gamma specifies the gamma constant for the Gaussian kernel
@@ -11,7 +11,7 @@
 % Output
 %    model: The SVM model.
 
-function model = svm_train(db,prt_train,opt)
+function model = svm_train(db,train_set,opt)
 	if nargin < 3
 		opt = struct();
 	end
@@ -30,11 +30,11 @@ function model = svm_train(db,prt_train,opt)
 	
 	ind_features = [];
 	feature_class = [];
-	for k = 1:length(prt_train)
-		ind = db.indices{prt_train(k)};
+	for k = 1:length(train_set)
+		ind = db.indices{train_set(k)};
 		ind_features = [ind_features ind];
 		feature_class = [feature_class ...
-			db.src.objects(prt_train(k)).class*ones(1,length(ind))];
+			db.src.objects(train_set(k)).class*ones(1,length(ind))];
 	end
 
 	
@@ -93,7 +93,7 @@ function model = svm_train(db,prt_train,opt)
 
 	model.full_test_kernel = opt.full_test_kernel;
 
-	model.prt_train = prt_train;
+	model.train_set = train_set;
 	
 	if ~exist('svmtrain_inplace') || opt.no_inplace
 		model.svm = svmtrain(feature_class.', ...
