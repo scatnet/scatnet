@@ -26,8 +26,4 @@ S = log_scat(S,1e-6);
 U = log_scat(U,1e-6);
 
 %compute the scalograms for the orders 1 and 2(layerNb=1) and for j1=120;
-scattergram(S,U,120);
-
-
-
-
+scattergram(U{2},[],S{2},[],S{3},120);

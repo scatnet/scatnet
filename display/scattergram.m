@@ -1,18 +1,20 @@
 % This function returns the set of three tables to be used for the
 % the display of scalograms.
 
-function scattergram(S1,U,j1)
-	imgU1 = scat_img(U{2},zeros(0,1));
-	imgS1 = scat_img(S1{2},zeros(0,1));
-	
-	imgS2_j1 = scat_img(S1{3},j1);
-
-	subplot(3,1,1);imagesc(imgU1);
-	subplot(3,1,2);imagesc(imgS1); 
-	subplot(3,1,3);imagesc(imgS2_j1);
+function img = scattergram(varargin)
+	ndisp = nargin/2;
+	for n = 1:ndisp
+		img{n} = scat_img(varargin{(n-1)*2+1},varargin{(n-1)*2+2});
+		subplot(ndisp,1,n);
+		imagesc(img{n});
+	end
 end
 
 function img = scat_img(X,j)
+	if all(size(j)==[0 0])
+		j = zeros(0,1);
+	end
+	
 	nbTimePt = max(cellfun(@(x)(size(x,1)), X.signal));
 	
 	max_jm = max(X.meta.j(end,:)+1);
