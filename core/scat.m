@@ -1,38 +1,48 @@
-% scat : Compute the scattering transform
-%
+% scat: Compute the scattering transform
 % Usage
-%    S = scat(x, Wavelet) computes the scattering invariant coefficients S
-%    [S, U] = scat(x, Wavelet) computes the scattering invariant
-%    coefficients S and the intermediate covariant coefficients U
-%
+%    [S, U] = scat(x, Wop) 
 % Input
-%    x : input signal
-%    Wavelet : <cell> the Wavelet operators , typically obtained
-%       with the provided factory wavelet_factory_1d or wavelet_factory_2d
-%
+%    x (numeric): The input signal.
+%    Wop (cell of function handles): Linear operators used to generate a new 
+%       layer from the previous one.
 % Output
-%    S : contains the invariant scattering vectors
-%    S{m}.signal{p} contains the signal corresponding to the
-%        p-th path of the m-th layer of scattering.
-%    Sx{m}.meta.j(:,p) contains the succesive scales of the wavelets
-%    corresponding to S{m}.signal{p}
+%    S (cell): The scattering coefficients.
+%    U (cell): Intermediate covariant modulus coefficients.
+% Description
+%    The signal x is decomposed using linear operators Wop and modulus 
+%    operators, creating scattering invariants S and intermediate covariant
+%    coefficients U. 
+%
+%    Each element of the Wop array is a function handle of the signature
+%       [A, V] = Wop{m+1}(U),
+%    where m ranges from 0 to M (M being the order of the transform). The 
+%    outputs A and V are the invariant and covariant parts of the operator.
+%
+%    The variables A, V and U are all of the same structure, that of a network
+%    layer. Specifically, the have one field, signal, which is a cell array
+%    corresponding to the constituent signals, and another field, meta, which
+%    contains various information on these signals.
+%
+%    The scattering transform therefore initializes the first layer of U using
+%    the input signal x, then iterates on the following transformation
+%       [S{m+1}, V] = Wop{m+1}(U{m+1});
+%       U{m+2} = modulus_layer(V);
+%    The invariant part of the linear operator is therefore output as a scat-
+%    tering coefficient, and the modulus covariant part V is assigned to the 
+%    next layer of U.
 
+function [S, U] = scat(x, Wop)
+	% Initialize signal and meta
+	U{1}.signal{1} = x;
+	U{1}.meta.j = zeros(0,1);
 
-function [S, U] = scat(x, Wavelet)
-
-% init signal and meta
-U{1}.signal{1} = x;
-U{1}.meta.j = zeros(0,1);
-
-% apply scattering
-nb_layer = numel(Wavelet);
-for m = 1:nb_layer
-    if (m < nb_layer)
-        [S{m}, W] = Wavelet{m}(U{m});
-        U{m+1} = modulus_layer(W);
-    else
-        S{m} = Wavelet{m}(U{m});
-    end
-end
-
+	% Apply scattering, order per order
+	for m = 0:numel(Wop)-1
+		if (m < numel(Wop)-1)
+			[S{m+1}, V] = Wop{m+1}(U{m+1});
+			U{m+2} = modulus_layer(V);
+		else
+			S{m+1} = Wop{m+1}(U{m+1});
+		end
+	end
 end
