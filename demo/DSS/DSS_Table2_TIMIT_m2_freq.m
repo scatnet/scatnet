@@ -21,11 +21,11 @@ ffilt1_opt.J = 6;
 
 fsc1_opt = struct();
 
-cascade = wavelet_factory_1d(N, filt1_opt, sc1_opt, 2);
-fcascade = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt, 1); 
+Wop = wavelet_factory_1d(N, filt1_opt, sc1_opt, 2);
+fWop = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt, 1); 
 
-scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,cascade))));
-fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fcascade));
+scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop))));
+fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop));
 format_fun1 = @(x)(permute(format_scat(fscatt_fun1(x)),[3 1 2]));
 feature_fun1 = @(x,obj)(feature_wrapper(x,obj,format_fun1,N,T_s,2,1));
 

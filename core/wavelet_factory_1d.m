@@ -1,6 +1,6 @@
 % wavelet_factory_1d: Create wavelet cascade from filters
 % Usage
-%    [W, filters] = wavelet_factory_1d(N, filter_options, scat_options, M)
+%    [Wop, filters] = wavelet_factory_1d(N, filter_options, scat_options, M)
 % Input
 %    N: The size of the signals to be transformed.
 %    filter_options: The filter options, same as for filter_bank.
@@ -8,11 +8,11 @@
 %        wavelet_layer_1d.
 %    M: The maximal order of the scattering transform.
 % Output
-%    W: A cell array of wavelet transforms needed for the scattering trans-
+%    Wop: A cell array of wavelet transforms needed for the scattering trans-
 %       form.
 %    filters: A cell array of the filters used in defining the wavelets.
 
-function [W, filters] = wavelet_factory_1d(N, filter_options, scat_options, M)
+function [Wop, filters] = wavelet_factory_1d(N, filter_options, scat_options, M)
 	filters = filter_bank(N, filter_options);
 	
 	for m = 0:M
@@ -21,6 +21,6 @@ function [W, filters] = wavelet_factory_1d(N, filter_options, scat_options, M)
 		if m == 0
 			scat_options_m.phi_renormalize = 0;
 		end
-		W{m+1} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, scat_options_m));
+		Wop{m+1} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, scat_options_m));
 	end
 end

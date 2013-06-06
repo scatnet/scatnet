@@ -21,11 +21,11 @@ ffilt1_opt.J = 6;
 
 fsc1_opt = struct();
 
-cascade1 = wavelet_factory_1d(N, filt1_opt, sc1_opt, 2);
-fcascade1 = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt, 1); 
+Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt, 2);
+fWop1 = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt, 1); 
 
-scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,cascade1))));
-fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fcascade1));
+scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
+fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
 format_fun1 = @(x)(permute(format_scat(fscatt_fun1(x)),[3 1 2]));
 feature_fun1 = @(x,obj)(feature_wrapper(x,obj,format_fun1,N,T_s,2,1));
 
@@ -40,11 +40,11 @@ ffilt2_opt.J = 4;
 
 fsc2_opt = fsc1_opt;
 
-cascade2 = wavelet_factory_1d(N, filt2_opt, sc2_opt, 2);
-fcascade2 = wavelet_factory_1d(16, ffilt2_opt, fsc2_opt, 1); 
+Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt, 2);
+fWop2 = wavelet_factory_1d(16, ffilt2_opt, fsc2_opt, 1); 
 
-scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,cascade2))));
-fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fcascade2));
+scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
+fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
 format_fun2 = @(x)(permute(format_scat(fscatt_fun2(x)),[3 1 2]));
 feature_fun2 = @(x,obj)(feature_wrapper(x,obj,format_fun2,N,T_s,2,1));
 
@@ -53,10 +53,10 @@ filt3_opt.J = T_to_J(2*512,filt3_opt.Q);
 
 sc3_opt = sc1_opt;
 
-cascade3 = wavelet_factory_1d(N, filt3_opt, sc3_opt, 2);
+Wop3 = wavelet_factory_1d(N, filt3_opt, sc3_opt, 2);
 
-scatt_fun3 = @(x)(log_scat(renorm_scat(scat(x,cascade3))));
-fscatt_fun3 = @(x)(func_output(@scat_freq,2,scatt_fun3(x),fcascade1));
+scatt_fun3 = @(x)(log_scat(renorm_scat(scat(x,Wop3))));
+fscatt_fun3 = @(x)(func_output(@scat_freq,2,scatt_fun3(x),fWop1));
 format_fun3 = @(x)(permute(format_scat(fscatt_fun3(x)),[3 1 2]));
 feature_fun3 = @(x,obj)(feature_wrapper(x,obj,format_fun3,N,T_s,2,1));
 
@@ -65,10 +65,10 @@ filt4_opt.J = T_to_J(2*512,filt4_opt.Q);
 
 sc4_opt = sc2_opt;
 
-cascade4 = wavelet_factory_1d(N, filt4_opt, sc4_opt, 2);
+Wop4 = wavelet_factory_1d(N, filt4_opt, sc4_opt, 2);
 
-scatt_fun4 = @(x)(log_scat(renorm_scat(scat(x,cascade4))));
-fscatt_fun4 = @(x)(func_output(@scat_freq,2,scatt_fun4(x),fcascade2));
+scatt_fun4 = @(x)(log_scat(renorm_scat(scat(x,Wop4))));
+fscatt_fun4 = @(x)(func_output(@scat_freq,2,scatt_fun4(x),fWop2));
 format_fun4 = @(x)(permute(format_scat(fscatt_fun4(x)),[3 1 2]));
 feature_fun4 = @(x,obj)(feature_wrapper(x,obj,format_fun4,N,T_s,2,1));
 
@@ -77,10 +77,10 @@ filt5_opt.J = T_to_J(4*512,filt5_opt.Q);
 
 sc5_opt = sc1_opt;
 
-cascade5 = wavelet_factory_1d(N, filt5_opt, sc5_opt, 2);
+Wop5 = wavelet_factory_1d(N, filt5_opt, sc5_opt, 2);
 
-scatt_fun5 = @(x)(log_scat(renorm_scat(scat(x,cascade5))));
-fscatt_fun5 = @(x)(func_output(@scat_freq,2,scatt_fun5(x),fcascade1));
+scatt_fun5 = @(x)(log_scat(renorm_scat(scat(x,Wop5))));
+fscatt_fun5 = @(x)(func_output(@scat_freq,2,scatt_fun5(x),fWop1));
 format_fun5 = @(x)(permute(format_scat(fscatt_fun5(x)),[3 1 2]));
 feature_fun5 = @(x,obj)(feature_wrapper(x,obj,format_fun5,N,T_s,2,1));
 
@@ -89,10 +89,10 @@ filt6_opt.J = T_to_J(4*512,filt6_opt.Q);
 
 sc6_opt = sc2_opt;
 
-cascade6 = wavelet_factory_1d(N, filt6_opt, sc6_opt, 2);
+Wop6 = wavelet_factory_1d(N, filt6_opt, sc6_opt, 2);
 
-scatt_fun6 = @(x)(log_scat(renorm_scat(scat(x,cascade6))));
-fscatt_fun6 = @(x)(func_output(@scat_freq,2,scatt_fun6(x),fcascade2));
+scatt_fun6 = @(x)(log_scat(renorm_scat(scat(x,Wop6))));
+fscatt_fun6 = @(x)(func_output(@scat_freq,2,scatt_fun6(x),fWop2));
 format_fun6 = @(x)(permute(format_scat(fscatt_fun6(x)),[3 1 2]));
 feature_fun6 = @(x,obj)(feature_wrapper(x,obj,format_fun6,N,T_s,2,1));
 

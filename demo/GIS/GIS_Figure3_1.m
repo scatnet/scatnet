@@ -29,13 +29,13 @@ fparam.Q = 1;
 
 options = struct();
 
-cascade1 = wavelet_factory_1d(N, fparam1,options,6);
-cascade2 = wavelet_factory_1d(N, fparam2,options,7);
-cascade3 = wavelet_factory_1d(N, fparam3,options,8);
+Wop1 = wavelet_factory_1d(N, fparam1,options,6);
+Wop2 = wavelet_factory_1d(N, fparam2,options,7);
+Wop3 = wavelet_factory_1d(N, fparam3,options,8);
 
-nScatt1 = diracnorm_scat(x, cascade1);
-nScatt2 = diracnorm_scat(x, cascade2);
-nScatt3 = diracnorm_scat(x, cascade3);
+nScatt1 = diracnorm_scat(x, Wop1);
+nScatt2 = diracnorm_scat(x, Wop2);
+nScatt3 = diracnorm_scat(x, Wop3);
  
  P = 2*N;
  y = zeros(1,P);

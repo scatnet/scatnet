@@ -18,10 +18,10 @@ fparam.J(1) = T_to_J(1024*2,fparam.Q(1));
 fparam.J(2) = T_to_J(1024*32,fparam.Q(2));
 options = struct();
 options.antialiasing=2;
-cascade = wavelet_factory_1d(length(v), fparam,options, 2);
+Wop = wavelet_factory_1d(length(v), fparam,options, 2);
 
 %[Compute the scattering vector with options.antialiasing set to 100
-[S, U]=scat(v,cascade);
+[S, U]=scat(v, Wop);
 
 S = renorm_scat(S,1e-2);
 

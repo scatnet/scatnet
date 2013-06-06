@@ -1,12 +1,8 @@
-function [ wavelet, filters, filters_rot ] = ...
+function [ Wop, filters, filters_rot ] = ...
 		wavelet_factory_3d(size_in, options, options_rot)
-	
-	
-	
 	% filters along spatial variable
 	options.null = 1;
 	filters = morlet_filter_bank_2d(size_in, options);
-	
 	
 	% filters along angular variable
 	sz = filters.meta.nb_angle * 2; % nb_angle is between 0 and pi
@@ -28,13 +24,11 @@ function [ wavelet, filters, filters_rot ] = ...
 	options = fill_struct(options, 'nb_layer', 3);
 	
 	% first wavelet transform is an usual wavelet transform
-	wavelet{1} = @(x)(wavelet_layer_2d(x, filters, options));
+	Wop{1} = @(x)(wavelet_layer_2d(x, filters, options));
 	
 	% other wavelet transform are roto-translation wavelet
 	for m = 2:options.nb_layer
-		wavelet{m} = @(x)(wavelet_layer_3d(x, filters, filters_rot, options));
+		Wop{m} = @(x)(wavelet_layer_3d(x, filters, filters_rot, options));
 	end
-	
-	
 end
 

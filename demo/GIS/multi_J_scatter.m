@@ -5,11 +5,11 @@ function mScatt=multi_J_Scatter(sig,fparam,options,Jmax)
 %wavelets.
 
 N=length(sig);
-cascades=cell(Jmax,1);
+Wops=cell(Jmax,1);
 
 for k=1:Jmax
     fparam.J=k;
-    cascades{k} = wavelet_factory_1d(N, fparam,options, fparam.J);
+    Wops{k} = wavelet_factory_1d(N, fparam,options, fparam.J);
 end
 
 mScatt=zeros(Jmax+1,2*N);
@@ -18,7 +18,7 @@ mScatt(1,1:N)=sig;
 
 for p=2:Jmax+1
    
-    tScatt=reorderScatt(scat(sig,cascades{p-1}));
+    tScatt=reorderScatt(scat(sig,Wops{p-1}));
   
   mScatt(p,:)=tScatt;
 end

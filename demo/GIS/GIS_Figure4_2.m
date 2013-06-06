@@ -18,9 +18,9 @@ fparam.Q = 1;
 
 %options
 options = struct();
-%cascade
+%Wop
 
-cascade = wavelet_factory_1d(N, fparam,options, fparam.J);
+Wop = wavelet_factory_1d(N, fparam,options, fparam.J);
 
 %Random Bernouilli signal with probability of occurrence of p
 p = 0.01;
@@ -31,7 +31,7 @@ f1(posit) = 1;
 f1 = f1 - mean(f1);
 f1 = f1 /sqrt(var(f1));
 f1=f1';
-Scat1 = diracnorm_scat(f1,cascade);
+Scat1 = diracnorm_scat(f1,Wop);
 P = length(Scat1);
 y = zeros(1,P);
 y(1:P) = (1:P);
@@ -54,7 +54,7 @@ hold off;
 %Gaussian white noise
 f2 = randn(1,N);
 f2=f2';
-Scat2 = diracnorm_scat(f2,cascade);
+Scat2 = diracnorm_scat(f2,Wop);
 hold off;
 subplot(2,2,4),plot_spect_scat(y,Scat2); 
 subplot(2,2,3), plot(z,f2); %Scattered representation at the scale 2^J

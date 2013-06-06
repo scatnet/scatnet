@@ -19,7 +19,7 @@ for l = 1:length(Js)
 	
 	opts{l}.J = T_to_J(2^Js(l),opts{l}.Q,opts{l}.B);
 
-	cascade{l} = wavelet_factory_1d(N, opts{l}, struct(), M); 
+	Wop{l} = wavelet_factory_1d(N, opts{l}, struct(), M); 
 end
 
 E = zeros(length(Js),M+1,length(files));
@@ -31,7 +31,7 @@ for k = 1:length(files)
 	x = x-mean(x);
 	x = x/sqrt(sum(abs(x(:)).^2));
 	for l = 1:length(Js)
-		[t,meta] = format_scat(scat(x,cascade{l}));
+		[t,meta] = format_scat(scat(x,Wop{l}));
 		
 		t = squeeze(t);
 		for m = 0:max(meta.order)

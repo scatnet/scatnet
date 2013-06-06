@@ -16,7 +16,7 @@ fparam.spline_order=3;
 fparam.J = Jmax-1;
 fparam.Q = 1;
 options = struct();
-cascade = wavelet_factory_1d(N, fparam,options, fparam.J);
+Wop = wavelet_factory_1d(N, fparam,options, fparam.J);
 
 
 % Examples of signals
@@ -29,7 +29,7 @@ f1 = f1 ./sum(abs(f1));
 f1=f1';
 % Scattering transform
 % tic
- Scat1 = diracNormScatt(f1,cascade);
+ Scat1 = diracNormScatt(f1,Wop);
 % toc
 P = length(Scat1);
 y = zeros(1,P);
@@ -71,7 +71,7 @@ R = 20;
   f1(1:N) = exp(-((1:N)-N/2).^2/(2 * (1024/32).^2)) .* cos(pi * (1:N)*0.90/3);
 f1 = f1 ./sum(abs(f1));
 f1=f1';
-Scat1 = diracNormScatt(f1,cascade);
+Scat1 = diracNormScatt(f1,Wop);
 P = length(Scat1);
 y = zeros(1,P);
 y(1:P) = (1:P);
@@ -98,7 +98,7 @@ R = 20;
 f2 = f2 ./sum(abs(f2));
 f2=f2';
 subplot(4,3,7), plot(w,f2(N/2-8*R:N/2+8*R)); 
-Scat2 = diracNormScatt(f2,cascade);
+Scat2 = diracNormScatt(f2,Wop);
 %Scat2 = NormScatter(f2,wavelet_name,Jmax,'White');
 %Scat = Scatter(f2,wavelet_name,Jmax,'White');
 %figure(2);
@@ -121,7 +121,7 @@ R = 20;
 f4 = f4 ./sum(abs(f4));
 
 f4=f4';
-Scat4 = diracNormScatt(f4,cascade);
+Scat4 = diracNormScatt(f4,Wop);
 P = length(Scat4);
 y = zeros(1,P);
 y(1:P) = (1:P);

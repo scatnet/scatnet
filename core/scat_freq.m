@@ -1,4 +1,4 @@
-function [S,U] = scat_freq(X,cascade)
+function [S,U] = scat_freq(X, Wop)
 	Y = concatenate_freq(X);
 	
 	S = {};
@@ -24,7 +24,7 @@ function [S,U] = scat_freq(X,cascade)
 			signal = reshape(signal,[sz_orig(1) sz_orig(2)*sz_orig(3)]);
 			
 			if m > 0
-				[S_fr,U_fr] = scat(signal,cascade);
+				[S_fr,U_fr] = scat(signal, Wop);
 				
 				% needed for the case of U, are not init by scat
 				if ~isfield(U_fr{1}.meta,'bandwidth')
@@ -59,10 +59,6 @@ function [S,U] = scat_freq(X,cascade)
 			end
 			
 			for mp = 0:length(S_fr)-1
-				% what do these do?
-				%S_fr{mp+1} = unpad_layer_1d(S_fr{mp+1},size(signal,1));
-				%U_fr{mp+1} = unpad_layer_1d(U_fr{mp+1},size(signal,1));
-				
 				for kp = 1:length(S_fr{mp+1}.signal)
 					for t = 0:1
 						if t == 0
@@ -157,8 +153,10 @@ function Y = concatenate_freq(X)
 			nsignal = permute(nsignal,[3 1 2]);
 			
 			Y{m+1}.signal{k} = nsignal;
-			Y{m+1}.meta.bandwidth = [Y{m+1}.meta.bandwidth X{m+1}.meta.bandwidth(ind)];
-			Y{m+1}.meta.resolution = [Y{m+1}.meta.resolution X{m+1}.meta.resolution(ind)];
+			Y{m+1}.meta.bandwidth = [Y{m+1}.meta.bandwidth ...
+				X{m+1}.meta.bandwidth(ind)];
+			Y{m+1}.meta.resolution = [Y{m+1}.meta.resolution ...
+			 	X{m+1}.meta.resolution(ind)];
 			Y{m+1}.meta.j = [Y{m+1}.meta.j X{m+1}.meta.j(:,ind)];
 		end
 	end
