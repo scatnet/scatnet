@@ -20,9 +20,49 @@
 
 \section{The Scattering Transform}
 
+The scattering transform is implemented in ScatNet using the \mcode{scat} function. This function can be used to calculate several types of scattering transforms by varying the linear operators supplied to it.
+
 \subsection{The \mcode{scat} Function}
 
-\subsection{Network Layer \mcode{U{m}}, \mcode{S{m}}}
+The \mcode{scat} function takes as input a signal \mcode{x} and a set of linear operators \mcode{Wop} and outputs a scattering transform \mcode{S} and intermediate modulus coefficients \mcode{U}. A call to the \mcode{scat} thus looks like
+\begin{lstlisting}
+[S, U] = scat(x, Wop);
+\end{lstlisting}
+Often, the modulus coefficients \mcode{U} are not necessary and so can be left out.
+
+Outputs \mcode{S} and \mcode{U} are cell arrays, each element corresponding to a layer of the scattering transform. The format of these layers is described in the next subsection.
+
+Each element of the \mcode{Wop} is a function handle, with signature
+\begin{lstlisting}
+[A, V] = Wop{m+1}(X);
+\end{lstlisting}
+Note that operators are indexed starting at $m = 0$, so an offset of $1$ is necessary for compatibility with MATLAB. Here, \mcode{X}, \mcode{A} and \mcode{V} are all in the network layer format described in the next subsection. The linear operator \mcode{Wop\{m+1\}} transforms the signals in the \mcode{X} into two new layers: an invariant layer \mcode{A} (average) and a covariant layer \mcode{V} (variations). In the case of a wavelet transform, \mcode{A} corresponds to the averaging of the lowpass filter $\phi$ while \mcode{V} consists of the wavelet coefficients obtained by convolving with $\psi_j$.
+
+Initializing \mcode{U{1}} using the input signal, the following loop is then executed in \mcode{scat}
+\begin{lstlisting}
+for m = 0:numel(Wop)-1
+	if (m < numel(Wop)-1)
+		[S{m+1}, V] = Wop{m+1}(U{m+1});
+		U{m+2} = modulus_layer(V);
+	else
+		S{m+1} = Wop{m+1}(U{m+1});
+	end
+end
+\end{lstlisting}
+For each intermediate layer \mcode{U\{m+1\}}, we thus apply the linear operator \mcode{Wop\{m+1\}}, assigning the invariant output to the $m$th-order scattering layer \mcode{S\{m+1\}}, and computing the modulus of the covariant part to obtain the $(m+1)$th order intermediate coefficients \mcode{U{m+2}}. For the last layer, we do not need the intermediate coefficients, and so only compute the scattering coefficients.
+
+\subsection{Network Layers \mcode{S\{m+1\}} and Linear Operators \mcode{Wop\{m+1\}}}
+
+As mentioned earlier, each element of \mcode{S} and \mcode{U} are in the network layer format. These consist of two fields, \mcode{signal} and \mcode{meta}. The former is a cell array of signals and the latter is a structure containing information related to each signal.
+
+Specifically, each of the fields in \mcode{meta} is an array with the same number of columns as the length of \mcode{signal}. For example, the \mcode{meta.resolution} field has one row, indicating the extent the signal has been subsampled with respect to the original length. In the case of wavelet transforms used as linear operators, an important field is \mcode{meta.j}, which has a variable number of rows, describing the scales of the wavelets used to compute the coefficient. For a first-order coefficient $|x\star\psi_{j_1}|\star\phi(t)$, this will simply be one row containing $j_1$. For a second-order coefficient $||x\star\psi_{j_1}|\star\psi_{j_2}|\star\phi(t)$, the first row will contain $j_1$ while the second will contain $j_2$.
+
+Let us consider the example output \mcode{S} from the \mcode{scat} function using wavelet transforms as linear operators. In this case, \mcode{S\{m+1\}} will contain the $m$th-order scattering coefficients, with \mcode{S\{m+1\}.signal\{p\}} being the $p$th signal among these. Its scales $(j_1,j_2,\ldots,j_m)$ are specified in \mcode{S\{m+1\}.meta.j(:,p)}.
+
+As mentioned earlier, the \mcode{Wop\{m+1\}} function handles take as an input a network layer and outputs two layers, one invariant and one covariant. Any function with these inputs and outputs can be used as an element of \mcode{Wop}. Two basic functions can be used for this purpose: \mcode{wavelet_layer_1d} and \mcode{wavelet_layer_2d}, which define wavelet transforms on network layers. For example, supposing we have defined a filter bank \mcode{filters} (see next section), we can create an accompanying 1D wavelet transform by defining
+\begin{lstlisting}
+Wop{m+1} = @(U)(wavelet_layer_1d(U, filters));
+\end{lstlisting}
 
 \section{Creating Operators}
 
