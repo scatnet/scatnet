@@ -18,7 +18,7 @@ function [U_phi, U_psi] = wavelet_layer_2d(U, filters, options)
 		
 		% compute mask for progressive paths
 		options.psi_mask = calculate_psi & ...
-			(filters.psi.meta.j >= j + filters.meta.v);
+			(filters.psi.meta.j >= j + filters.meta.Q);
 		
 		% compute wavelet transform
 		[x_phi, x_psi] = wavelet_2d(x, filters, options);

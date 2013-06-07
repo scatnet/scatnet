@@ -21,11 +21,11 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	% mirror padding and fft
 	xf = fft2(pad_mirror_2d(x, margins));
 	
-	v = filters.meta.v;
+	Q = filters.meta.Q;
 	
 	% low pass filtering, downsampling and unpading
 	J = filters.phi.meta.J;
-	ds = max(floor(J/v)- lastres - oversampling, 0);
+	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
 	x_phi = real(conv_sub_unpad_2d(xf, filters.phi.filter, ds, margins));
 	
@@ -33,7 +33,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	x_psi = {};
 	for p = find(psi_mask)
 		j = filters.psi.meta.j(p);
-		ds = max(floor(j/v)- lastres - oversampling, 0);
+		ds = max(floor(j/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
 		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, margins);
 	end

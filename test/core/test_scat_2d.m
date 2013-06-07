@@ -1,7 +1,5 @@
-x = lena
-%x = x(1:256, 1:256);
-%%
-%x = imreadBW('ens.png');
+x = lena;
+
 %%
 clear options;
 %options.margins = [0, 0];

@@ -19,6 +19,6 @@ function [Wop, filters] = wavelet_factory_2d(size_in, options)
 	
 	% wavelet transforms :
 	for m = 1:options.M+1
-		wavelet{m} = @(x)(wavelet_layer_2d(x, filters, options));
+		Wop{m} = @(x)(wavelet_layer_2d(x, filters, options));
 	end
 end
