@@ -26,7 +26,6 @@ fWop1 = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt);
 scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
 format_fun1 = @(x)(format_scat(fscatt_fun1(x)));
-feature_fun1 = @(x,obj)(feature_wrapper(x,obj,format_fun1,N,T_s,2,1));
 
 filt2_opt = filt1_opt;
 filt2_opt.Q = [1 1];
@@ -45,7 +44,6 @@ fWop2 = wavelet_factory_1d(16, ffilt2_opt, fsc2_opt);
 scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
 fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
 format_fun2 = @(x)(format_scat(fscatt_fun2(x)));
-feature_fun2 = @(x,obj)(feature_wrapper(x,obj,format_fun2,N,T_s,2,1));
 
 filt3_opt = filt1_opt;
 filt3_opt.J = T_to_J(2*512,filt3_opt.Q);
@@ -57,7 +55,6 @@ Wop3 = wavelet_factory_1d(N, filt3_opt, sc3_opt);
 scatt_fun3 = @(x)(log_scat(renorm_scat(scat(x,Wop3))));
 fscatt_fun3 = @(x)(func_output(@scat_freq,2,scatt_fun3(x),fWop1));
 format_fun3 = @(x)(format_scat(fscatt_fun3(x)));
-feature_fun3 = @(x,obj)(feature_wrapper(x,obj,format_fun3,N,T_s,2,1));
 
 filt4_opt = filt2_opt;
 filt4_opt.J = T_to_J(2*512,filt4_opt.Q);
@@ -69,7 +66,6 @@ Wop4 = wavelet_factory_1d(N, filt4_opt, sc4_opt);
 scatt_fun4 = @(x)(log_scat(renorm_scat(scat(x,Wop4))));
 fscatt_fun4 = @(x)(func_output(@scat_freq,2,scatt_fun4(x),fWop2));
 format_fun4 = @(x)(format_scat(fscatt_fun4(x)));
-feature_fun4 = @(x,obj)(feature_wrapper(x,obj,format_fun4,N,T_s,2,1));
 
 filt5_opt = filt1_opt;
 filt5_opt.J = T_to_J(4*512,filt5_opt.Q);
@@ -81,7 +77,6 @@ Wop5 = wavelet_factory_1d(N, filt5_opt, sc5_opt);
 scatt_fun5 = @(x)(log_scat(renorm_scat(scat(x,Wop5))));
 fscatt_fun5 = @(x)(func_output(@scat_freq,2,scatt_fun5(x),fWop1));
 format_fun5 = @(x)(format_scat(fscatt_fun5(x)));
-feature_fun5 = @(x,obj)(feature_wrapper(x,obj,format_fun5,N,T_s,2,1));
 
 filt6_opt = filt2_opt;
 filt6_opt.J = T_to_J(4*512,filt6_opt.Q);
@@ -93,21 +88,26 @@ Wop6 = wavelet_factory_1d(N, filt6_opt, sc6_opt);
 scatt_fun6 = @(x)(log_scat(renorm_scat(scat(x,Wop6))));
 fscatt_fun6 = @(x)(func_output(@scat_freq,2,scatt_fun6(x),fWop2));
 format_fun6 = @(x)(format_scat(fscatt_fun6(x)));
-feature_fun6 = @(x,obj)(feature_wrapper(x,obj,format_fun6,N,T_s,2,1));
 
 duration_fun = @(x,obj)(32*duration_feature(x,obj));
 
-features = {feature_fun1, feature_fun2, feature_fun3, feature_fun4, feature_fun5, feature_fun6, duration_fun};
+features = {format_fun1, format_fun2, format_fun3, ...
+	format_fun4, format_fun5, format_fun6, duration_fun};
 
-for k = 1:length(features)
-    fprintf('testing feature #%d...',k);
-    tic;
-    sz = size(features{k}(randn(N,1),struct('u1',1,'u2',N)));
-    aa = toc;
-    fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
-end
+	for k = 1:length(features)
+		fprintf('testing feature #%d...',k);
+		tic;
+		sz = size(features{k}(randn(N,1)));
+		aa = toc;
+		fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
+	end
 
-db = prepare_database(src,features);
+database_opt.input_sz = N;
+database_opt.output_sz = T_s;
+database_opt.obj_normalize = 2;
+database_opt.collapse = 1;
+
+db = prepare_database(src,features,database_opt);
 db.features = single(db.features);
 db = svm_calc_kernel(db,'gaussian','triangle',[db.indices{train_set}]);
 

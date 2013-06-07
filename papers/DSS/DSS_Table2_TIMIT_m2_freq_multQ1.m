@@ -26,7 +26,6 @@ fWop1 = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt);
 scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
 format_fun1 = @(x)(format_scat(fscatt_fun1(x)));
-feature_fun1 = @(x,obj)(feature_wrapper(x,obj,format_fun1,N,T_s,2,1));
 
 filt2_opt = filt1_opt;
 filt2_opt.Q = [1 1];
@@ -45,21 +44,25 @@ fWop2 = wavelet_factory_1d(16, ffilt2_opt, fsc2_opt);
 scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
 fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
 format_fun2 = @(x)(format_scat(fscatt_fun2(x)));
-feature_fun2 = @(x,obj)(feature_wrapper(x,obj,format_fun2,N,T_s,2,1));
 
 duration_fun = @(x,obj)(32*duration_feature(x,obj));
 
-features = {feature_fun1, feature_fun2, duration_fun};
+features = {format_fun1, format_fun2, duration_fun};
 
 for k = 1:length(features)
-    fprintf('testing feature #%d...',k);
-    tic;
-    sz = size(features{k}(randn(N,1),struct('u1',1,'u2',N)));
-    aa = toc;
-    fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
+	fprintf('testing feature #%d...',k);
+	tic;
+	sz = size(features{k}(randn(N,1)));
+	aa = toc;
+	fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
 end
 
-db = prepare_database(src,features);
+database_opt.input_sz = N;
+database_opt.output_sz = T_s;
+database_opt.obj_normalize = 2;
+database_opt.collapse = 1;
+
+db = prepare_database(src,features,database_opt);
 db.features = single(db.features);
 db = svm_calc_kernel(db,'gaussian','triangle');
 

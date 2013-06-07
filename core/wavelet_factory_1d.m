@@ -17,11 +17,7 @@ function [Wop, filters] = wavelet_factory_1d(N, filter_options, scat_options)
 	
 	for m = 0:scat_options.M
 		filt_ind = min(numel(filters), m+1);
-		scat_options_m = scat_options;
-		if m == 0
-			scat_options_m.phi_renormalize = 0;
-		end
 		Wop{m+1} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, ...
-			scat_options_m));
+			scat_options));
 	end
 end

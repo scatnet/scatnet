@@ -25,11 +25,11 @@ duration_fun = @(x,obj)(32*duration_feature(x,obj));
 features = {feature_fun, duration_fun};
 
 for k = 1:length(features)
-    fprintf('testing feature #%d...',k);
-    tic;
-    sz = size(features{k}(randn(N,1),struct('u1',1,'u2',N)));
-    aa = toc;
-    fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
+	fprintf('testing feature #%d...',k);
+	tic;
+	sz = size(features{k}(randn(N,1)));
+	aa = toc;
+	fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
 end
 
 db = prepare_database(src,features);
