@@ -18,21 +18,25 @@ sc1_opt = struct();
 filters = filter_bank(N, filt1_opt);
 
 scatt_fun = @(x)(format_scat(log_scat(faspec(x,filters,sc1_opt))));
-feature_fun = @(x,obj)(feature_wrapper(x,obj,scatt_fun,N,T_s,2,1));
 
 duration_fun = @(x,obj)(32*duration_feature(x,obj));
 
-features = {feature_fun, duration_fun};
+features = {scatt_fun, duration_fun};
 
 for k = 1:length(features)
-    fprintf('testing feature #%d...',k);
-    tic;
-    sz = size(features{k}(randn(N,1),struct('u1',1,'u2',N)));
-    aa = toc;
-    fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
+	fprintf('testing feature #%d...',k);
+	tic;
+	sz = size(features{k}(randn(N,1)));
+	aa = toc;
+	fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
 end
 
-db = prepare_database(src,features);
+database_opt.input_sz = N;
+database_opt.output_sz = T_s;
+database_opt.obj_normalize = 2;
+database_opt.collapse = 1;
+
+db = prepare_database(src,features,database_opt);
 db.features = single(db.features);
 db = svm_calc_kernel(db,'gaussian','triangle');
 

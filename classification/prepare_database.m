@@ -18,14 +18,12 @@ function db = prepare_database(src,feature_fun,opt)
 	opt = fill_struct(opt,'file_normalize',[]);
 	opt = fill_struct(opt, 'parallel', 1);
 	
-	
 	features = cell(1,length(src.files));
 	obj_ind = cell(1,length(src.files));
 	
 	rows = 0;
 	cols = 0;
 	precision = 'double';
-	
 	
 	if (opt.parallel)
 		% parfor loop
@@ -129,7 +127,7 @@ function out = apply_features(x,objects,feature_fun,opt)
 		if nargin(feature_fun{k}) == 2
 			out{k,1} = feature_fun{k}(x,objects);
 		elseif nargin(feature_fun{k}) == 1
-			out{k,1} = feature_wrapper(x,objects,feature_fun{k});
+			out{k,1} = feature_wrapper(x,objects,feature_fun{k},opt);
 		else
 			error('Invalid number of inputs for feature function!')
 		end

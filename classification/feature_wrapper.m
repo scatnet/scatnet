@@ -27,25 +27,18 @@
 %       space/time dimension and K is the signal index, if multiple objects
 %       are given as input.
 
-function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
-		obj_normalize,collapse)
+function t = feature_wrapper(x,objects,fun,options)
+	%input_sz,output_sz,obj_normalize,collapse)
 	if nargin < 4
-		input_sz = [];
+		options = struct();
 	end
 	
-	if nargin < 5
-		output_sz = [];
-	end
+	options = fill_struct(options, 'input_sz', []);
+	options = fill_struct(options, 'output_sz', []);
+	options = fill_struct(options, 'obj_normalize', []);
+	options = fill_struct(options, 'collapse', 0);
 	
-	if nargin < 6
-		obj_normalize = [];
-	end
-	
-	if nargin < 7
-		collapse = 0;
-	end
-	
-	if isempty(input_sz)
+	if isempty(options.input_sz)
 		
 		buf = zeros([objects(1).u2-objects(1).u1+ones(size(objects(1).u1)), ...
 			length(objects)]);
@@ -53,14 +46,14 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 		u1 = [objects.u1];
 		u2 = [objects.u2];
 	else
-		if length(input_sz) == 1
-			input_sz = [input_sz 1];	
+		if length(options.input_sz) == 1
+			options.input_sz = [options.input_sz 1];	
 		end
 
-		buf = zeros([input_sz,length(objects)]);
+		buf = zeros([options.input_sz,length(objects)]);
 		
-		u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz/2);
-		u2 = u1+input_sz-1;
+		u1 = round(([objects.u1]+[objects.u2]+1)/2-options.input_sz/2);
+		u2 = u1+options.input_sz-1;
 	end
 	
 	% extract objects with bounding box
@@ -77,12 +70,12 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	end
 	
 	% normalize
-	if ~isempty(obj_normalize)
-		if obj_normalize == 1
+	if ~isempty(options.obj_normalize)
+		if options.obj_normalize == 1
 			n = sum(abs(buf),1);
-		elseif obj_normalize == 2
+		elseif options.obj_normalize == 2
 			n = sqrt(sum(abs(buf).^2,1));
-		elseif obj_normalize == Inf
+		elseif options.obj_normalize == Inf
 			n = max(abs(buf),[],1);
 		end
 		
@@ -91,16 +84,17 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	
 	t = fun(buf);
 	
-	if ~isempty(output_sz)
-		if length(output_sz) == 1
-			output_sz = [output_sz 1];
+	if ~isempty(options.output_sz)
+		if length(options.output_sz) == 1
+			options.output_sz = [options.output_sz 1];
 		end
 		
 		N = [size(t,2) size(t,3)];
-		extent = floor(output_sz./(2*input_sz).*N);
+		extent = floor(options.output_sz./(2*options.input_sz).*N);
 	
-		if N(2) > 1
-			t = t(:,N(1)/2+1-extent(1):N(1)/2+1+extent(1),N(2)/2+1-extent(2):N(2)/2+1+extent(2),:);
+		if options.input_sz(2) > 1
+			t = t(:,N(1)/2+1-extent(1):N(1)/2+1+extent(1), ...
+				N(2)/2+1-extent(2):N(2)/2+1+extent(2),:);
 		else
 			t = t(:,N(1)/2+1-extent(1):N(1)/2+1+extent(1),1,:);
 		end
@@ -108,7 +102,7 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	
 	t = reshape(t,[size(t,1) size(t,2)*size(t,3) size(t,4)]);
 	
-	if collapse
+	if options.collapse
 		t = reshape(t,[size(t,1)*size(t,2) 1 size(t,3)]);
 	end
 end
