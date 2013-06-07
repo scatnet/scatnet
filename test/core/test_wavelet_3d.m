@@ -33,7 +33,7 @@ plot_meta_layer(y_Psi.meta)
 %% check number of coefficient
 K = filters_rot.J;
 J = filters.meta.J;
-L = filters.meta.nb_angle;
+L = filters.meta.L;
 
 nb_phi_psi = K;
 nb_psi_psi = (J-1)*L;
