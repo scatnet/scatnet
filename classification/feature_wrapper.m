@@ -52,12 +52,12 @@ function t = feature_wrapper(x,objects,fun,options)
 
 		buf = zeros([options.input_sz,length(objects)]);
 		
-		if input_sz(2)==1
-			u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz(1)/2);
-			u2 = u1+input_sz(1)-1;
+		if options.input_sz(2)==1
+			u1 = round(([objects.u1]+[objects.u2]+1)/2-options.input_sz(1)/2);
+			u2 = u1+options.input_sz(1)-1;
 		else
-			u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz/2);
-			u2 = u1+input_sz-1;
+			u1 = round(([objects.u1]+[objects.u2]+1)/2-options.input_sz/2);
+			u2 = u1+options.input_sz-1;
 		end
 	end
 	
