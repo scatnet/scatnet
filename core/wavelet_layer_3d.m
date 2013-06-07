@@ -30,7 +30,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 		
 		% compute mask for progressive paths
 		options.psi_mask = calculate_psi & ...
-			(filters.psi.meta.j >= j + filters.meta.v);
+			(filters.psi.meta.j >= j + filters.meta.Q);
 		
 		if (calculate_psi)
 			% compute wavelet transform

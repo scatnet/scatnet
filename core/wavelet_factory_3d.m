@@ -5,7 +5,7 @@ function [ Wop, filters, filters_rot ] = ...
 	filters = morlet_filter_bank_2d(size_in, options);
 	
 	% filters along angular variable
-	sz = filters.meta.nb_angle * 2; % nb_angle is between 0 and pi
+	sz = filters.meta.L * 2; % L orientations between 0 and pi
 	% periodic convolutions along angles
 	options_rot.boundary = 'per';
 	options_rot.filter_format = 'fourier_multires';

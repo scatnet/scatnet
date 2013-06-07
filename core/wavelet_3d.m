@@ -71,7 +71,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		% low pass angle
 		y_phi_angle =  sum(y, 3) / 2^(ds_angle/2);
 		% low pass spatial
-		ds = max(floor(J/v)- lastres - oversampling, 0);
+		ds = max(floor(J/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^lastres;
 		tmp = fft2(pad_mirror_2d(y_phi_angle, margins));
 		margins = filters.meta.margins / 2^(lastres+ds);
