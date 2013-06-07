@@ -65,7 +65,7 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 		switch n_dim
 			case 1
 				ind = max(u1(l),1):min(u2(l),length(x));
-				buf(:,l) = [zeros(max(0,1-u1(l)),1); x(ind); zeros(max(0,u2(l)-length(x)),1)];
+				buf(:,1,l) = [zeros(max(0,1-u1(l)),1); x(ind); zeros(max(0,u2(l)-length(x)),1)];
 			case 2
 				buf = x;
 				% TODO : extract bounding box
