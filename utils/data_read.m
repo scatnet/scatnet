@@ -8,10 +8,9 @@ function varargout = data_read(file,varargin)
 	elseif length(file) > 4 && strcmpi(file(end-3:end),'.wav')
 		s = textread(file,'%s',1);
 		if isempty(strfind(s{1},'NIST_1A'))
-			% TODO: Allow for 'size' parameter
 			[varargout{1},varargout{2}] = wavread(file,varargin{:});
 		else
-			[varargout{1},varargout{2}] = readnist(file,varargin{:});
+			[varargout{1},varargout{2}] = sphere_read(file,varargin{:});
 		end
 	elseif length(file) > 4 && strcmpi(file(end-3:end),'.jpg')
 		varargout{1} = imreadBW(file,varargin{:});
