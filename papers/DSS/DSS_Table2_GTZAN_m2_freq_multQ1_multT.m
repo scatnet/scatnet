@@ -104,7 +104,9 @@ db = prepare_database(src,features);
 db.features = single(db.features);
 db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
 
-load('prts-gtzan.mat');
+partitions = load('prts-gtzan.mat');
+train_set = partitions.prt_train;
+test_set = partitions.prt_test;
 
 optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
