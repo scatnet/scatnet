@@ -204,9 +204,80 @@ Instead of a scattering output \mcode{S}, we can also specify intermediate modul
 
 \subsection{2D}
 
+LAURENT
+
 \section{Classification}
 
+ScatNet contains a classification pipeline for affine space and support vector classifiers. These let the user specify a feature transformation for computing features in batch form, then set up a training/testing mechanism for evaluating results.
+
 \subsection{Batch Computation}
+
+To compute scattering coefficients for a database of signals, we first define a source. A source is a set of files, each file containing a number of objects to be classified. Each object has a class and a location within the file.
+
+The source can be created using \mcode{create_src(directory, extract_objects_fun)} (or one of its wrappers, such as \mcode{gtzan_src}, \mcode{phone_src}, \mcode{uiuc_src}, etc). Given a directory, this function recursively traverses it, looking for `.jpg', `.wav', or `.au' files. For each such file, it calls \mcode{extract_objects_fun} to determine its constituent objects and their classes. To add a new database, it suffices to write the corresponding \mcode{extract_objects_fun} function.
+
+The \mcode{extract_objects_fun} function has the following signature
+\begin{lstlisting}
+[objects, classes] = extract_objects_fun(file);
+\end{lstlisting}
+Given a file, it returns a structure array \mcode{objects} of the objects it contains and a cell array of their class names \mcode{classes}. The structure of the \mcode{objects} variable is described below.
+
+Most often, a file will only contain one object, so \mcode{objects} is a  structure of size one, but this can vary from database to database (for example in speech recognition a file corresponds to a recording of a phrase, which can contain different phones to be classified).
+
+The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in a 2D (or 1D) signal. These bounds are inclusive. For the case where a file only contains one object, the bounds will simply be the bounds of the signal. If desired, additional fields can be specified that will be passed on and saved in the source structure.
+
+Given a directory and this function, \mcode{create_src} returns a source structure \mcode{src}, which has the following fields
+\begin{itemize}
+	\item \mcode{src.classes}: A cell array of the class names.
+	\item \mcode{src.files}: A cell array of the file names.
+	\item \mcode{src.objects}: A struct array of the objects returned by applying \mcode{objects_fun} to each filename, but with two supplementary fields: \mcode{src.objects.ind}, corresponding to the index of its parent filename in \mcode{src.files} and \mcode{src.objects.class}, corresponding to the index of its class in \mcode{src.classes}.
+\end{itemize}
+
+The scattering coefficients of the objects in \mcode{src} can now be calculated using the function \mcode{prepare_database}. This function takes for input the \mcode{src} structure, a function handle \mcode{feature_fun}, which calculates the feature representation, and an options structure. If we want to calculate multiple feature representations and concatenate the results, their feature functions can be assembled into a cell array and given instead of \mcode{feature_fun}.
+
+A ``feature function'' takes as input one or more signals and returns the their feature vectors. Its signature is thus
+\begin{lstlisting}
+features = feature_fun(signal);
+\end{lstlisting}
+
+When \mcode{signal} is a 1D signal, \mcode{features} should be a 2D matrix (potentially just a column vector) where the first dimension is the feature index and the second dimension is a time index. The \mcode{signal} argument can also be a collection of 1D signals, arranged as a columns of a 2D matrix. In this case, the output \mcode{features} is a 3D array, with the first two dimensions being the same, but the third dimension corresponding to the signal index in \mcode{signal}.
+
+Similarly, for \mcode{signal} being a 2D signal, \mcode{features} is a 2D matrix with first dimension corresponding to feature dimension and the second dimension corresponding to a space index. Again, multiple 2D signals can be given to \mcode{feature_fun} by specifying \mcode{signal} to be a 3D array, with signals arranged along the third dimension. The output \mcode{features} will then also be a 3D array as in the 1D case.
+
+Note that a feature function is not required to output only one feature vector for each signal. That is, it can leave a time/space index in the output feature representation. If more than one feature vector is associated to a single signal object, the classifier will classify each feature vector separately and aggregate the results, either through averaging the approximation error (for the affine space classifier) or through voting (for the SVM classifier). If this is not desired, the user has to make sure that the feature function only returns feature vectors with one time index per signal.
+
+The \mcode{scat} function, combined with the \mcode{format_scat} function, fulfills the above criteria. As such, we can use it to define a feature function for \mcode{prepare_database}. For batch calculation of second-order audio scattering vectors for the GTZAN dataset, we have the following code.
+\begin{lstlisting}
+N = 5*2^17;
+src = gtzan_src;
+
+filt_opt = default_filter_options('audio', 8192);
+scat_opt = struct();
+
+Wop = wavelet_factory_1d(N, filt_opt, scat_opt, 2);
+
+feature_fun = @(x)(format_scat( ...
+	log_scat(renorm_scat(scat(x, Wop)))));
+	
+database_opt = struct();
+	
+database = prepare_database(src, feature_fun, database_opt);
+\end{lstlisting}
+Observe the signal length \mcode{N}, which is equal to the length of the signals contained in \mcode{gtzan_src}. 
+
+The \mcode{database_opt} contains options given to \mcode{prepare_database}. These include:
+\begin{itemize}
+	\item \mcode{database_opt.feature_sampling}: The factor by which the features should be downsampled. Useful for reducing computational complexity of the classifier training and testing (default \mcode{1} - no downsampling).
+	\item \mcode{database_opt.file_normalize}: The norm to use when normalizing each file. Can be either \mcode{1}, \mcode{2}, \mcode{Inf} or \mcode{[]}, corresponding to $\mathbf{l}^1$, $\mathbf{l}^2$, $\mathbf{l}^\infty$ norms and no normalization, respectively (default \mcode{[]}).
+	\item \mcode{database_opt.parallel}: If \mcode{1}, \mcode{prepare_database} will attempt to parallelize the code by using the \mcode{parfor} construct from the MATLAB Distributed Computing Toolbox. Note that if this is not available, performance may be worse since MATLAB will only use one core (default \mcode{1}).
+\end{itemize}
+
+The resulting \mcode{database} structure now contains three fields:
+\begin{itemize}
+	\item \mcode{database.src}: The original \mcode{src} structure from which the features were computed.
+	\item \mcode{database.features}: The feature vectors, arranged in a 2D matrix, each feature vector forming a column.
+	\item \mcode{database.indices}: The indices corresponding to each object in \mcode{database.src}. Specifically, \mcode{database.features(:,database.indices\{k\})} contains the features vector(s) calculated from \mcode{database.src.objects(k)}. If there is one feature vector per object, each element of \mcode{database.indices} is a scalar.
+\end{itemize}
 
 \subsection{Affine Space Classifier}
 
