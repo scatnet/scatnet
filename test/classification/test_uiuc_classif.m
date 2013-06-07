@@ -66,3 +66,4 @@ for i = 1:100
 	err_3d_log(i) = classif_err(labels, test_set, src);
 	fprintf('fold %d correct %d \n',i,100*(1- err_3d_log(i)));
 end
+
