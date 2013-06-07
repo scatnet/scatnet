@@ -53,6 +53,10 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 		u1 = [objects.u1];
 		u2 = [objects.u2];
 	else
+		if length(input_sz) == 1
+			input_sz = [input_sz 1];	
+		end
+
 		buf = zeros([input_sz,length(objects)]);
 		
 		u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz/2);
@@ -88,10 +92,18 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 	t = fun(buf);
 	
 	if ~isempty(output_sz)
-		N = size(t,2);
-		extent = floor(output_sz/(2*input_sz)*N);
+		if length(output_sz) == 1
+			output_sz = [output_sz 1];
+		end
 		
-		t = t(:,N/2+1-extent:N/2+1+extent,:);
+		N = [size(t,2) size(t,3)];
+		extent = floor(output_sz./(2*input_sz).*N);
+	
+		if N(2) > 1
+			t = t(:,N(1)/2+1-extent(1):N(1)/2+1+extent(1),N(2)/2+1-extent(2):N(2)/2+1+extent(2),:);
+		else
+			t = t(:,N(1)/2+1-extent(1):N(1)/2+1+extent(1),1,:);
+		end
 	end
 	
 	t = reshape(t,[size(t,1) size(t,2)*size(t,3) size(t,4)]);
