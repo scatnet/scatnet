@@ -1,4 +1,8 @@
 function [y, fs] = sphere_read(filename, N)
+	if nargin < 2
+		N = [];
+	end
+	
 	fid = fopen(filename);
 	
 	if fid == -1
@@ -66,6 +70,10 @@ function [y, fs] = sphere_read(filename, N)
 	if ischar(N) && strcmp(N,'size')
 		y = count;
 		return;
+	end
+	
+	if ~isempty(N) && isnumeric(N)
+		count = N;
 	end
 	
 	if isempty(byte_format)
