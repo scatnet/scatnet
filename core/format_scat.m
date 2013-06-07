@@ -66,20 +66,14 @@ function [out,meta] = format_scat(X,fmt)
 				tables{m+1} = [];
 			else
 				tables{m+1} = zeros( ...
-					[length(X{m+1}.signal), ...
-					size(X{m+1}.signal{1},1), ...
-					size(X{m+1}.signal{1},2)], ...
+					[length(X{m+1}.signal) size(X{m+1}.signal{1})], ...
 					class(X{m+1}.signal{1}));
 				
 				for j1 = 0:length(X{m+1}.signal)-1
-					tables{m+1}(j1+1,:,:) = X{m+1}.signal{j1+1};
+					tables{m+1}(j1+1,1:numel(X{m+1}.signal{1})) = X{m+1}.signal{j1+1}(:);
 				end
 				
 				last = m;
-			end
-			
-			if size(tables{m+1},3) == 1
-				tables{m+1} = tables{m+1}(:,:,1);
 			end
 			
 			metas{m+1} = X{m+1}.meta;

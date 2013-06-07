@@ -33,6 +33,8 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	% resolution of x - how much have we subsampled by?
 	j0 = log2(filters.N/N_padded);
 	
+	x = reshape(x, [size(x,1), size(x,3)]);
+	
 	x = pad_signal_1d(x, N_padded, filters.boundary);
 	
 	xf = fft(x,[],1);
@@ -47,6 +49,8 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	meta_phi.j = -1;
 	meta_phi.bandwidth = phi_bw;
 	meta_phi.resolution = ds;
+	
+	x_phi = reshape(x_phi, [size(x_phi,1) 1 size(x_phi,2)]);
 	
 	if options.phi_renormalize
 		x_renorm = real(conv_sub_1d(xf, filters.phi.filter, 0));
@@ -69,5 +73,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		meta_psi.j(:,p1) = p1-1;
 		meta_psi.bandwidth(:,p1) = psi_bw(p1);
 		meta_psi.resolution(:,p1) = ds;
+		
+		x_psi{p1} = reshape(x_psi{p1}, [size(x_psi{p1},1) 1 size(x_psi{p1},2)]);
 	end
 end
