@@ -12,7 +12,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	precision_4byte = getoptions(options, 'precision_4byte', 1);
 	
 	% option retrieving
-	antialiasing = getoptions(options, 'antialiasing', 1);
+	oversampling = getoptions(options, 'oversampling', 1);
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 	
 	% precomputation
@@ -25,7 +25,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	
 	% low pass filtering, downsampling and unpading
 	J = filters.phi.meta.J;
-	ds = max(floor(J/v)- lastres - antialiasing, 0);
+	ds = max(floor(J/v)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
 	x_phi = real(conv_sub_unpad_2d(xf, filters.phi.filter, ds, margins));
 	
@@ -33,7 +33,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	x_psi = {};
 	for p = find(psi_mask)
 		j = filters.psi.meta.j(p);
-		ds = max(floor(j/v)- lastres - antialiasing, 0);
+		ds = max(floor(j/v)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
 		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, margins);
 	end

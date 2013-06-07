@@ -45,12 +45,12 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		options = struc();
 	end
 	
-	v = filters.meta.v;
+	Q = filters.meta.Q;
 	J = filters.meta.J;
 	
 	% option retrieving
-	antialiasing = getoptions(options, 'antialiasing', 1);
-	antialiasing_rot = getoptions(options, 'antialiasing_rot', -1);
+	oversampling = getoptions(options, 'oversampling', 1);
+	oversampling_rot = getoptions(options, 'oversampling_rot', -1);
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 	
 	% precomputation
@@ -63,7 +63,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 	% ------- LOW PASS -------
 	% ------- PHI(U,V) * PHI(THETA) -------
 	phi_angle = filters_rot.phi.filter;
-	ds_angle = max(filters_rot.J/filters_rot.Q - antialiasing_rot, 0);
+	ds_angle = max(filters_rot.J/filters_rot.Q - oversampling_rot, 0);
 	if (~calculate_psi && 2^ds_angle == size(y,3))
 		% if there is one coefft left along angle, compute the sum
 		% along angle first is more efficient
@@ -71,7 +71,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		% low pass angle
 		y_phi_angle =  sum(y, 3) / 2^(ds_angle/2);
 		% low pass spatial
-		ds = max(floor(J/v)- lastres - antialiasing, 0);
+		ds = max(floor(J/v)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^lastres;
 		tmp = fft2(pad_mirror_2d(y_phi_angle, margins));
 		margins = filters.meta.margins / 2^(lastres+ds);
@@ -91,7 +91,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		
 		% low pass spatial (filter along first two dimension)
 		for theta = 1:nb_angle_in
-			ds = max(floor(J/v)- lastres - antialiasing, 0);
+			ds = max(floor(J/Q)- lastres - oversampling, 0);
 			margins = filters.meta.margins / 2^(lastres+ds);
 			tmp = ...
 				real(conv_sub_unpad_2d(yf(:,:,theta), filters.phi.filter, ds, margins));
@@ -107,7 +107,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		
 		% low pass angle 
 		phi_angle = filters_rot.phi.filter;
-		ds = max(filters_rot.J/filters_rot.Q - antialiasing_rot, 0);
+		ds = max(filters_rot.J/filters_rot.Q - oversampling_rot, 0);
 		if (2^ds == size(y_phi,3)) % if there is one coefft left, compute the sum
 			% is faster than convolving with a constant filter
 			y_Phi.signal{1} = sum(y_phi,3) / 2^(ds/2);
@@ -144,7 +144,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		for lambda2 = find(psi_mask)
 			theta2 = filters.psi.meta.theta(lambda2);
 			j2 = filters.psi.meta.j(lambda2);
-			ds = max(floor(j2/v)- lastres - antialiasing, 0);
+			ds = max(floor(j2/Q)- lastres - oversampling, 0);
 			
 			% convolution with psi_{j1, theta + theta2}
 			for theta = 1:nb_angle_in
@@ -222,28 +222,5 @@ function z_conv_filter = sub_conv_1d_along_third_dim_simple(zf, filter, ds)
 		z_conv_filter = 2^(ds/2)*z_conv_filter(:,:,1:2^ds:end);
 	end
 end
-
-
-
-
-% slower than sub_conv_1d_along_third_dim_simple because of reshape and
-% sum overhead
-% function z_conv_filter = sub_conv_1d_along_third_dim(zf, filter, ds)
-% 	N = size(zf, 1);
-% 	M = size(zf, 2);
-% 	nb_angle = size(zf, 3);
-% 	% reformat z to be compatible with conv_sub_1d
-% 	% where filtering is along dimension 1
-% 	zf = permute( zf, [3, 1 ,2]);
-% 	zf = reshape( zf, nb_angle, N*M);
-%
-% 	z_conv_filter = conv_sub_1d( zf, filter, ds);
-% 	nb_angle_ds = size(z_conv_filter, 1);
-% 	% reformat in original format
-% 	z_conv_filter = reshape( z_conv_filter, nb_angle_ds, N, M);
-% 	z_conv_filter = permute( z_conv_filter, [2, 3, 1]);
-% end
-
-
 
 
