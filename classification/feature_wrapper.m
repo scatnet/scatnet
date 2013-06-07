@@ -94,6 +94,8 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 		t = t(:,N/2+1-extent:N/2+1+extent,:);
 	end
 	
+	t = reshape(t,[size(t,1) size(t,2)*size(t,3) size(t,4)]);
+	
 	if collapse
 		t = reshape(t,[size(t,1)*size(t,2) 1 size(t,3)]);
 	end
