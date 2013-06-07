@@ -1,5 +1,5 @@
 function [out,meta] = faspec(in,filters,options)
-	options = fill_struct(options,'antialiasing',1);
+	options = fill_struct(options,'oversampling',1);
 	
 	filters1 = filters{1};
 	filters2 = filters{min(2,numel(filters))};
@@ -22,12 +22,12 @@ function [out,meta] = faspec(in,filters,options)
 	window = ifft(realize_filter(filters2.phi.filter));
 	window = [window(Nfilt-N1*supp_mult/2+1:Nfilt); window(1:N1*supp_mult/2)];
 	
-	frames = zeros(length(window),round(N/N1*2^options.antialiasing),size(in,2));
+	frames = zeros(length(window),round(N/N1*2^options.oversampling),size(in,2));
 	
 	out = zeros(size(frames,2),size(fs,2),size(in,2));
 	
 	for t = 0:size(out,1)-1
-		ind = round(t*N1/2^options.antialiasing+[-N1*supp_mult/2:N1*supp_mult/2-1]+1);
+		ind = round(t*N1/2^options.oversampling+[-N1*supp_mult/2:N1*supp_mult/2-1]+1);
 		
 		% symmetric extension
 		ind(ind<1) = 1-ind(ind<1);
@@ -43,7 +43,7 @@ function [out,meta] = faspec(in,filters,options)
 	out = fs.'*reshape(frame_fm,[size(frame_fm,1) size(frame_fm,2)*size(frame_fm,3)]);
 	out = reshape(out,[size(fs,2) size(frame_fm,2) size(frame_fm,3)]);
 	
-	resolution = round(log2(N1))-options.antialiasing;
+	resolution = round(log2(N1))-options.oversampling;
 
 	meta.order = ones(size(fs,2),1);
 	meta.scale = [0:size(fs,2)-1]';

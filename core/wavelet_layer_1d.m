@@ -4,8 +4,8 @@
 % Input
 %    U: The input layer to be transformed.
 %    filters: The filters of the wavelet transform.
-%    options: Various options for the transform. options.antialiasing controls
-%       the antialiasing factor when subsampling.
+%    options: Various options for the transform. options.oversampling controls
+%       the oversampling factor when subsampling.
 % Output
 %    U_phi The coefficients of in, lowpass-filtered (scattering coefficients).
 %    U_psi: The wavelet transform coefficients.

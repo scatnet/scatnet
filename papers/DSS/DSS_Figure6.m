@@ -14,10 +14,10 @@ fparam.Q = 4*fparam.B;
 fparam.J(1) = T_to_J(1024,fparam.Q(1));
 fparam.J(2) = T_to_J(65536,fparam.Q(2));
 options = struct();
-options.antialiasing=5;
+options.oversampling=5;
 Wop = wavelet_factory_1d(length(v), fparam,options, 2);
 
-%[Compute the scattering vector with options.antialiasing set to 100
+%[Compute the scattering vector with options.oversampling set to 100
 [S, U]=scat(v, Wop);
 
 S = renorm_scat(S,1e-2);
