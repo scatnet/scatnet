@@ -12,13 +12,13 @@
 
 function [Wop, filters] = wavelet_factory_2d(size_in, options)
 	options.null = 1;
-	options = fill_struct(options, 'nb_layer', 3);
+	options = fill_struct(options, 'M', 2); % the maximum scattering order
 	
 	% filters :
 	filters = morlet_filter_bank_2d(size_in, options);
 	
 	% wavelet transforms :
-	for m = 1:options.nb_layer
-		Wop{m} = @(x)(wavelet_layer_2d(x, filters, options));
+	for m = 1:options.M+1
+		wavelet{m} = @(x)(wavelet_layer_2d(x, filters, options));
 	end
 end

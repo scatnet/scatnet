@@ -22,8 +22,8 @@ margin = 4;
 N = 2*n+1;
 N_margin = N + margin;
 J = filters.meta.J;
-nb_angle = filters.meta.nb_angle;
-big_img = ones(N_margin*J, (2*nb_angle+1)*N_margin);
+L = filters.meta.L;
+big_img = ones(N_margin*J, (2*L+1)*N_margin);
 
 
 % low pass : first on the left
@@ -49,7 +49,7 @@ for p = 1:numel(filters.psi.filter)
   
   big_img((1:N)+ j*N_margin, (1:N) + (theta)*N_margin) = ...
     real(filt_for_disp)/M;
-  big_img((1:N)+ j*N_margin, (1:N) + (theta+nb_angle)*N_margin) = ...
+  big_img((1:N)+ j*N_margin, (1:N) + (theta+L)*N_margin) = ...
     imag(filt_for_disp)/M;
 end
 

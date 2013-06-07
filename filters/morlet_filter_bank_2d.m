@@ -6,9 +6,9 @@
 % Input 
 % - size_in : <1x2 int> size of the input of the scattering
 % - options : [optional] <1x1 struct> contains the following optional fields
-%   - v          : <1x1 int> the number of scale per octave
+%   - Q          : <1x1 int> the number of scale per octave
 %   - J          : <1x1 int> the total number of scale.
-%   - nb_angle   : <1x1 int> the number of orientations
+%   - L   : <1x1 int> the number of orientations
 %   - sigma_phi  : <1x1 double> the width of the low pass phi_0
 %   - sigma_psi  : <1x1 double> the width of the envelope
 %                                   of the high pass psi_0
@@ -36,22 +36,22 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	
 	options.null = 1;
 	
-	v = getoptions(options, 'v', 1); % number of scale per octave
+	Q = getoptions(options, 'Q', 1); % number of scale per octave
 	J = getoptions(options, 'J', 4); % total number of scales
-	nb_angle = getoptions(options, 'nb_angle', 8); % number of orientations
+	L = getoptions(options, 'L', 8); % number of orientations
 	
-	sigma_phi  = getoptions(options, 'sigma_phi',   0.8);
+	sigma_phi  = getoptions(options, 'sigma_phi',  0.8);
 	sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
-	xi_psi     = getoptions(options, 'xi_psi',     3*pi/4);
-	slant_psi  = getoptions(options, 'slant_psi',  0.5);
+	xi_psi     = getoptions(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);
+	slant_psi  = getoptions(options, 'slant_psi',  4/L);
 	
-	res_max = floor(J/v);
+	res_max = floor(J/Q);
 	% compute margin for padding
 	% make sure size_in is multiple of 2^res_max
 	if (sum(size_in/2^res_max == floor(size_in/2^res_max))~=2)
 		error('size_in must be multiple of downsampling');
 	end
-	margins_default = min(sigma_phi*2^((J-1)/v), size_in/2);
+	margins_default = min(sigma_phi*2^((J-1)/Q), size_in/2);
 	margins_default = 2^res_max * ceil(margins_default/2^res_max);
 	margins = ...
 		getoptions(options, 'margins', margins_default);
@@ -71,14 +71,14 @@ function filters = morlet_filter_bank_2d(size_in, options)
 		M = ceil(size_filter(2) / 2^res);
 		
 		% compute low pass filters phi
-		scale = 2^((J-1) / v - res);
+		scale = 2^((J-1) / Q - res);
 		filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
 		phi.filter.coefft{res+1} = fft2(filter_spatial);
 		phi.meta.J = J;
 		
 		littlewood_final = zeros(N, M);
 		% compute high pass filters psi
-		angles = (0:nb_angle-1)  * pi / nb_angle;
+		angles = (0:L-1)  * pi / L;
 		p = 1;
 		for j = 0:J-1
 			for theta = 1:numel(angles)
@@ -86,7 +86,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 				psi.filter{p}.type = 'fourier_multires';
 				
 				angle = angles(theta);
-				scale = 2^(j/v - res);
+				scale = 2^(j/Q - res);
 				if (scale >= 1)
 					if (res==0)
 						filter_spatial = morlet_2d_noDC(N, ...
@@ -126,9 +126,9 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	filters.phi = phi;
 	filters.psi = psi;
 	
-	filters.meta.v = v;
+	filters.meta.Q = Q;
 	filters.meta.J = J;
-	filters.meta.nb_angle = nb_angle;
+	filters.meta.L = L;
 	filters.meta.sigma_phi = sigma_phi;
 	filters.meta.sigma_psi = sigma_psi;
 	filters.meta.xi_psi = xi_psi;
