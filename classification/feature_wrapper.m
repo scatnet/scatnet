@@ -59,8 +59,13 @@ function t = feature_wrapper(x,objects,fun,input_sz,output_sz, ...
 
 		buf = zeros([input_sz,length(objects)]);
 		
-		u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz/2);
-		u2 = u1+input_sz-1;
+		if input_sz(2)==1
+			u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz(1)/2);
+			u2 = u1+input_sz(1)-1;
+		else
+			u1 = round(([objects.u1]+[objects.u2]+1)/2-input_sz/2);
+			u2 = u1+input_sz-1;
+		end
 	end
 	
 	% extract objects with bounding box
