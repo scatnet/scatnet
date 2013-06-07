@@ -16,11 +16,9 @@ fparam.spline_order=3;
 fparam.J = Jmax-1;
 fparam.Q = 1;
 
-%options
-options = struct();
-%Wop
+options.M = fparam.J;
 
-Wop = wavelet_factory_1d(N, fparam,options, fparam.J);
+Wop = wavelet_factory_1d(N, fparam,options);
 
 %Random Bernouilli signal with probability of occurrence of p
 p = 0.01;

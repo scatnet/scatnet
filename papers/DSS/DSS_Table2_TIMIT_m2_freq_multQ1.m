@@ -14,15 +14,15 @@ filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
 filt1_opt.J = T_to_J(512,filt1_opt.Q);
 
-sc1_opt = struct();
+sc1_opt.M = 2;
 
 ffilt1_opt.filter_type = 'morlet_1d';
 ffilt1_opt.J = 6;
 
-fsc1_opt = struct();
+fsc1_opt.M = 1;
 
-Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt, 2);
-fWop1 = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt, 1); 
+Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt);
+fWop1 = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt); 
 
 scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
@@ -40,8 +40,8 @@ ffilt2_opt.J = 4;
 
 fsc2_opt = fsc1_opt;
 
-Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt, 2);
-fWop2 = wavelet_factory_1d(16, ffilt2_opt, fsc2_opt, 1); 
+Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt);
+fWop2 = wavelet_factory_1d(16, ffilt2_opt, fsc2_opt); 
 
 scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
 fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));

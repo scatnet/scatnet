@@ -14,16 +14,15 @@ filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
 filt1_opt.J = T_to_J(8192,filt1_opt.Q);
 
-sc1_opt=struct();
+sc1_opt.M = 2;
+
 ffilt1_opt.filter_type = 'morlet_1d';
 ffilt1_opt.J = 7;
 
+fsc1_opt.M = 1;
 
-fsc1_opt=struct();
-
-
-Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt, 2);
-fWop1 = wavelet_factory_1d(128, ffilt1_opt,fsc1_opt, 1);
+Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt);
+fWop1 = wavelet_factory_1d(128, ffilt1_opt, fsc1_opt);
 
 scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
 % [~,U] = scat_freq(scat_fun(x),fWop1);
@@ -43,8 +42,8 @@ ffilt2_opt.J = 5; %For the momen I don't know how to choose the right
 
 fsc2_opt = fsc1_opt;
 
-Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt, 2);
-fWop2 = wavelet_factory_1d(32, ffilt2_opt, fsc2_opt, 1);% ici aussi, pas sure de la valeur
+Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt);
+fWop2 = wavelet_factory_1d(32, ffilt2_opt, fsc2_opt);% ici aussi, pas sure de la valeur
 %utilisee pour N.
 
 scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));

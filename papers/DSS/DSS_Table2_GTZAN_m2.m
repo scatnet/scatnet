@@ -12,11 +12,14 @@ src=gtzan_src('/home/anden/GTZAN/gtzan');
 
 
 fparam.filter_type = {'gabor_1d','morlet_1d'};
- fparam.Q = [8 2];
+fparam.Q = [8 2];
 fparam.J = T_to_J(8192,fparam.Q);
-options = struct();
-Wavelet = wavelet_factory_1d(N, fparam,options,2);
-feature_fun = {@(x)((squeeze(format_scat(log_scat(renorm_scat(scat(x,Wavelet)))))))};
+
+options.M = 2;
+
+Wop = wavelet_factory_1d(N, fparam, options);
+
+feature_fun = {@(x)((squeeze(format_scat(log_scat(renorm_scat(scat(x,Wop)))))))};
 
 
 %matlabpool 8

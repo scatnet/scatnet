@@ -19,7 +19,7 @@ for l = 1:length(Js)
 	
 	opts{l}.J = T_to_J(2^Js(l),opts{l}.Q,opts{l}.B);
 
-	Wop{l} = wavelet_factory_1d(N, opts{l}, struct(), M); 
+	Wop{l} = wavelet_factory_1d(N, opts{l}, struct('M', M)); 
 end
 
 E = zeros(length(Js),M+1,length(files));

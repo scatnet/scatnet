@@ -14,9 +14,9 @@ filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
 filt1_opt.J = T_to_J(512,filt1_opt.Q);
 
-sc1_opt = struct();
+sc1_opt.M = 1;
 
-Wop = wavelet_factory_1d(N, filt1_opt, sc1_opt, 1);
+Wop = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 
 scatt_fun = @(x)(permute(format_scat(log_scat(renorm_scat(scat(x,Wop)))),[3 1 2]));
 feature_fun = @(x,obj)(feature_wrapper(x,obj,scatt_fun,N,T_s,2,1));

@@ -27,11 +27,13 @@ fparam3.filter_type = {'spline_1d'};
 fparam3.spline_order=3;
 fparam.Q = 1;
 
-options = struct();
+options1.M = 6;
+options2.M = 6;
+options3.M = 6;
 
-Wop1 = wavelet_factory_1d(N, fparam1,options,6);
-Wop2 = wavelet_factory_1d(N, fparam2,options,7);
-Wop3 = wavelet_factory_1d(N, fparam3,options,8);
+Wop1 = wavelet_factory_1d(N, fparam1, options1);
+Wop2 = wavelet_factory_1d(N, fparam2, options2);
+Wop3 = wavelet_factory_1d(N, fparam3, options3);
 
 nScatt1 = diracnorm_scat(x, Wop1);
 nScatt2 = diracnorm_scat(x, Wop2);

@@ -15,8 +15,8 @@ fparam.spline_order=3;
 % Scale 2^J selected to display the scattering representation
 fparam.J = Jmax-1;
 fparam.Q = 1;
-options = struct();
-Wop = wavelet_factory_1d(N, fparam,options, fparam.J);
+options.M = fparam.J;
+Wop = wavelet_factory_1d(N, fparam, options);
 
 
 % Examples of signals

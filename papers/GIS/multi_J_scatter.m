@@ -9,7 +9,8 @@ Wops=cell(Jmax,1);
 
 for k=1:Jmax
     fparam.J=k;
-    Wops{k} = wavelet_factory_1d(N, fparam,options, fparam.J);
+	options.M = fparam.J;
+    Wops{k} = wavelet_factory_1d(N, fparam, options);
 end
 
 mScatt=zeros(Jmax+1,2*N);

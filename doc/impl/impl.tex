@@ -73,9 +73,9 @@ Linear operators can be constructed manually as indicated in the previous sectio
 
 The \mcode{wavelet_factory_1d} function takes a signal size along with a number of parameters and returns a cell array of linear operators corresponding to wavelet transforms. Its signature is given by
 \begin{lstlisting}
-[Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt, M);
+[Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt);
 \end{lstlisting}
-where \mcode{N} is the size of the signal, \mcode{filt_opt} are the filter parameters, \mcode{scat_opt} are other parameters for the wavelet transforms, and \mcode{M} is the maximal order of the scattering transform (i.e. how many layers/linear operators to create). The function outputs the wavelet transforms \mcode{Wop} and the filters used to define them \mcode{filters}. To calculate the scattering, only the former are necessary.
+where \mcode{N} is the size of the signal, \mcode{filt_opt} are the filter parameters, \mcode{scat_opt} are other parameters for the wavelet transforms. Specifically, \mcode{scat_opt.M} is the maximal order of the scattering transform (i.e. how many layers/linear operators to create). The function outputs the wavelet transforms \mcode{Wop} and the filters used to define them \mcode{filters}. To calculate the scattering, only the former are necessary.
 
 Default filter options are obtained by calling \mcode{default_filter_options}, which takes as input a type of filter and an averaging scale. The type of filter is one of \mcode{'audio'}, \mcode{'dyadic'} or \mcode{'image'}, corresponding to audio signals, other (less oscillatory) 1D signals, and images, respectively. The averaging scale determines the size of the largest wavelet and consequently that of the lowpass filter $\phi$. For more filter options, see next section.
 
@@ -88,9 +88,9 @@ To specify default values, \mcode{scat_opt} can be left empty.
 Using the above information, we can create a second-order scattering transform for an audio signal of length $65536$ with an averaging scale of $4096$
 \begin{lstlisting}
 filt_opt = default_filter_options('audio', 4096);
-scat_opt = struct();
+scat_opt.M = 2;
 
-Wop = wavelet_factory_1d(65536, filt_opt, scat_opt, 2);
+Wop = wavelet_factory_1d(65536, filt_opt, scat_opt);
 \end{lstlisting}
 The scattering transform of a signal \mcode{x} is then obtained by calling \mcode{scat(x, Wop)}.
 
@@ -252,9 +252,9 @@ N = 5*2^17;
 src = gtzan_src;
 
 filt_opt = default_filter_options('audio', 8192);
-scat_opt = struct();
+scat_opt.M = 2;
 
-Wop = wavelet_factory_1d(N, filt_opt, scat_opt, 2);
+Wop = wavelet_factory_1d(N, filt_opt, scat_opt);
 
 feature_fun = @(x)(format_scat( ...
 	log_scat(renorm_scat(scat(x, Wop)))));
