@@ -1,6 +1,5 @@
 % M=2 scattering, cv parameters
 
-%run_name = 'phones_304';
 run_name = 'DSS_Table2_TIMIT_m2';
 
 src = phone_src('/home/anden/timit/TIMIT');
@@ -18,7 +17,7 @@ sc1_opt.M = 2;
 
 Wop = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 
-scatt_fun = @(x)(permute(format_scat(log_scat(renorm_scat(scat(x,Wop)))),[3 1 2]));
+scatt_fun = @(x)(format_scat(log_scat(renorm_scat(scat(x,Wop)))));
 feature_fun = @(x,obj)(feature_wrapper(x,obj,scatt_fun,N,T_s,2,1));
 
 duration_fun = @(x,obj)(32*duration_feature(x,obj));
@@ -33,22 +32,17 @@ for k = 1:length(features)
     fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
 end
 
-%matlabpool 8
-
 db = prepare_database(src,features);
-
 db.features = single(db.features);
-
 db = svm_calc_kernel(db,'gaussian','triangle');
-
-addpath('~/cpp/libsvm-dense-compact-3.12/matlab');
 
 optt.kernel_type = 'gaussian';
 optt.gamma = 2.^[-14:2:-10];
 optt.C = 2.^[2:2:6];
 optt.search_depth = 2;
 
-[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,train_set,valid_set,optt);
+[dev_err_grid,C_grid,gamma_grid] = ...
+	svm_adaptive_param_search(db,train_set,valid_set,optt);
 
 [dev_err,ind] = min(dev_err_grid{end});
 C = C_grid{end}(ind);

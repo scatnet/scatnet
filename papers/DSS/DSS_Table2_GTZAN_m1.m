@@ -1,12 +1,9 @@
-%Script to reproduce the experiments leading to the results provided in the
-%table 2 of the paper "Deep Scattering Spectrum by J . Anden and S. Mallat.
+% Script to reproduce the experiments leading to the results provided in the
+% Table 2 of the paper "Deep Scattering Spectrum" by J. Andén and S. Mallat.
 
+% M=1 scattering
 
-% M=1 scattering, cv parameters
-
-run_name = 'DSS_Table2_GTZAN_m1_Q2=2';
-
-tic
+run_name = 'DSS_Table2_GTZAN_m1';
 
 N=5*2^17;
 
@@ -20,16 +17,13 @@ options.M = 1;
 
 Wop = wavelet_factory_1d(N, fparam, options);
 
-feature_fun = ...
-	{@(x)(squeeze(format_scat(log_scat(renorm_scat(scat(x,Wop))))))};
+feature_fun = {@(x)(format_scat(log_scat(renorm_scat(scat(x,Wop)))))};
 
-%matlabpool 8
- 
 db = prepare_database(src,feature_fun);
 db.features = single(db.features)
 db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
 
-load('~/matlab/scattlab1d/prts-gtzan.mat');
+load('prts-gtzan.mat');
 
 optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
@@ -37,10 +31,9 @@ optt.gamma = 2.^[-16:4:-8];
 optt.search_depth = 3;
 optt.full_test_kernel = 0;
 
-addpath('~/cpp/libsvm-dense-compact-3.12/matlab');
-
 for k = 1:10
-	[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,train_set{k},[],optt);
+	[dev_err_grid,C_grid,gamma_grid] = ...
+		svm_adaptive_param_search(db,train_set{k},[],optt);
 
 	[dev_err(k),ind] = min(mean(dev_err_grid{end},2));
 	C(k) = C_grid{end}(ind);
@@ -58,7 +51,6 @@ for k = 1:10
 
 	save([run_name '.mat'],'dev_err','err','C','gamma');
 end
-toc
 
 
 

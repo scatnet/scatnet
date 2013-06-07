@@ -1,14 +1,13 @@
-%run_name = 'gtzan_201';
+% Script to reproduce the experiments leading to the results provided in the
+% Table 2 of the paper "Deep Scattering Spectrum" by J. Andén and S. Mallat.
 
-tic
+% M=2 scattering, frequency scattering, multiple Q1
+
 run_name = 'DSS_Table2_GTZAN_m2_freq_multQ1';
 
 src = gtzan_src('~/GTZAN/gtzan');
 
-
 N = 5*2^17;
-
-
 
 filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
@@ -25,10 +24,8 @@ Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 fWop1 = wavelet_factory_1d(128, ffilt1_opt, fsc1_opt);
 
 scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
-% [~,U] = scat_freq(scat_fun(x),fWop1);
-% return U
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
-feature_fun1 = @(x)(squeeze(format_scat(fscatt_fun1(x))));
+feature_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 
 filt2_opt = filt1_opt;
 filt2_opt.Q = [1 1];
@@ -37,22 +34,18 @@ filt2_opt.J = T_to_J(8192,filt2_opt.Q);
 sc2_opt = sc1_opt;
 
 ffilt2_opt = ffilt1_opt;
-ffilt2_opt.J = 5; %For the momen I don't know how to choose the right 
-%value for J
+ffilt2_opt.J = 5;
 
 fsc2_opt = fsc1_opt;
 
 Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt);
-fWop2 = wavelet_factory_1d(32, ffilt2_opt, fsc2_opt);% ici aussi, pas sure de la valeur
-%utilisee pour N.
+fWop2 = wavelet_factory_1d(32, ffilt2_opt, fsc2_opt);
 
 scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
 fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
+feature_fun2 = @(x)(format_scat(fscatt_fun2(x)));
 
-feature_fun2 = @(x)(squeeze(format_scat(fscatt_fun2(x))));
-
-features = {feature_fun1,feature_fun2};
-
+features = {feature_fun1, feature_fun2};
 
 for k = 1:length(features)
     fprintf('testing feature #%d...',k);
@@ -62,16 +55,11 @@ for k = 1:length(features)
     fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
 end
 
-
-db = prepare_database(src,features,struct('feature_sampling',1));
-
+db = prepare_database(src,features);
 db.features = single(db.features);
-
 db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
 
-load('~/matlab/scattlab1d/prts-gtzan.mat');
-
-addpath('~/cpp/libsvm-dense-compact-3.12/matlab');
+load('prts-gtzan.mat');
 
 optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
@@ -80,7 +68,8 @@ optt.search_depth = 3;
 optt.full_test_kernel = 0;
 
 for k = 1:10
-	[dev_err_grid,C_grid,gamma_grid] = svm_adaptive_param_search(db,train_set{k},[],optt);
+	[dev_err_grid,C_grid,gamma_grid] = ...
+		svm_adaptive_param_search(db,train_set{k},[],optt);
 
 	[dev_err(k),ind] = min(mean(dev_err_grid{end},2));
 	C(k) = C_grid{end}(ind);
