@@ -279,8 +279,103 @@ The resulting \mcode{database} structure now contains three fields:
 	\item \mcode{database.indices}: The indices corresponding to each object in \mcode{database.src}. Specifically, \mcode{database.features(:,database.indices\{k\})} contains the features vector(s) calculated from \mcode{database.src.objects(k)}. If there is one feature vector per object, each element of \mcode{database.indices} is a scalar.
 \end{itemize}
 
+\subsection{Classifier Framework}
+Once the database of feature vectors is constructed, models can be trained and tested. To create a train/test partition, the function \mcode{create_partition} is available. Given a source \mcode{src} and a ratio, it partitions the objects so that each class is divided evenly into the training and testing set according to the ratio. For example, the following code defines a train/test partition with $80\%$ of the objects in the training set:
+\begin{lstlisting}
+[train_set, test_set] = create_partition(src, 0.8);
+\end{lstlisting}
+Here, \mcode{train_set} will contain the indices in \mcode{src.objects} that correspond to the training instances, while \mcode{test_set} will contain those corresponding to testing instances.
+
+Alternatively, a partition can be defined manually by traversing the \mcode{src.objects} array and recording the desired indices.
+
+Given a partition, a model can be trained using the appropriate training function. We will denote the training function by \mcode{train}, but in reality it will be either \mcode{affine_train} or \mcode{svm_train}. The training is then done by:
+\begin{lstlisting}
+model = train(database, train_set, train_opt);
+\end{lstlisting}
+The structure \mcode{train_opt} contains various parameters for training the model, which will depend on the type of classifier used.
+
+To test the model, the functions \mcode{affine_test} and \mcode{svm_test} are used. Here, we denote the testing function by \mcode{test}. The labels obtained for the testing instances specified by \mcode{test_set} are then obtained by:
+\begin{lstlisting}
+labels = test(database, model, test_set);
+\end{lstlisting}
+To calculate the classification error, the \mcode{classif_err} is used:
+\begin{lstlisting}
+err = classif_err(labels, test_set, src);
+\end{lstlisting}
+Note that the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
+
+To calculate the errors over a range of training parameters in \mcode{train_opt}, the functions \mcode{affine_param_search} and \mcode{svm_param_search} are available. Denoting them both by \mcode{param_search}, they have the following signature
+\begin{lstlisting}
+[err, param1, param2] = param_search( ...
+	database, train_set, valid_set, train_opt);
+\end{lstlisting}
+Where \mcode{database} and \mcode{train_set} are the feature database and training set, respectively, \mcode{valid_set} is a validation set to calculate the errors on and \mcode{train_opt} contain the training parameters for the model. Multiple training parameters are specified by setting the field to an array instead of a scalar in \mcode{train_opt}. The classification error for different parameter combinations is then given in \mcode{err}, with the actual parameter values stored in \mcode{param1}, \mcode{param2}, etc.
+
+The validation set can be taken to be \mcode{test_set}, but this would lead to overfitting of the parameters. For some tasks, a separate validation test is given for this purpose. Another alternative is to perform cross-validation on the training set \mcode{train_set}. This is obtained by setting \mcode{test_set} to \mcode{[]}. By default, \mcode{param_search} will then split \mcode{train_set} into five parts, train on four and test on the remaining one, then shuffle and repeat. The number of folds can be determined by the \mcode{train_opt.cv_folds} option. In this case, \mcode{err} is a 2D matrix, with the parameter set index along the first dimension and the fold index along the second. To obtain the best parameter set, an average can then be performed along the fold index.
+
 \subsection{Affine Space Classifier}
 
+The affine classifier is defined by the functions \mcode{affine_train} and \mcode{affine_test}. The former takes as an option the number of dimensions, \mcode{train_opt.dim} used for the affine space model of each class. 
+
+The following code calculates the error for an affine space classifier dimension $40$:
+\begin{lstlisting}
+train_opt.dim = 40;
+model = affine_train(database, train_set, train_opt);
+labels = affine_test(database, model, test_set);
+err = classif_err(labels, test_set, src);
+\end{lstlisting}
+
+For an affine space classifier, the model structure contains the dimension for which it is defined \mcode{model.dim}, the centers of the classes \mcode{model.mu} (a cell array) and the direction vectors defining the affine space \mcode{model.v} (a cell array).
+
+In addition to the labels, \mcode{affine_test} can also output the approximation errors for each feature vector and object. This is done by the additional outputs \mcode{obj_err} and \mcode{feature_err}, as in the following call:
+\begin{lstlisting}
+[labels, obj_err, feature_err] = affine_test(database, model, test_set);
+\end{lstlisting}
+Here, \mcode{obj_err} is a 2D matrix with the first dimension corresponding to the class index of the affine space the object was approximated using and the second dimension corresponding to the object index. Similarly, \mcode{feature} is a 2D matrix with first dimension being the class index and the second dimension corresponding to the feature vector index, arranged according to the objects they belong to. That is, the feature vectors of \mcode{test_set(1)} come first, then those of \mcode{test_set(2)}, etc. Note that \mcode{obj_err} can be calculated from \mcode{feature_err} by averaging over the all the feature vectors for one object.
+
+To find the optimal dimension of the affine space, \mcode{affine_param_search} is used, with a range of dimensions specified for \mcode{train_opt.dim}. Specifically, we call
+\begin{lstlisting}
+[err, dim] = affine_param_search(database, train_set, valid_set, train_opt);
+\end{lstlisting}
+where \mcode{database}, \mcode{train_set}, \mcode{valid_set}, \mcode{train_opt} are as described in the previous subsection. The output \mcode{dim} is equal to \mcode{train_opt.dim}, and \mcode{err} contains the errors for this range of dimensions.
+
 \subsection{Support Vector Classifier}
+
+\textbf{NOTE: Requires the LIBSVM library, see \url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/}}
+
+The support vector machine classifier is defined by the functions \mcode{svm_train} and \mcode{svm_test}. The training options consist of:
+\begin{itemize}
+	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
+	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
+	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
+\end{itemize}
+
+The following code calculates the error for an SVM classifier with a linear kernel and $C = 8$:
+\begin{lstlisting}
+train_opt.kernel_type = 'linear';
+train_opt.C = 8;
+model = svm_train(database, train_set, train_opt);
+labels = svm_test(database, model, test_set);
+err = classif_err(labels, test_set, src);
+\end{lstlisting}
+
+If the feature vectors are very large, which can be the case for scattering coefficients, it is often useful to precalculate the kernel. This significantly speeds up training and testing, but at a cost of memory consumption. To precalculate the kernel, the function \mcode{svm_calc_kernel} is used on \mcode{database}, as in
+\begin{lstlisting}
+database = svm_calc_kernel(database, kernel_type);
+\end{lstlisting}
+where \mcode{kernel_type} is either \mcode{'linear'} or \mcode{'gaussian'}. Afterwards, when \mcode{svm_train} is called, it can take advantage of this kernel if the same kernel type is specified in \mcode{train_opt.kernel_type}.
+
+To determine the optimal parameters, a parameter search function \mcode{svm_param_search} is provided, with the same syntax as described above. Its signature is
+\begin{lstlisting}
+[err, C, gamma] = svm_param_search(database, train_set, valid_set, train_opt);
+\end{lstlisting}
+where \mcode{database}, \mcode{train_set}, \mcode{valid_set}, \mcode{train_opt} are as described previously. We set the values of \mcode{C} and \mcode{gamma} that we wish to test in \mcode{train_opt}. All combinations of these parameters are then evaluated, with errors recorded in \mcode{err} and the particular values for each set stores in \mcode{C} and \mcode{gamma}.
+
+Since parameters can vary over a large domain, and a fine-grained parameter search can be quite costly, there is also an adaptive parameter search function, \mcode{svm_adaptive_param_search}. This function calls \mcode{svm_param_search}, recenters the \mcode{C}-\mcode{gamma} parameter grid on the optimal parameter combination while increasing the grid resolution,  then reapplies \mcode{svm_param_search}, and so on. This is done \mcode{train_opt.cv_depth} times, which by default equals $2$.
+
+If a linear kernel is used, we can extract the discriminant vector $w$ and bias $\rho$ from the model using the function \mcode{svm_extract_w}. The function takes as input the database \mcode{database} and the SVM model \mcode{model}. It outputs the $w$s corresponding to each pair of classes in the model, arranged in the order $1$vs$2$,$1$vs$3$,\ldots$1$vs$N$,$2$vs$3$,\ldots,$2$vs$N$,\ldots,$(N-1)$vs$N$, where $N$ is the number of classes. The function is called as in:
+\begin{lstlisting}
+[w,rho] = svm_extract_w(database, model);
+\end{lstlisting}
 
 \end{document}
