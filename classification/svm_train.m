@@ -82,6 +82,10 @@ function model = svm_train(db,train_set,opt)
 		else
 			params = [params ' -t 4'];
 			
+			if strcmp(db.kernel.kernel_format, 'triangle')
+				error(['Triangular kernels not supported for standard ' ...
+				' LIBSVM version. Please try libsvm-dense-compact.'])
+			end
 			features = db.kernel.K(:,ind_features);
 			
 			if strcmp(db.kernel.kernel_type,'gaussian')
