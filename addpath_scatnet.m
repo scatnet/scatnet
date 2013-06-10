@@ -9,7 +9,7 @@ addpath(fullfile(path_to_scatnet, 'filters'));
 addpath(fullfile(path_to_scatnet, 'utils'));
 addpath(fullfile(path_to_scatnet, 'papers'));
 addpath(fullfile(path_to_scatnet, 'papers/GIS'));
-addpath(fullfile(path_to_scattlab, 'papers/DSS'));
+addpath(fullfile(path_to_scatnet, 'papers/DSS'));
 
 clear path_to_scatnet;
 
