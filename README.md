@@ -15,7 +15,7 @@ Install ScatNet
 
 - launch `addpath_scatnet` from matlab shell
 
-- [optional] : add the following two lines to your startup.m file
+[optional] : add the following two lines to your startup.m file
 so that matlab does the addpath automatically when it starts: 
 
 
