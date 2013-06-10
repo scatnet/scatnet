@@ -1,8 +1,9 @@
-x = lena;
+x = uiuc_sample;
+x = x(1:256, 1:256);
 
-wavelet = wavelet_factory_2d(size(x));
+Wop = wavelet_factory_2d(size(x));
 %%
-[S, U] = scat(x, wavelet);
+[Sx, Ux] = scat(x, Wop);
 
 %%
-plot_meta_layer(S{3}.meta);
+plot_meta_layer(Sx{3}.meta);
