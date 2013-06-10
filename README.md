@@ -11,8 +11,6 @@ http://www.di.ens.fr/data/software/scatnet/
 Install ScatNet
 ---------------
 
-- edit `addpath_scatnet.m` and set the path to scatnet
-
 - launch `addpath_scatnet` from matlab shell
 
 [optional] : add the following two lines to your startup.m file

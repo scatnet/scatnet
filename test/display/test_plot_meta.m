@@ -1,8 +1,8 @@
 x = lena;
 
-wavelet = wavelet_factory_2d(size(x));
+Wop = wavelet_factory_2d(size(x));
 %%
-[S, U] = scat(x, wavelet);
+[Sx, Ux] = scat(x, Wop);
 
 %%
-plot_meta(S);
+plot_meta(Sx);

@@ -6,7 +6,9 @@ x = uiuc_sample;
 
 size_in = size(x);
 
-filters = morlet_filter_bank_2d(size_in);
+filt_opt.margins = [0, 0];
+
+filters = morlet_filter_bank_2d(size_in, filt_opt);
 
 psif = filters.psi.filter{32}.coefft{1};
 %% convolution then subsampling
@@ -16,16 +18,16 @@ xf = fft2(x);
 tic;
 for i = 1:N
   tmp = abs(ifft2(xf .* psif));
-  xconvpsi = tmp(1:2^ds:end, 1:2^ds:end)*2^(2*ds);
+  xconvpsi = tmp(1:2^ds:end, 1:2^ds:end)*2^ds;
 end
 toc;
 
 %% periodization before ifft : 2-3 times faster
 tic;
 for i = 1:N
-  xconvpsi_fast = abs(conv_sub_2d(xf, psif, ds));
+  xconvpsi_fast = abs(conv_sub_unpad_2d(xf, psif, ds,[0,0]));
 end
 toc;
 
 imagesc([xconvpsi,xconvpsi_fast])
-assert(norm(xconvpsi(:) - xconvpsi_fast(:)) < 1E-13);
+norm(xconvpsi(:) - xconvpsi_fast(:)) 
