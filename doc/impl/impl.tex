@@ -285,7 +285,7 @@ image_scat_layer(S{m+1}, 0, 0);
 Paths can also be arranged in a specific order along rows and column.
 For example, the following arranges scattering coefficient of second order
 by lexicographic order on $j$ along rows and lexicographic order on $\theta$ along columns.
-
+\begin{lstlisting}
 var_y{1}.name = 'j';
 var_y{1}.index = 1;
 var_y{2}.name = 'j';
@@ -296,7 +296,7 @@ var_x{2}.name = 'theta';
 var_x{2}.index = 2;
 m = 2;
 image_scat_layer_order(S{3},var_x, var_y,1);
-
+\end{lstlisting}
 The spatial coefficients of all filter of a filter bank can be displayed using
 \begin{lstlisting}
 display_filter_bank_2d(filters);
