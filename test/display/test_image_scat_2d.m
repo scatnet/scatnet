@@ -1,10 +1,10 @@
-x = lena;
+x = uiuc_sample;
 
-wavelet = wavelet_factory_2d(size(x));
+Wop = wavelet_factory_2d(size(x));
 %%
-[S, U] = scat(x, wavelet);
+[Sx, Ux] = scat(x, Wop);
 %%
-image_scat(S);
+image_scat(Sx);
 %%
-image_scat(U);
+image_scat(Ux);
 

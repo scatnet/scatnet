@@ -12,13 +12,6 @@ function [ Wop, filters, filters_rot ] = ...
 	options_rot.J = 3;
 	options_rot.P = 0;
 	filters_rot = morlet_filter_bank_1d(sz, options_rot);
-	meyer_rot = getoptions(options_rot,'meyer_rot',0);
-	if (meyer_rot)
-		if (sz ~= 16)
-			error('meyer designed only for 16 orientations')
-		end
-		filters_rot = meyer_filter_bank_1d_16();
-	end
 	
 	% number of layer
 	options = fill_struct(options, 'nb_layer', 3);

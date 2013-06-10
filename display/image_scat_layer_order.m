@@ -105,6 +105,7 @@ function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
 			offset_y = offset_y + size(img,1) + margin;
 		end
 	end
+	imagesc(big_img);
 end
 
 

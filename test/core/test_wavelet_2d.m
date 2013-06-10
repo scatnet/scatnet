@@ -8,7 +8,6 @@ options.null = 1;
 filters = morlet_filter_bank_2d(size(x), options);
 
 %%
-options.antialiasing = 0;
 
 tic;
 [x_phi, x_psi] = wavelet_2d(x, filters, options);

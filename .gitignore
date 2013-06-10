@@ -1,4 +1,5 @@
 .DS_Store
+perso/*
 feature/
 *.m~
 doc/*/*.aux

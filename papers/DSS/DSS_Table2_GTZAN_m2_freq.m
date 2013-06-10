@@ -1,9 +1,9 @@
 % Script to reproduce the experiments leading to the results provided in the
 % Table 2 of the paper "Deep Scattering Spectrum" by J. Andén and S. Mallat.
 
-% M=2 scattering, frequency scattering, multiple Q1
+% M=2 scattering, frequency scattering
 
-run_name = 'DSS_Table2_GTZAN_m2_freq_multQ1';
+run_name = 'DSS_Table2_GTZAN_m2_freq';
 
 src = gtzan_src('~/GTZAN/gtzan');
 
@@ -27,25 +27,7 @@ scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
 feature_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 
-filt2_opt = filt1_opt;
-filt2_opt.Q = [1 1];
-filt2_opt.J = T_to_J(8192,filt2_opt.Q);
-
-sc2_opt = sc1_opt;
-
-ffilt2_opt = ffilt1_opt;
-ffilt2_opt.J = 5;
-
-fsc2_opt = fsc1_opt;
-
-Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt);
-fWop2 = wavelet_factory_1d(32, ffilt2_opt, fsc2_opt);
-
-scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
-fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
-feature_fun2 = @(x)(format_scat(fscatt_fun2(x)));
-
-features = {feature_fun1, feature_fun2};
+features = {feature_fun1};
 
 for k = 1:length(features)
     fprintf('testing feature #%d...',k);
