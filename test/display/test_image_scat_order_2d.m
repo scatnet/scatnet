@@ -16,7 +16,6 @@ var_x{2}.name = 'theta';
 var_x{2}.index = 2;
 
 
-big_img = image_scat_layer_order(S{3},var_x, var_y,1);
-imagesc(big_img)
+image_scat_layer_order(S{3},var_x, var_y,1);
 ylabel('j_1, j_2');
 xlabel('\theta_1, \theta_2');

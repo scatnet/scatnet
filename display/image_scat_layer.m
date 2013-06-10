@@ -196,4 +196,5 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 		end
 		
 	end
+	imagesc(big_img);
 end

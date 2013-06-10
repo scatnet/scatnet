@@ -265,7 +265,42 @@ Instead of a scattering output \mcode{S}, we can also specify intermediate modul
 
 \subsection{2D}
 
-LAURENT
+The \mcode{image_scat} opens one figure per layer and display all the path of a layer in the corresponding figure. Its signature is 
+\begin{lstlisting}
+Sx = scat(x, Wop);
+% display scattering coefficients
+image_scat(Sx)
+\end{lstlisting}
+
+To display all the coefficients of a particular layer, one can use 
+\begin{lstlisting}
+m = 2;
+image_scat_layer(Sx{m+1})
+\end{lstlisting}
+This stacks all paths of the layer next to each other, renormalize them and overlay their meta information. Both these feature can be turned off using
+\begin{lstlisting}
+m = 2;
+image_scat_layer(S{m+1}, 0, 0);
+\end{lstlisting}
+Paths can also be arranged in a specific order along rows and column.
+For example, the following arranges scattering coefficient of second order
+by lexicographic order on $j$ along rows and lexicographic order on $\theta$ along columns.
+
+var_y{1}.name = 'j';
+var_y{1}.index = 1;
+var_y{2}.name = 'j';
+var_y{2}.index = 2;
+var_x{1}.name = 'theta';
+var_x{1}.index = 1;
+var_x{2}.name = 'theta';
+var_x{2}.index = 2;
+m = 2;
+image_scat_layer_order(S{3},var_x, var_y,1);
+
+The spatial coefficients of all filter of a filter bank can be displayed using
+\begin{lstlisting}
+display_filter_bank_2d(filters);
+\end{lstlisting}
 
 \section{Classification}
 
