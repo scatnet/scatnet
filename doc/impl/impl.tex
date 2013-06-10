@@ -95,13 +95,14 @@ Wop = wavelet_factory_1d(65536, filt_opt, scat_opt);
 The scattering transform of a signal \mcode{x} is then obtained by calling \mcode{scat(x, Wop)}.
 
 \subsection{\mcode{wavelet_factory_2d}}
-The \mcode{wavelet_factory_2d} function takes a \mcode{size_in} vector of image size and optional parameters wrapped in an \mcode{filt_opt} and \mcode{scat_opt} structure of options parameters, an integer \mcode{M} which is the maximum scattering order and outputs a cell array of linear operators corresponding to successive wavelet transforms. Its signature  is given by
+The \mcode{wavelet_factory_2d} function takes a \mcode{size_in} vector of image size and optional parameters wrapped in an \mcode{filt_opt} and \mcode{scat_opt} structure of options parameters and outputs a cell array of linear operators corresponding to successive wavelet transforms. Its signature  is given by
 \begin{lstlisting}
-[Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt, M)
+[Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
 \end{lstlisting}
 The \mcode{scat_opt} options are specific to the scattering algorithm. It can contain the following fields :
 \begin{itemize}
-	\item \mcode{scat_opt.oversampling}: The extent to which the final scattering output is oversampled. Specifically, the sampling rate is \mcode{2^scat_opt.oversampling} times the critical sampling rate. By default equal to \mcode{1}.
+	\item \mcode{scat_opt.M} the maximum scattering order. By default equal to \mcode{2}.
+	\item \mcode{scat_opt.oversampling} the extent to which the final scattering output is oversampled. Specifically, the sampling rate is \mcode{2^scat_opt.oversampling} times the critical sampling rate. By default equal to \mcode{1}.
 	\item \mcode{precision_4byte}: if set to 1 (its default value), output of wavelet transforms will be stored in 4 bytes float instead of 8 bytes double to save memory.
 \end{itemize}
 The \mcode{filt_opt} options are specific to the filter bank used in wavelet transforms. The possible fields for \mcode{filt_opt} are detailed in section \ref{sec_filters_2d}.
