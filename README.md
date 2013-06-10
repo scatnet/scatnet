@@ -19,13 +19,6 @@ Install ScatNet
 so that matlab does the addpath automatically when it starts: 
 
 
-	addpath /path/to/scatnet;
-	addpath_scatnet;
-
-
-
-This is a normal paragraph:
-
     addpath /path/to/scatnet;
     addpath_scatnet;
 
