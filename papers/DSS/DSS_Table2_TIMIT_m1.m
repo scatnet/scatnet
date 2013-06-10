@@ -38,12 +38,13 @@ database_opt.collapse = 1;
 
 db = prepare_database(src,features,database_opt);
 db.features = single(db.features);
-db = svm_calc_kernel(db,'gaussian','triangle');
+db = svm_calc_kernel(db,'gaussian','triangle',[db.indices{train_set}]);
 
 optt.kernel_type = 'gaussian';
 optt.gamma = 2.^[-14:2:-10];
 optt.C = 2.^[2:2:6];
 optt.search_depth = 2;
+optt.full_test_kernel = 1;
 
 [dev_err_grid,C_grid,gamma_grid] = ...
 	svm_adaptive_param_search(db,train_set,valid_set,optt);
