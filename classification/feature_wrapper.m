@@ -39,8 +39,12 @@ function t = feature_wrapper(x,objects,fun,options)
 	options = fill_struct(options, 'collapse', 0);
 	
 	if isempty(options.input_sz)
-		
-		buf = zeros([objects(1).u2-objects(1).u1+ones(size(objects(1).u1)), ...
+		sz=objects(1).u2-objects(1).u1+ones(size(objects(1).u1));
+
+        if length(sz)==1
+            sz=[sz 1];
+        end
+        buf = zeros([sz, ...
 			length(objects)]);
 		
 		u1 = [objects.u1];
