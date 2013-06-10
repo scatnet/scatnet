@@ -36,6 +36,6 @@ function gab = morlet_2d_noDC(N, M, sigma, slant, xi, theta, offset)
 	K = sum(oscilating_part(:)) ./ sum(gaussian_envelope(:));
 	gabc = oscilating_part - K.*gaussian_envelope;
 	
-	gab=1/(2*pi*sigma^2/slant)*fftshift(gabc);
+	gab=1/(2*pi*sigma^2/slant^2)*fftshift(gabc);
 	
 end

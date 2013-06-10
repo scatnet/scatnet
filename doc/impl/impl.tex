@@ -95,11 +95,16 @@ Wop = wavelet_factory_1d(65536, filt_opt, scat_opt);
 The scattering transform of a signal \mcode{x} is then obtained by calling \mcode{scat(x, Wop)}.
 
 \subsection{\mcode{wavelet_factory_2d}}
-The \mcode{wavelet_factory_2d} function takes a \mcode{size_in} vector of image size and optional parameters wrapped in an \mcode{options} structure and outputs a cell array of linear operators corresponding to successive wavelet transforms. Its signature  is given by
+The \mcode{wavelet_factory_2d} function takes a \mcode{size_in} vector of image size and optional parameters wrapped in an \mcode{filt_opt} and \mcode{scat_opt} structure of options parameters, an integer \mcode{M} which is the maximum scattering order and outputs a cell array of linear operators corresponding to successive wavelet transforms. Its signature  is given by
 \begin{lstlisting}
-[Wop, filters] = wavelet_factory_2d(size_in, options);
+[Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt, M)
 \end{lstlisting}
-
+The \mcode{scat_opt} options are specific to the scattering algorithm. It can contain the following fields :
+\begin{itemize}
+	\item \mcode{scat_opt.oversampling}: The extent to which the final scattering output is oversampled. Specifically, the sampling rate is \mcode{2^scat_opt.oversampling} times the critical sampling rate. By default equal to \mcode{1}.
+	\item \mcode{precision_4byte}: if set to 1 (its default value), output of wavelet transforms will be stored in 4 bytes float instead of 8 bytes double to save memory.
+\end{itemize}
+The \mcode{filt_opt} options are specific to the filter bank used in wavelet transforms. The possible fields for \mcode{filt_opt} are detailed in section \ref{sec_filters_2d}.
 
 \section{Defining Filters}
 
@@ -147,9 +152,62 @@ In addition to the parameters listed above, the spline filter bank has the follo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
-\subsection{2D Morlet/Gabor Filters}
+\subsection{2D Morlet Filters}
+\label{sec_filters_2d}
+The Gabor wavelets consist of Gaussian envelopes modulated by complex exponentials to cover the en- tire frequency spectrum. Morlet wavelets are derived from these by subtracting the envelope multiplied by a constant such that the integral of the filter equals zero. 
 
-LAURENT
+A 2D Morlet filter bank consists in a gaussian window 
+\begin{equation}
+\phi_J (u) =  2^{-2j/Q} \phi(2^{-j/Q} (u,v))
+\end{equation}
+and in dilated and rotated Morlet filters.
+\begin{equation}
+\psi_{j, \theta}(u) = 2^{-2j/Q} \psi(r_\theta 2^{-j/Q} (u,v)) 
+\end{equation}
+with 
+\begin{eqnarray}
+j & \in & [0,J-1] \\
+\pi^{-1} \theta & \in & [0,L-1]
+\end{eqnarray}
+The full filter bank can be obtained by calling 
+\mcode{morlet_filter_bank_2d}. 
+\begin{lstlisting}
+size_in = [128, 128];
+filt_opt.L = 6;
+filt_opt.Q = 1;
+filt_opt.J = 3;
+filters = morlet_filter_bank_2d(size_in, filt_opt);
+\end{lstlisting}
+This example builds a \mcode{128x128} filter bank with the following options :
+\begin{itemize}
+	\item \mcode{filt_opt.Q} the number of wavelets per octave. By default $1$.
+	\item \mcode{filt_opt.J}  the number of wavelet scales. By default $4$.
+	\item \mcode{filt_opt.L}  the number of wavelet orientations. By default $8$.
+\end{itemize}	
+
+
+
+The mother Morlet filter is
+\begin{equation}
+\label{eq_mother_morlet}
+\psi(u,v) = e^{ \frac{u^2 + s^2 v^2}{2 \sigma^2}}(K - e^{i u \xi})
+\end{equation}
+Its parameters are
+\begin{itemize}
+\item $\sigma$ the spread of the gaussian envelope 
+\item $\xi$ the frequency of the oscillatory exponential
+\item $s$ the eccentricity of the elliptical gaussian enveloppe
+\end{itemize}
+Setting \mcode{Q} and \mcode{L} influences the default parameters of the mother Morlet filter $\sigma$, 
+$\xi$ and $s$. For example, increasing $L$ also increases the angular resolution by decreasing $\xi$.
+This adaptive behavior can be overridden by manually setting $\sigma$, $\xi$, $s$ in the \mcode{filt_opt} structure.
+\begin{itemize}
+	\item \mcode{filt_opt.sigma_phi} the spread of $\phi$
+	\item \mcode{filt_opt.sigma_psi} the spread $\sigma$ in (\ref{eq_mother_morlet})
+	\item \mcode{filt_opt.xi_psi} the frequency $\xi$ in (\ref{eq_mother_morlet})
+	\item \mcode{filt_opt.slant_psi} the eccentricity $s$ in (\ref{eq_mother_morlet})
+\end{itemize}	
+
 
 \section{Manipulating, Formatting Scattering Coefficients}
 
