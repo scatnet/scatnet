@@ -1,19 +1,17 @@
+%% with lena
 x = lena;
 
 wavelet = wavelet_factory_2d(size(x));
-S = scat(x, wavelet);
-s = format_scat(S);
+Sx = scat(x, wavelet);
+sx = format_scat(Sx);
 
-%% with mnist
-x = retrieve_mnist(1,1,1);
-x = x{1}{1};
+%% with 32,32 
+x = rand(32,32);
 
+filt_opt.J = 3;
+filt_opt.L = 6;
+scat_opt.oversampling = 2;
+[wavelet, filters] = wavelet_factory_2d(size(x), filt_opt, scat_opt);
 
-options.J = 3;
-options.nb_angle = 6;
-options.antialiasing = 2;
-[wavelet, filters] = wavelet_factory_2d(size(x), options);
-
-
-S = scat(x, wavelet);
-[s , meta] = format_scat(S);
+Sx = scat(x, wavelet);
+[s , meta] = format_scat(Sx);
