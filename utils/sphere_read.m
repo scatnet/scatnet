@@ -98,4 +98,6 @@ function [y, fs] = sphere_read(filename, N)
 	end
 	
 	y = fread(fid, count, 'short');
+
+	fclose(fid);
 end
