@@ -16,17 +16,20 @@ Install ScatNet
 - launch `addpath_scatnet` from matlab shell
 
 - [optional] : add the following two lines to your startup.m file
-so that matlab does the addpath automatically when it starts
-     
+so that matlab does the addpath automatically when it starts: 
 
 
-     addpath /path/to/scatnet;
-     addpath_scatnet;
+	addpath /path/to/scatnet;
+	addpath_scatnet;
 
 
 
-Quickstart
-----------
+This is a normal paragraph:
+
+    This is a code block.
+
+Quickstarts
+-----------
 
 Use ScatNet with audio signals:
 http://www.di.ens.fr/data/software/scatnet/quickstart-audio/
