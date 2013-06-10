@@ -1,7 +1,7 @@
 
-% load lena
-x = lena;
-
+% load an image
+x = uiuc_sample;
+x = x(1:256, 1:256);
 
 % compute filter bank
 options.null = 1;

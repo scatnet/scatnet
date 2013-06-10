@@ -13,19 +13,17 @@
 %       form.
 %    filters: A cell array of the filters used in defining the wavelets.
 
-function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt, M)
+function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
 	
 	filt_opt.null = 1;
 	scat_opt.null = 1;
-	if (nargin<4)
-		M = 2;
-	end
+	scat_opt = fill_struct(scat_opt, 'M', 2);
 	
 	% filters :
 	filters = morlet_filter_bank_2d(size_in, filt_opt);
 	
 	% wavelet transforms :
-	for m = 1:M+1
+	for m = 1:scat_opt.M+1
 		Wop{m} = @(x)(wavelet_layer_2d(x, filters, scat_opt));
 	end
 end
