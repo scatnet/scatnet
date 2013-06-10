@@ -10,7 +10,8 @@
 % Description:
 %    Extracts the indices of the phones in src in the standard TRAIN set, the
 %    core TEST set of 24 speakers, and the standard development set in TEST
-%    consisting of 50 speakers [1]. For a listing of the latter, see Halberstadt.
+%    consisting of 50 speakers [1].
+%
 %    Note that if src does not contain all the phrases in the relevant sets,
 %    phone_partition only extracts those phones that are present.
 % References
