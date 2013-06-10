@@ -1,11 +1,11 @@
-ScatNet is a MATLAB implementation of the Scattering Networks 
+ScatNet is a MATLAB implementation of the Scattering Networks.
 
 See homepage of the project for license, documentation, tutorials, bug reports
 
- http://www.di.ens.fr/signal/software/scatnet/
+http://www.di.ens.fr/data/software/scatnet/
 
 
-INSTALL SCATNET:
+Install ScatNet:
 
 1) edit addpath_scatnet.m and set the path to scatnet
 
@@ -18,4 +18,11 @@ addpath /path/to/scatnet;
 addpath_scatnet;
 
 
+Quickstart:
+
+Use ScatNet with audio signals:
+http://www.di.ens.fr/data/software/scatnet/quickstart-audio/
+
+Use ScatNet with images:
+http://www.di.ens.fr/data/software/scatnet/quickstart-image/
 
