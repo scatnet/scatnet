@@ -1,7 +1,7 @@
 % this script demonstrates the rotation invariance 
 % of the roto-translation scattering
 
-x = lena;
+x = uiuc_sample;
 x = x(128:128+255, 128:128+255);
 
 filt_opt.null = 1;
