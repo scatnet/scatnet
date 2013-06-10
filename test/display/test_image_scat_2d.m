@@ -1,4 +1,4 @@
-x = lena;
+x = uiuc_sample;
 
 wavelet = wavelet_factory_2d(size(x));
 %%
