@@ -26,7 +26,8 @@ so that matlab does the addpath automatically when it starts:
 
 This is a normal paragraph:
 
-    This is a code block.
+    addpath /path/to/scatnet;
+    addpath_scatnet;
 
 Quickstarts
 -----------
