@@ -6,7 +6,7 @@ function varargout = data_read(file,varargin)
 	if length(file) > 3 && strcmpi(file(end-2:end),'.au')
 		[varargout{1},varargout{2}] = auread(file,varargin{:});
 	elseif length(file) > 4 && strcmpi(file(end-3:end),'.wav')
-		s = textread(file,'%s',1);
+		s = textscan(file,'%s',1);
 		if isempty(strfind(s{1},'NIST_1A'))
 			[varargout{1},varargout{2}] = wavread(file,varargin{:});
 		else
