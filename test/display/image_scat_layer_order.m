@@ -1,22 +1,17 @@
-
-
-
-%%
-N = 512;
-x = lena;
-
+x = uiuc_sample;
+x = x(1:256, 1:256);
 
 
 
 %% morlet angle
 
-options.J = 4;
-options.antialiasing = 10;
-options_rot.meyer_rot = 0;
-W_rt = wavelet_factory_3d([N,N], options, options_rot);
+filt_opt.J = 4;
+filt_rot_opt.null = 1;
+scat_opt.oversampling = 10;
+Wop = wavelet_factory_3d(size(x), filt_opt, filt_rot_opt, scat_opt);
 
 tic;
-S_rt = scat(x, W_rt);
+S_rt = scat(x, Wop);
 toc;
 
 
