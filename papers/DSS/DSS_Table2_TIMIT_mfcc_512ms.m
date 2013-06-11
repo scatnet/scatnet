@@ -1,4 +1,4 @@
-% faspec 512ms (370ms in paper), cv parameters
+% "MFCCs" (frequency-averaged spectra) 512ms (370ms in paper), cv parameters
 
 run_name = 'DSS_Table2_TIMIT_faspec_512ms';
 
@@ -17,7 +17,7 @@ sc1_opt = struct();
 
 filters = filter_bank(N, filt1_opt);
 
-scatt_fun = @(x)(format_scat(log_scat(faspec(x,filters,sc1_opt))));
+scatt_fun = @(x)(format_scat(log_scat(spec_freq_average(x,filters,sc1_opt))));
 
 duration_fun = @(x,obj)(32*duration_feature(x,obj));
 

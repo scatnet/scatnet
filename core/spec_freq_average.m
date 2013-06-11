@@ -1,4 +1,4 @@
-function [out,meta] = faspec(in,filters,options)
+function [out,meta] = spec_freq_average(in,filters,options)
 	options = fill_struct(options,'oversampling',1);
 	
 	filters1 = filters{1};
