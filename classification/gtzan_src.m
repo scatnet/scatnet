@@ -8,7 +8,7 @@
 % Output
 %    src: The GTZAN source.
 % Description
-%    Creates a source index for the GTZAN dataset (available at %
+%    Creates a source index for the GTZAN dataset (available at 
 %    http://marsyasweb.appspot.com/download/data_sets/) that can be used for
 %    calculating a feature database and classifying musical genres.
 

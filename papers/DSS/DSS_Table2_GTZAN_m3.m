@@ -7,7 +7,7 @@ run_name = 'DSS_Table2_GTZAN_m3';
 
 N=5*2^17;
 
-src=gtzan_src('/home/anden/GTZAN/gtzan');
+src=gtzan_src('/path/to/gtzan');
 
 fparam.filter_type = {'gabor_1d','morlet_1d','morlet_1d'};
 fparam.Q = [8 2 1];
@@ -31,7 +31,7 @@ optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
 optt.gamma = 2.^[-16:4:-8];
 optt.search_depth = 3;
-optt.full_test_kernel = 1;
+optt.full_test_kernel = 0;
 
 for k = 1:10
 	[dev_err_grid,C_grid,gamma_grid] = ...

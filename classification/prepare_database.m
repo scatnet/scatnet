@@ -4,8 +4,14 @@
 % Input
 %    src: The source specifying the objects.
 %    feature_fun: The feature functions applied to each object.
-%    options: Options for calculating the features. options.feature_sampling
-%       specifies how to sample the feature vectors in time/space.
+%    options: Options for calculating the features:
+%       options.feature_sampling: specifies how to sample the feature vectors 
+%           in time/space (default 1).
+%       options.file_normalize: The normalization of each file before being
+%          given to feature_fun. Can be empty, 1, 2, or Inf (default []).
+%       options.parallel: If 1, tries to use the Distributed Computing Tool-
+%          box to speed up calculation (default 1).
+%       Other options are listed in the help for the feature_wrapper function.
 % Output
 %    database: The database of feature vectors.
 
@@ -14,8 +20,8 @@ function db = prepare_database(src,feature_fun,opt)
 		opt = struct();
 	end
 	
-	opt = fill_struct(opt,'feature_sampling',1);
-	opt = fill_struct(opt,'file_normalize',[]);
+	opt = fill_struct(opt, 'feature_sampling', 1);
+	opt = fill_struct(opt, 'file_normalize', []);
 	opt = fill_struct(opt, 'parallel', 1);
 	
 	features = cell(1,length(src.files));

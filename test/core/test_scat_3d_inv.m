@@ -1,25 +1,26 @@
 % this script demonstrates the rotation invariance 
 % of the roto-translation scattering
 
-x = lena;
+x = uiuc_sample;
 x = x(128:128+255, 128:128+255);
 
-options.null = 1;
+filt_opt.null = 1;
+filt_rot_opt.null = 1;
 % oversampling must be set to infty
 % so that scattering of original and rotated
 % image will be sampled at exactly the same points
-options.oversampling = 10;
+scat_opt.oversampling = 10;
 
-wavelet = wavelet_factory_3d(size(x), options);
+Wop = wavelet_factory_3d(size(x), filt_opt, filt_rot_opt, scat_opt);
 
 % compute scattering of x
-sx = scat(x, wavelet);
-sx_raw = format_scat(sx);
+Sx = scat(x, Wop);
+sx_raw = format_scat(Sx);
 
 % compute scattering of x rotated by pi/2
 x_rot = rot90(x,1);
-sx_rot = scat(x_rot, wavelet);
-sx_rot_raw = format_scat(sx_rot);
+Sx_rot = scat(x_rot, Wop);
+sx_rot_raw = format_scat(Sx_rot);
 
 % rotate back every layer of output
 for p = 1:size(sx_rot_raw,1)

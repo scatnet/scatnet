@@ -10,6 +10,7 @@ addpath(fullfile(path_to_scatnet, 'utils'));
 addpath(fullfile(path_to_scatnet, 'papers'));
 addpath(fullfile(path_to_scatnet, 'papers/GIS'));
 addpath(fullfile(path_to_scatnet, 'papers/DSS'));
+addpath(fullfile(path_to_scatnet, 'demo'));
 
 clear path_to_scatnet;
 

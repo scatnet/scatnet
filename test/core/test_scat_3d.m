@@ -1,26 +1,16 @@
+% this script demonstrates how to compute the roto-translation
+% scattering transform of an image
 
-N = 256;
-x = zeros(N,N);
+x = uiuc_sample;
+x = x(1:256,1:256);
 
-step_grid = 64;
-for i = 1:step_grid:N
-	x(:,i) = 1;
-	x(i,:) = 1;
-end
+filt_opt.null = 1;
+filt_rot_opt.null = 1;
+scat_opt.oversampling = 0;
 
+[Wop, filters, filters_rot ] = ...
+		wavelet_factory_3d(size(x), filt_opt, filt_rot_opt, scat_opt);
 
-%%
-%x = imreadBW('ens.png');
-%x = uiuc_sample;
-%x  = x(1:end/2, 1:end/2);
-options.antialiasing = 1;
-options.precision_4byte = 1;
-%wavelet = wavelet_factory_3d(size(x), options);
- [ wavelet, filters, filters_rot ] = ...
-		wavelet_factory_3d(size(x), options);
-profile on;
 tic;
-[S, U] = scat(x, wavelet);
-toc;
-profile off;
-profile viewer;
+[Sx, Ux] = scat(x, Wop);
+toc
