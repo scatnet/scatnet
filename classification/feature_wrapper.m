@@ -22,7 +22,7 @@
 %          (default empty).
 %       options.obj_normalize: The normalization of the input vectors before 
 %          being given to feature_fun. Can be empty, 1, 2, or Inf (default 
-%          Inf).
+%          []).
 %       options.collapse: If true, collapses the time/space dimension into one 
 %          vector, otherwise leaves this dimension intact (default false).
 % Output

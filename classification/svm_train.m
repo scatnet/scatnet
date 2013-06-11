@@ -4,12 +4,23 @@
 % Input
 %    db: The database containing the feature vector.
 %    train_set: The object indices of the training instances.
-%    options: The training options. options.kernel_type specifies the kernel
-%       type ('linear' or 'gaussian'), options.C specified the slack factor,
-%       and options.gamma specifies the gamma constant for the Gaussian kernel
-%       case.
+%    options: The training options:
+%          options.kernel_type: The kernel type: 'linear' or 'gaussian'
+%             (default 'gaussian').
+%          options.C: The slack factor (default 8).
+%          options.gamma: The gamma of the Gaussian kernel (default 1e-4).
+%          options.no_inplace: Do not use the inplace version of LIBSVM, even
+%             if it available (default 0).
+%          options.full_test_kernel: Explicity calculate the test kernel 
+%             instead of relying on the precalculated kernel. Used if the 
+%             kernel is only defined on the training vectors (default 0).
 % Output
 %    model: The SVM model.
+% Description
+%    The svm_train function provides an interface to the LIBSVM set of 
+%    SVM training routines. If available, will use the inplace version found 
+%    in libsvm-compact (see http://www.di.ens.fr/data/software/) to save
+%    memory and speed up calculations.
 
 function model = svm_train(db,train_set,opt)
 	if nargin < 3
@@ -84,7 +95,7 @@ function model = svm_train(db,train_set,opt)
 			
 			if strcmp(db.kernel.kernel_format, 'triangle')
 				error(['Triangular kernels not supported for standard ' ...
-				' LIBSVM version. Please try libsvm-dense-compact.'])
+				' LIBSVM version. Please try libsvm-compact.'])
 			end
 			features = db.kernel.K(:,ind_features);
 			

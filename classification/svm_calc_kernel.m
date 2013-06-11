@@ -1,3 +1,22 @@
+% svm_calc_kernel: Precalculate SVM kernel.
+% Usage
+%    database = svm_calc_kernel(database, kernel_type, kernel_format, ... 
+%       kernel_set)
+% Input
+%    database: The database containing the feature vectors.
+%    kernel_type: The type of kernel: 'linear', or 'gaussian' (default 
+%       'gaussian')
+%    kernel_format: The format in which to store the kernel: 'square', or 
+%       'triangular'. The latter only takes half the space (default 'square').
+%    kernel_set: The set of indices for which the kernel is computed. Note 
+%       that only these are used for training and testing, so if a subset
+%       of the full database is chosen, performance might degrade. To manually
+%       recalculate the kernel during testing, the full_test_kernel option can
+%       be set and passed to svm_train (default 1:size(db.features,2)).
+% Output
+%    database: The input database, with a kernel field added containing the
+%       precalculated kernel.
+
 function db = svm_calc_kernel(db,kernel_type,kernel_format,kernel_set)
 	if nargin < 4
 		kernel_set = 1:size(db.features,2);

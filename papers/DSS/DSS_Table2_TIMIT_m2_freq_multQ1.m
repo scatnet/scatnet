@@ -2,7 +2,7 @@
 
 run_name = 'DSS_Table2_TIMIT_m2_freq_multQ1';
 
-src = phone_src('/home/anden/timit/TIMIT');
+src = phone_src('/path/to/timit');
 
 [train_set,test_set,valid_set] = phone_partition(src);
 

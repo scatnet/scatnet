@@ -7,7 +7,7 @@ run_name = 'DSS_Table2_GTZAN_m1';
 
 N=5*2^17;
 
-src=gtzan_src('/home/anden/GTZAN/gtzan');
+src=gtzan_src('/path/to/gtzan');
 
 fparam.filter_type = {'gabor_1d','morlet_1d'};
 fparam.Q = [8 2];
