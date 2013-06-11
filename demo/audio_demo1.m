@@ -13,14 +13,16 @@ scat_opt.M = 2;
 [Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt);
 
 % Display first- and second-order filter banks
+figure;
 for m = 1:2
-	figure;
+	subplot(1,2,m);
 	hold on; 
 	for k = 1:length(filters{m}.psi.filter)
 		plot(realize_filter(filters{m}.psi.filter{k}, N)); 
 	end
 	hold off;
 	ylim([0 1.5]);
+	xlim([1 5*N/8]);
 end
 
 % Compute the scattering coefficients of y.
