@@ -19,8 +19,8 @@
 % Description
 %    The svm_train function provides an interface to the LIBSVM set of 
 %    SVM training routines. If available, will use the inplace version found 
-%    in libsvm-dense-compact (see http://www.di.ens.fr/data/software/) to
-%    save memory and speed up calculations.
+%    in libsvm-compact (see http://www.di.ens.fr/data/software/) to save
+%    memory and speed up calculations.
 
 function model = svm_train(db,train_set,opt)
 	if nargin < 3
@@ -95,7 +95,7 @@ function model = svm_train(db,train_set,opt)
 			
 			if strcmp(db.kernel.kernel_format, 'triangle')
 				error(['Triangular kernels not supported for standard ' ...
-				' LIBSVM version. Please try libsvm-dense-compact.'])
+				' LIBSVM version. Please try libsvm-compact.'])
 			end
 			features = db.kernel.K(:,ind_features);
 			
