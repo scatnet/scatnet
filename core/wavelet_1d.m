@@ -65,7 +65,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	for p1 = find(options.psi_mask)
 		ds = round(log2(2*pi/psi_bw(p1)/2)) - ...
 		     j0 - ...
-		     options.oversampling;
+		     max(1, options.oversampling);
 		ds = max(ds, 0);
 		
 		x_psi{p1} = conv_sub_1d(xf, filters.psi.filter{p1}, ds);
