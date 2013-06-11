@@ -7,7 +7,7 @@ function varargout = data_read(file,varargin)
 		[varargout{1},varargout{2}] = auread(file,varargin{:});
 	elseif length(file) > 4 && strcmpi(file(end-3:end),'.wav')
 		s = textscan(file,'%s',1);
-		if isempty(strfind(s{1},'NIST_1A'))
+		if isempty(strfind(s{1}{1},'NIST_1A'))
 			[varargout{1},varargout{2}] = wavread(file,varargin{:});
 		else
 			[varargout{1},varargout{2}] = sphere_read(file,varargin{:});
