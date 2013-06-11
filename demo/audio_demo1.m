@@ -10,7 +10,18 @@ filt_opt = default_filter_options('audio', 4096);
 scat_opt.M = 2;
 
 % Prepare wavelet transforms to use in scattering.
-Wop = wavelet_factory_1d(N, filt_opt, scat_opt);
+[Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt);
+
+% Display first- and second-order filter banks
+for m = 1:2
+	figure;
+	hold on; 
+	for k = 1:length(filters{m}.psi.filter)
+		plot(realize_filter(filters{m}.psi.filter{k}, N)); 
+	end
+	hold off;
+	ylim([0 1.5]);
+end
 
 % Compute the scattering coefficients of y.
 S = scat(y, Wop);
