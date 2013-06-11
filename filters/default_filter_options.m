@@ -14,6 +14,7 @@ function filt_opt = default_filter_options(filter_type, averaging_size)
 	if strcmp(filter_type, 'image')
 		filt_opt.J = log2(averaging_size);
 	elseif strcmp(filter_type, 'audio')
+		filt_opt.filter_type = {'gabor_1d', 'morlet_1d'};
 		filt_opt.Q = [8 1];
 		filt_opt.J = T_to_J(averaging_size, filt_opt);
 	elseif strcmp(filter_type, 'dyadic')
