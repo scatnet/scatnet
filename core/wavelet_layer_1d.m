@@ -10,9 +10,13 @@
 %    U_phi The coefficients of in, lowpass-filtered (scattering coefficients).
 %    U_psi: The wavelet transform coefficients.
 
-function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options)
+function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options, wavelet)
 	if nargin < 3
 		options = struct();
+	end
+	
+	if nargin < 4
+		wavelet = @wavelet_1d;
 	end
 	
 	calc_U = (nargout>=2);
@@ -39,7 +43,7 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options)
 		options.x_resolution = U.meta.resolution(p1);
 		options.psi_mask = psi_mask;
 		[x_phi, x_psi, meta_phi, meta_psi] = ...
-			wavelet_1d(U.signal{p1}, filters, options);
+			wavelet(U.signal{p1}, filters, options);
 		
 		U_phi.signal{1,p1} = x_phi;
 		U_phi.meta = map_meta(U.meta,p1,U_phi.meta,p1);
