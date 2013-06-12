@@ -48,4 +48,7 @@ function Z = separate_freq(Y)
 		src_value = getfield(Y.meta,field_names{n});
 		Z.meta = setfield(Z.meta,field_names{n},src_value(:,I));
 	end
+	
+	Z.signal = cellfun(@(x)(permute(x,[1 3 2])), Z.signal, ...
+		'UniformOutput', false);
 end
