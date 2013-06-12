@@ -27,6 +27,9 @@ function Y = concatenate_freq(X,fmt)
 		Y.meta = setfield(Y.meta,field_names{n},zeros(sz(1),0));
 	end
 	
+	X.signal = cellfun(@(x)(permute(x,[1 3 2])), X.signal, ...
+		'UniformOutput', false);
+	
 	for k = 1:max(assigned)
 		sz_orig = size(X.signal{1});
 		
