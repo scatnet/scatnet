@@ -136,14 +136,19 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 			options1.psi_mask = psi_mask;
 			options1.phi_renormalize = 0;
 
+			signal = Z.signal{p1};
+			sz_orig = size(signal);
+			sz_orig = [sz_orig ones(1,3-length(sz_orig))];
+			signal = reshape(signal,[sz_orig(1) 1 sz_orig(2)*sz_orig(3)]);
+
 			[Z_phi, Z_psi, meta_phi, meta_psi] = ...
-				wavelet_1d(Z.signal{p1}, filters{1}, options1);
+				wavelet_1d(signal, filters{1}, options1);
 			
 			if s == 1
 				ds = meta_phi.resolution;
-				ind0 = r0:2^ds:r0+size(Z.signal{p1},1)-1;
+				ind0 = r0:2^ds:r0+size(signal,1)-1;
 				fr_count = size(Z_phi,1);
-				U_phi.signal{p1} = Z_phi;
+				U_phi.signal{p1} = reshape(Z_phi,[size(Z_phi,1) sz_orig(2:3)]);
 				ind_phi = r_phi:r_phi+fr_count-1;
 		
 				U_phi.meta = map_meta(Z.meta,ind0,U_phi.meta,ind_phi);
@@ -157,9 +162,9 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 			end
 		
 			for k = find(psi_mask)
-				U_psi.signal{p2} = Z_psi{k};
+				U_psi.signal{p2} = reshape(Z_psi{k},[size(Z_psi{k},1) sz_orig(2:3)]);
 				ds = meta_psi.resolution(k);
-				ind0 = r0:2^ds:r0+size(Z.signal{p1},1)-1;
+				ind0 = r0:2^ds:r0+size(signal,1)-1;
 				fr_count = size(Z_psi{k},1);
 				ind_psi = r_psi:r_psi+fr_count-1;
 				U_psi.meta = map_meta(Z.meta,ind0,U_psi.meta,ind_psi,{'j','fr_j'});
@@ -174,9 +179,9 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				p2 = p2+1;
 			end
 			
-			r0 = r0+size(Z.signal{p1},1);
+			r0 = r0+size(signal,1);
 		end
-	end	
+	end
 
 	U_phi = separate_freq(U_phi);
 	U_psi = separate_freq(U_psi);
