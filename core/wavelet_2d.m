@@ -19,7 +19,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	lastres = log2(filters.meta.size_in(1)/size(x,1));
 	margins = filters.meta.margins / 2^lastres;
 	% mirror padding and fft
-	xf = fft2(pad_mirror_2d(x, margins));
+	xf = fft2(pad_signal_1d(x, filters.meta.size_filter/2^lastres, [], 0));
 	
 	Q = filters.meta.Q;
 	
@@ -27,7 +27,8 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	J = filters.phi.meta.J;
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
-	x_phi = real(conv_sub_unpad_2d(xf, filters.phi.filter, ds, margins));
+	x_phi = real(conv_sub_unpad_2d(xf, filters.phi.filter, ds, [0 0]));
+	x_phi = unpad_signal_1d(x_phi, (lastres+ds)*[1 1], size(x));
 	
 	% high pass filtering, downsampling and unpading
 	x_psi = {};
@@ -35,7 +36,8 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 		j = filters.psi.meta.j(p);
 		ds = max(floor(j/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
-		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, margins);
+		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, [0 0]);
+		x_psi{p} = unpad_signal_1d(x_psi{p}, (lastres+ds)*[1 1], size(x));
 	end
 	
 	if(precision_4byte)
