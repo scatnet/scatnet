@@ -48,14 +48,13 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options, wavelet)
 		U_phi.signal{1,p1} = x_phi;
 		U_phi.meta = map_meta(U.meta,p1,U_phi.meta,p1);
 		U_phi.meta.bandwidth(1,p1) = meta_phi.bandwidth;
-		U_phi.meta.resolution(1,p1) = U.meta.resolution(p1)+...
-			meta_phi.resolution;
+		U_phi.meta.resolution(1,p1) = meta_phi.resolution;
 		
 		ind = r:r+sum(psi_mask)-1;
 		U_psi.signal(1,ind) = x_psi(1,psi_mask);
 		U_psi.meta = map_meta(U.meta,p1,U_psi.meta,ind,{'j'});
 		U_psi.meta.bandwidth(1,ind) = meta_psi.bandwidth(psi_mask);
-		U_psi.meta.resolution(1,ind) = U.meta.resolution(p1)+meta_psi.resolution(psi_mask);
+		U_psi.meta.resolution(1,ind) = meta_psi.resolution(psi_mask);
 		U_psi.meta.j(:,ind) = [U.meta.j(:,p1)*ones(1,length(ind)); ...
 			meta_psi.j(psi_mask)];
 			
