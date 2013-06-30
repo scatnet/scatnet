@@ -27,7 +27,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	J = filters.phi.meta.J;
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
-	x_phi = real(conv_sub_unpad_2d(xf, filters.phi.filter, ds, [0 0]));
+	x_phi = real(conv_sub_2d(xf, filters.phi.filter, ds));
 	x_phi = unpad_signal_1d(x_phi, (lastres+ds)*[1 1], size(x));
 	
 	% high pass filtering, downsampling and unpading
@@ -36,7 +36,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 		j = filters.psi.meta.j(p);
 		ds = max(floor(j/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
-		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, [0 0]);
+		x_psi{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);
 		x_psi{p} = unpad_signal_1d(x_psi{p}, (lastres+ds)*[1 1], size(x));
 	end
 	
