@@ -35,7 +35,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	
 	x = reshape(x, [size(x,1), size(x,3)]);
 	
-	x = pad_signal_1d(x, N_padded, filters.boundary);
+	x = pad_signal(x, N_padded, filters.boundary);
 	
 	xf = fft(x,[],1);
 	
@@ -45,7 +45,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	ds = max(ds, 0);
 	
 	x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
-	x_phi = unpad_signal_1d(x_phi, ds, N);
+	x_phi = unpad_signal(x_phi, ds, N);
 	meta_phi.j = -1;
 	meta_phi.bandwidth = phi_bw;
 	meta_phi.resolution = j0+ds;
@@ -69,7 +69,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		ds = max(ds, 0);
 		
 		x_psi{p1} = conv_sub_1d(xf, filters.psi.filter{p1}, ds);
-		x_psi{p1} = unpad_signal_1d(x_psi{p1}, ds, N);
+		x_psi{p1} = unpad_signal(x_psi{p1}, ds, N);
 		meta_psi.j(:,p1) = p1-1;
 		meta_psi.bandwidth(:,p1) = psi_bw(p1);
 		meta_psi.resolution(:,p1) = j0+ds;

@@ -1,4 +1,4 @@
-function x = pad_signal_1d(x,N1,boundary,half_sample)
+function x = pad_signal(x,N1,boundary,half_sample)
 	if nargin < 3 || isempty(boundary)
 		boundary = 'symm';
 	end
