@@ -29,7 +29,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
 	x_phi = real(conv_sub_2d(xf, filters.phi.filter, ds));
-	x_phi = unpad_signal_1d(x_phi, (lastres+ds)*[1 1], size(x));
+	x_phi = unpad_signal_1d(x_phi, ds*[1 1], size(x));
 	
 	meta_phi.j = -1;
 	meta_phi.theta = -1;
@@ -45,7 +45,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
 		ds = max(floor(j/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
 		x_psi{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);
-		x_psi{p} = unpad_signal_1d(x_psi{p}, (lastres+ds)*[1 1], size(x));
+		x_psi{p} = unpad_signal_1d(x_psi{p}, ds*[1 1], size(x));
 		
 		meta_psi.j(1,p) = filters.psi.meta.j(p);
 		meta_psi.theta(1,p) = filters.psi.meta.theta(p);
