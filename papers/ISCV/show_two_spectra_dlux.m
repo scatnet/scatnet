@@ -13,7 +13,6 @@ if nargin < 4
 	normvalue(2) = max(outsplit{2}(:));
 end
 
-figure;
 cc=colormap(gray);
 invgray=1-cc;
 
