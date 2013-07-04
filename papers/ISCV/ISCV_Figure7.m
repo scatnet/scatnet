@@ -6,7 +6,6 @@
 %%%%%This figure displays the scattering coefficients of
 %%%%%% a digit taken from the MNIST dataset.
 
-d=4;
 Nim=32;
 copts.renorm_process=0;
 copts.l2_renorm=1;
@@ -21,8 +20,8 @@ dirac(1)=1;
 dirac=fftshift(dirac);
 [scdirac]=scat(dirac,Wop);
 
-tr=retrieve_mnist_data(5,5);
-im=tr{d}{1}';
+tmp=load('mnist_sample.mat');
+im=tmp.im;
 
 %compute scattering coefficients
 [sc_digit]=scat(im,Wop);
