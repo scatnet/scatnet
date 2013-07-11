@@ -48,19 +48,20 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	res_max = floor(J/Q);
 	% compute margin for padding
 	% make sure size_in is multiple of 2^res_max
-	if (sum(size_in/2^res_max == floor(size_in/2^res_max))~=2)
-		error('size_in must be multiple of downsampling');
-	end
+	%if (sum(size_in/2^res_max == floor(size_in/2^res_max))~=2)
+	%	error('size_in must be multiple of downsampling');
+	%end
 	margins_default = 2*sigma_phi*2^((J-1)/Q);
 	margins_default = min(2^res_max * ceil(margins_default/2^res_max), ...
 		size_in);
 	margins = ...
 		getoptions(options, 'margins', margins_default);
 	% make sure margin is multiple of 2^res_max
-	if (sum(margins/2^res_max == floor(margins/2^res_max))~=2)
-		error('margin must be multiple of downsampling');
-	end
+	%if (sum(margins/2^res_max == floor(margins/2^res_max))~=2)
+	%	error('margin must be multiple of downsampling');
+	%end
 	size_filter = size_in + margins;
+	size_filter = ceil(size_filter/2^res_max)*2^res_max;
 	
 	phi.filter.type = 'fourier_multires';
 	

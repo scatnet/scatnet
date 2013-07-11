@@ -1,4 +1,4 @@
-function x = unpad_signal_1d(x,res,N0)
+function x = unpad_signal(x,res,N0)
 	dims = ndims(x);
 	for d = 1:length(N0)
 		N2 = 1+floor((N0(d)-1)/2^res(d));
