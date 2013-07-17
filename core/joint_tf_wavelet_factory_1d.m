@@ -1,4 +1,6 @@
-function wavelet = joint_tf_wavelet_factory_1d(N, time_filter_options, freq_filter_options, scat_options, M)
+function wavelet = joint_tf_wavelet_factory_1d(N, time_filter_options, freq_filter_options, scat_options)
+	M = scat_options.M;
+
 	time_filters = filter_bank(N, time_filter_options);
 	
 	N_freq = 2^ceil(log2(numel(time_filters{1}.psi.filter)));
