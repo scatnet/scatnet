@@ -24,7 +24,7 @@ function img = scat_img(X,j)
 
 	ind = find(all(bsxfun(@eq,X.meta.j(1:end-1,:),j),1));
 	
-	signal = cellfun(@(x)(interp(x,nbTimePt/size(x,1))), ...
+	signal = cellfun(@(x)(interpft(x,nbTimePt)), ...
 		X.signal(ind),'UniformOutput',false);
 	
 	%img(X.meta.j(end,ind)+1,:) = log(abs([signal{:}].')+epsilon);

@@ -3,11 +3,12 @@
 % Usage
 %	[x_phi, x_psi] = wavelet_2d(x, filters)
 
-function [x_phi, x_psi] = wavelet_2d(x, filters, options)
-	
+function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
 	if nargin<3
 		options = struct();
 	end
+	
+	options = fill_struct(options, 'x_resolution',0);
 	
 	precision_4byte = getoptions(options, 'precision_4byte', 1);
 	
@@ -16,10 +17,10 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 	
 	% precomputation
-	lastres = log2(filters.meta.size_in(1)/size(x,1));
+	lastres = options.x_resolution;
 	margins = filters.meta.margins / 2^lastres;
 	% mirror padding and fft
-	xf = fft2(pad_mirror_2d(x, margins));
+	xf = fft2(pad_signal(x, filters.meta.size_filter/2^lastres, [], 0));
 	
 	Q = filters.meta.Q;
 	
@@ -27,15 +28,28 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	J = filters.phi.meta.J;
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
-	x_phi = real(conv_sub_unpad_2d(xf, filters.phi.filter, ds, margins));
+	x_phi = real(conv_sub_2d(xf, filters.phi.filter, ds));
+	x_phi = unpad_signal(x_phi, ds*[1 1], size(x));
+	
+	meta_phi.j = -1;
+	meta_phi.theta = -1;
+	meta_phi.resolution = lastres+ds;
 	
 	% high pass filtering, downsampling and unpading
 	x_psi = {};
+	meta_psi.j = -1*ones(1, numel(filters.psi.filter));
+	meta_psi.theta = -1*ones(1, numel(filters.psi.filter));
+	meta_psi.resolution = -1*ones(1, numel(filters.psi.filter));
 	for p = find(psi_mask)
 		j = filters.psi.meta.j(p);
 		ds = max(floor(j/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
-		x_psi{p} = conv_sub_unpad_2d(xf, filters.psi.filter{p}, ds, margins);
+		x_psi{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);
+		x_psi{p} = unpad_signal(x_psi{p}, ds*[1 1], size(x));
+		
+		meta_psi.j(1,p) = filters.psi.meta.j(p);
+		meta_psi.theta(1,p) = filters.psi.meta.theta(p);
+		meta_psi.resolution(1,p) = lastres+ds;
 	end
 	
 	if(precision_4byte)

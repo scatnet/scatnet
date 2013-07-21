@@ -30,12 +30,15 @@ function X = average_scat(X,T,step,window_fun)
 				res = X{m+1}.meta.resolution(p1);
 			end
 			N0 = size(X{m+1}.signal{p1},1);
+			if T < 2^res
+				continue;
+			end
 			% calculate the T and step at current resolution
 			real_T = T/2^res;
-			real_step = step/2^res;
+			real_step = max(1,step/2^res);
 			% calculate number of windows we get & allocate buffer
 			n_windows = floor(length(X{m+1}.signal{p1})/real_step);
-			buf = zeros(real_T,n_windows,size(X{m+1}.signal{p1},2));
+			buf = zeros([real_T,n_windows,size(X{m+1}.signal{p1},3)]);
 			% since we want symmetric boundary conditions, we need to extend 
 			% the signal symmetrically
 			ind0 = [1:N0 N0:-1:1];

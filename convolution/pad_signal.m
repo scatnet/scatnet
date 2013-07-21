@@ -1,9 +1,22 @@
-function x = pad_signal_1d(x,N1,boundary)
+function x = pad_signal(x,N1,boundary,half_sample)
+	if nargin < 3 || isempty(boundary)
+		boundary = 'symm';
+	end
+	
+	if nargin < 4 || isempty(half_sample)
+		half_sample = 1;
+	end
+		
+	
 	for d = 1:length(N1)
 		N0 = size(x,d);
 	
 		if strcmp(boundary,'symm')
-			ind0 = [1:N0 N0:-1:1];
+			if half_sample
+				ind0 = [1:N0 N0:-1:1];
+			else
+				ind0 = [1:N0 N0-1:-1:2];
+			end
 		elseif strcmp(boundary,'per')
 			ind0 = [1:N0];
 		elseif strcmp(boundary,'zero')
@@ -18,7 +31,7 @@ function x = pad_signal_1d(x,N1,boundary)
 			ind(N0+1:N0+floor((N1(d)-N0)/2)) = ...
 				ind0(mod([N0+1:N0+floor((N1(d)-N0)/2)]-1,length(ind0))+1);
 			ind(N1(d):-1:N0+floor((N1(d)-N0)/2)+1) = ...
-				ind0(mod([1:ceil((N1(d)-N0)/2)]-1,length(ind0))+1);
+				ind0(mod(length(ind0)-[1:ceil((N1(d)-N0)/2)],length(ind0))+1);
 		else
 			ind = 1:N0;
 		end

@@ -100,6 +100,8 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 		N = sig_length;
 	end
 	
+	N = 2^ceil(log2(N));
+	
 	filters.N = N;
 	
 	filters.psi.filter = cell(1,options.J+options.P);
