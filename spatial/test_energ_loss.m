@@ -7,3 +7,5 @@ en = xc1.^2;
 en = sum(en(:))
 
 xc2 = convsub2d_spatial(x, psi, 1);
+en2 = xc2.^2;
+en2 = sum(en2(:))
