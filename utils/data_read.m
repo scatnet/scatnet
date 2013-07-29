@@ -14,7 +14,8 @@ function varargout = data_read(file,varargin)
 		else
 			[varargout{1},varargout{2}] = sphere_read(file,varargin{:});
 		end
-	elseif length(file) > 4 && strcmpi(file(end-3:end),'.jpg')
+	elseif length(file) > 4 && (strcmpi(file(end-3:end),'.jpg')...
+			|| strcmpi(file(end-3:end),'.png') )
 		varargout{1} = imreadBW(file,varargin{:});
 	else
 		error('Unknown file extension!');
