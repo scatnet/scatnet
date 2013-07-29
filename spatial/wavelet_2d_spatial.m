@@ -1,13 +1,21 @@
 function [x_phi, x_psi] = wavelet_2d_spatial(x, filters, options)
 	
+	% retrieve options
 	options.null = 1;
-	
+	precision = getoptions(options, 'precision', 'single');
 	J = getoptions(options, 'J', 4);
 	j_min = getoptions(options, 'j_min',0);
-	hx.signal{1} = x;
+	
+	% initialize structure
+	if strcmp(precision, 'single')
+		hx.signal{1} = single(x);
+	else
+		hx.signal{1} = x;
+	end
 	hx.meta.j(1) = 0;
-	h = filters.h.filter;
+	
 	% low pass
+	h = filters.h.filter;
 	for j = 1:J
 		hx.signal{j+1} = convsub2d_spatial(hx.signal{j}, h, 1);
 		hx.meta.j(j+1) = j;

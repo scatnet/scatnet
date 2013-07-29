@@ -44,18 +44,14 @@ function filters = morlet_filter_bank_2d_spatial(options)
 	xi_psi     = getoptions(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);
 	slant_psi  = getoptions(options, 'slant_psi',  4/L);
 	
-	P = getoptions(options, 'P', 3) % the size of the support is 2*P + 1
+	P = getoptions(options, 'P', 3); % the size of the support is 2*P + 1
+	
+	precision  = getoptions(options, 'precision', 'single');% if single
+	% then the filter is in 32 bits float.
 	
 	% low pass filter h
-	filter_spatial= gabor_2d(2*P+2,...
-		2*P+2,...
-		sigma_phi,...
-		1,...
-		0,...
-		0,...
-		[0,0]);
-	h.filter.coefft = fftshift(filter_spatial);
-	h.filter.coefft = h.filter.coefft(2:2*P+2, 2:2*P+2);
+	
+	h.filter.coefft = gaussian_2d_spatial(P, sigma_phi, precision);
 	h.filter.type = 'spatial_support';
 	
 	angles = (0:L-1)  * pi / L;
@@ -68,12 +64,12 @@ function filters = morlet_filter_bank_2d_spatial(options)
 			angle = angles(theta);
 			scale = 2^(q/Q);
 			
-			filter_spatial = morlet_2d_spatial(P, ...
+			g.filter{p}.coefft = morlet_2d_spatial(P, ...
 				sigma_psi*scale,...
 				slant_psi,...
 				xi_psi/scale,...
-				angle) ;
-			g.filter{p}.coefft = filter_spatial;
+				angle,...
+				precision) ;
 			g.filter{p}.type = 'spatial_support';
 			
 			g.meta.q(p) = q;

@@ -8,6 +8,7 @@ function [U_phi, U_psi] = wavelet_layer_2d_spatial(U, filters, options)
 	end
 	J = getoptions(options, 'J', 4);
 	
+	w_options = options;
 	p2 = 1;
 	for p = 1:numel(U.signal)
 		x = U.signal{p};

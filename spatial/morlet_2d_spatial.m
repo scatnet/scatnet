@@ -15,7 +15,7 @@
 % output :
 % - gab : <NxM double> the morlet filter in spatial domain
 
-function gab = morlet_2d_spatial(P, sigma, slant, xi, theta)
+function gab = morlet_2d_spatial(P, sigma, slant, xi, theta, precision)
 	
 	
 	[x , y] = meshgrid(1:2*P+1, 1:2*P+1);
@@ -35,5 +35,7 @@ function gab = morlet_2d_spatial(P, sigma, slant, xi, theta)
 	gabc = oscilating_part - K.*gaussian_envelope;
 	
 	gab=1/(2*pi*sigma^2/slant^2)*(gabc);
-	
+	if (strcmp(precision, 'single'))
+		gab = single(gab);
+	end
 end

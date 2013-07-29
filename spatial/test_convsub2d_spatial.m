@@ -1,7 +1,8 @@
-options.P = 4;
+options.P = 3;
 filters = morlet_filter_bank_2d_spatial(options);
 filters_sep = morlet_filter_bank_2d_spatial_separable(options);
 x = lena;
+x = single(x);
 
 filter = filters.h.filter;
 x_h = convsub2d_spatial(x, filter, 1);

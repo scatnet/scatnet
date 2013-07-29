@@ -23,10 +23,13 @@
 % NOTE :
 % when used with xi = 0, and slant = 1, this implements a gaussian
 
-function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset)
+function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset, precision)
 	
 	if ~exist('offset','var')
 		offset = [0,0];
+	end
+	if ~exist('precisin', 'var')
+		precision = 'double';
 	end
 	
 	[x , y] = meshgrid(1:M,1:N);
@@ -40,5 +43,9 @@ function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset)
 	%normalize sucht that the maximum of fourier modulus is 1
 	gabc = exp( - s/2 + 1i*(x*xi*cos(theta) + y*xi*sin(theta)));
 	gab = 1/(2*pi*sigma0*sigma0/slant)*fftshift(gabc);
+	
+	if (strcmp(precision, 'single'))
+		gab = single(gab);
+	end
 	
 end
