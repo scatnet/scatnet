@@ -21,7 +21,7 @@ function gab = morlet_2d_spatial(N, M, sigma, slant, xi, theta, precision, offse
 		offset = [1 + floor(N/2), 1 + floor(M/2)];
 	end
 	
-	[x , y] = meshgrid(1:N, 1:M);
+	[x , y] = meshgrid(1:M, 1:N);
 
 	x = x - offset(2);
 	y = y - offset(1);

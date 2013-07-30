@@ -51,7 +51,10 @@ function filters = morlet_filter_bank_2d_spatial(options)
 	
 	% low pass filter h
 	
-	h.filter.coefft = gaussian_2d_spatial(P, sigma_phi, precision);
+	h.filter.coefft = gaussian_2d_spatial(2*P+1,...
+		2*P+1,...
+		sigma_phi,...
+		precision);
 	h.filter.type = 'spatial_support';
 	
 	angles = (0:L-1)  * pi / L;
