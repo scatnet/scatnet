@@ -1,5 +1,5 @@
 
 P = 3;
 sigma = 2;
-precision = 'double';
-g = gaussian_2d_spatial(P, sigma, precision);
+precision = 'single';
+g = gaussian_2d_spatial(2*P+1, 2*P+1, sigma, precision);

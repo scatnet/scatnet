@@ -20,7 +20,15 @@ function [Wop, filters] = wavelet_factory_2d_spatial(filt_opt, scat_opt)
 	scat_opt = fill_struct(scat_opt, 'M', 2);
 	
 	% filters :
-	filters = morlet_filter_bank_2d_spatial(filt_opt);
+	filt_opt = fill_struct(filt_opt, 'type', 'morlet');
+	switch (filt_opt.type)
+		case 'morlet'	
+			filters = morlet_filter_bank_2d_spatial(filt_opt);
+			
+		case 'haar'
+			filters = haar_filter_bank_2d_spatial(filt_opt);
+			
+	end
 	
 	% wavelet transforms :
 	for m = 1:scat_opt.M+1
