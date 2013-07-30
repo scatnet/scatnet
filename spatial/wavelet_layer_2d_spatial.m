@@ -1,7 +1,7 @@
 function [U_phi, U_psi] = wavelet_layer_2d_spatial(U, filters, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
-	% with psi if the user does get U_psi
+	% with psi if the user does not get U_psi
 	
 	if ~isfield(U.meta,'theta')
 		U.meta.theta = zeros(0,size(U.meta.j,2));
