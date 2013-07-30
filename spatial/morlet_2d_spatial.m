@@ -15,13 +15,16 @@
 % output :
 % - gab : <NxM double> the morlet filter in spatial domain
 
-function gab = morlet_2d_spatial(P, sigma, slant, xi, theta, precision)
+function gab = morlet_2d_spatial(N, M, sigma, slant, xi, theta, precision, offset)
 	
+	if ~exist('offset', 'var')
+		offset = [1 + floor(N/2), 1 + floor(M/2)];
+	end
 	
-	[x , y] = meshgrid(1:2*P+1, 1:2*P+1);
+	[x , y] = meshgrid(1:N, 1:M);
 
-	x = x - P-1;
-	y = y - P-1;
+	x = x - offset(2);
+	y = y - offset(1);
 	
 	Rth = rotation_matrix_2d(theta);
 	A = inv(Rth) * [1/sigma^2, 0 ; 0 slant^2/sigma^2] * Rth ;
