@@ -4,8 +4,7 @@
 % Input
 %    db: The database containing the feature vector.
 %    model: The affine space model obtained from svm_train.
-%    test_set: The object indices of the testing instances.
-% Output
+%    test_set: The object indices of the testing instances. Output
 %    labels: The assigned labels.
 %    votes: The number of votes for each testing instance and class pair.
 %    feature_labels: The labels assigned to the individual features.
@@ -76,7 +75,10 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 			K = db.features(:,ind_features).'*model.SVs.';
 		elseif model.Parameters(2) == 2		% Gaussian kernel
 			norm1 = sum(abs(db.features(:,ind_features)).^2,1);
-			norm2 = sum(abs(model.SVs.').^2,1);
+                        model.SVs=full(model.SVs);			
+                        norm2 = sum(abs(model.SVs.').^2,1);
+                        norm2=full(norm2);
+                        model.SVs=full(model.SVs);
 			K = bsxfun(@plus,norm1.',norm2)-... 
 				2*db.features(:,ind_features).'*model.SVs.';
 			K = exp(-model.Parameters(4)*K);
@@ -91,7 +93,9 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 			elseif strcmp(db.kernel.kernel_type,'gaussian')
 				norm1 = sum(abs(db.features(:,ind_features)).^2,1);
 				%norm2 = sum(abs(db.features(:,db.kernel.kernel_set(model.SVs))).^2,1);
-				K = bsxfun(@plus,norm1.',norm2)-... 
+                            %   norm1=full(norm1);
+                             %  norm2=full(norm2);			
+ 	K = bsxfun(@plus,norm1.',norm2)-... 
 					2*db.features(:,ind_features).'*db.features(:,db.kernel.kernel_set(model.SVs));
 			else
 				error('unknown kernel type');
