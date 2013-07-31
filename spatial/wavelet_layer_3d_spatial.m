@@ -33,7 +33,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(U, filters, filters_rot, opti
 	U_psi_meta = struct();
 	for p = 1:numel(U_orb.signal)
 		if (calculate_psi)
-			[y_Phi, y_Psi] = wavelet_3d_spatial(U_orb.signal{p});
+			[y_Phi, y_Psi] = wavelet_3d_spatial(U_orb.signal{p}, filters, filters_rot, w_options);
 			if (p == 1)
 				[phifn, phinfn1, phinfn2] = merge_fieldnames(U_orb.meta, y_Phi.meta);
 				[psifn, psinfn1, psinfn2] = merge_fieldnames(U_orb.meta, y_Psi.meta);
