@@ -1,4 +1,5 @@
-function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(U, filters, filters_rot, options)
+function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
+		U, filters, filters_rot, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
 	% with psi if the user does not get U_psi
@@ -28,41 +29,53 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(U, filters, filters_rot, opti
 	
 	%% for each orbit, apply the 3d wavelet tranform
 	
-	next_p_phi = 1;
-	U_phi_meta = struct();
-	U_psi_meta = struct();
-	for p = 1:numel(U_orb.signal)
-		if (calculate_psi)
-			[y_Phi, y_Psi] = wavelet_3d_spatial(U_orb.signal{p}, filters, filters_rot, w_options);
-			if (p == 1)
-				[phifn, phinfn1, phinfn2] = merge_fieldnames(U_orb.meta, y_Phi.meta);
-				[psifn, psinfn1, psinfn2] = merge_fieldnames(U_orb.meta, y_Psi.meta);
-			end
-		else
-			y_Phi = wavelet_3d_spatial(U_orb.signal{p});
-		end
-		% copy the paths
-		U_Phi.signal{p} = y_Phi.signal;
-		%U_Phi.meta.j(:,p) = [U_orb.meta.j(:,p); J];
-		%U_Phi.meta.theta2(:,p) = U_Phi.
-		for p2 = 1:numel(y_Phi.signal)
-			U_Phi.signal{next_p_phi} = y_Phi.signal{p2};
-			U_phi_meta = extend_meta(next_p_phi,...
-				U_phi_meta,...
-				U_orb.meta,...
-				p,...
-				y_Phi.meta,...
-				p2,...
-				phifn,...
-				phinfn1,...
-				phinfn2);
-		end
-		if (calculate_psi)
-			for p2 = 1:numel(y_Psi.signal)
+	p2 = 1;
+	if (calculate_psi) % first application
+		
+		for p = 1:numel(U_orb.signal)
+			j = U_orb.meta.j(end, p);
+			
+			% configure wavelet transform
+			w_options.angular_range = 'zero_pi';
+			w_options.j_min         = 1;
+			w_options.J             = J - j;
+			
+			% compute wavelet transform
+			[y_Phi, y_Psi] = wavelet_3d_spatial(U_orb.signal{p},...
+				filters, filters_rot, w_options);
+			
+			% copy signal and meta
+			U_Phi.signal{p} = y_Phi.signal{1};
+			U_Phi.meta.j(:,p) = [U_orb.meta.j(:,p), J];
+			
+			for p_psi = 1:numel(y_Psi.signal)
+				U_Psi.signal{p2} = y_Psi.signal{p_psi};
 				
+				U_Psi.meta.j(:,p2)     = j;
+				U_Psi.meta.j2(:,p2)    = y_Psi.meta.j2(:,p_psi) + j;
+				U_Psi.meta.theta(:,p2) = y_Psi.meta.theta2(:,p_psi);
+				U_Psi.meta.k(:,p2)     = y_Psi.meta.k2(:,p_psi);
 				
+				p2 = p2 + 1;
 			end
 		end
+	else  % second application, only compute low pass
+		for p = 1:numel(U_orb.signal)
+			
+			% configure wavelet transform
+			w_options.angular_range = 'zero_2pi';
+			
+			% compute wavelet transform (low pass only)
+			y_Phi = wavelet_3d_spatial(U_orb.signal{p},...
+				filters, filters_rot, w_options);
+			
+			%
+			U_Phi.signal{p} = y_Phi.signal{1};
+			
+			
+		end
+		U_Phi.meta = U_orb.meta;
+		U_Phi.meta.j = [U_Phi.meta.j; J*ones(1, size(U_Phi.meta.j,2))];
 	end
 	
 end

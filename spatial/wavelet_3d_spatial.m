@@ -76,8 +76,8 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 		y_Phi.signal{1} = real(...
 			sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
 	end
-	y_Phi.meta.J = J;
-	y_Phi.meta.J_theta = filters_rot.J;
+	y_Phi.meta.j2 = J;
+	y_Phi.meta.k2 = filters_rot.J;
 	
 	
 	%%

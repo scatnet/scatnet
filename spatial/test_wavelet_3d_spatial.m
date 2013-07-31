@@ -12,4 +12,11 @@ filters_rot = morlet_filter_bank_1d(sz, filt_rot_opt);
 y = rand(480,640,8);
 options.angular_range = 'zero_pi';
 options.J = 4;
+
+options.j_min = 1;
 [y_Phi, y_Psi] = wavelet_3d_spatial(y, filters, filters_rot, options);
+
+%% low pass only
+y = rand(480,640,4);
+options.angular_range = 'zero_2pi';
+y_Phi = wavelet_3d_spatial(y, filters, filters_rot, options);
