@@ -3,6 +3,15 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
 	% with psi if the user does not get U_psi
+	precision = getoptions(options,'precision','single');
+	switch precision
+		case 'single'
+			prec = @single;
+		case 'double'
+			prec = @(x)(x);
+		otherwise
+			error('invalid precision format');
+	end
 	%%
 	J = getoptions(options, 'J', 4);
 	w_options = options;
@@ -16,7 +25,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 				p = find(U.meta.j(1,:) == j &...
 					U.meta.theta(1,:) == theta);
 				if (theta == 1)
-					tmp = zeros([size(U.signal{p}), L]);
+					tmp = prec(zeros([size(U.signal{p}), L]));
 				end
 				tmp(:, :, theta) = U.signal{p};
 			end

@@ -10,7 +10,19 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 	L = filters_rot.N / 2;
 	[N, M, T] = size(y);
 	
-	% find out the resolution
+	
+	% precision
+	precision = getoptions(options,'precision','single');
+	switch precision
+		case 'single'
+			prec = @single;
+		case 'double'
+			prec = @(x)(x);
+		otherwise
+			error('invalid precision format');
+	end
+	
+	% angular resolution
 	switch (angular_range)
 		case 'zero_pi'
 			angular_res = floor(log2(2*L/(2*T)));
@@ -46,7 +58,7 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 			if (theta == 1) % allocate when size is known
 				tmp_slice = ...
 					convsub2d_spatial(hy.signal{j}(:,:,theta), h, 1);
-				tmp = zeros([size(tmp_slice), T]);
+				tmp = prec(zeros([size(tmp_slice), T]));
 				tmp(:,:,theta) = tmp_slice;
 			else
 				clear tmp_slice;

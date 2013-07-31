@@ -1,12 +1,15 @@
 
 x = uiuc_sample;
 %%
-Wop = wavelet_factory_3d_spatial();
+options.J = 5;
+options.precision = 'single';
+[Wop,f1,f2] = wavelet_factory_3d_spatial(options, options, options);
 tic;
 [Sx, Ux] = scat(x, Wop);
 toc;
 %%
 options.oversampling = 0;
+options.J = 5;
 Wop2 = wavelet_factory_3d(size(x), options, options, options);
 
 tic;
