@@ -1,7 +1,7 @@
 
 x = uiuc_sample;
 %%
-options.J = 5;
+options.J = 4;
 options.precision = 'single';
 [Wop,f1,f2] = wavelet_factory_3d_spatial(options, options, options);
 tic;

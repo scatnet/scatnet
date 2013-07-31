@@ -149,7 +149,7 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 						theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
 						tmp_slice = convsub2d_spatial(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL}, 0);
 						if (theta2 == 1) % allocate
-							tmp = zeros([size(tmp_slice), 2*L]);
+							tmp = prec(zeros([size(tmp_slice), 2*L]));
 						end
 						if (theta_sum_mod2L <= L)
 							tmp(:,:,theta) = tmp_slice;

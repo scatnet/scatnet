@@ -19,7 +19,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 	%%
 	% if previous layer is output of 2d wavelet transform,
 	% extract the orbits
-	if (~isfield(U.meta,'j2'))
+	if (~isfield(U.meta,'theta2'))
 		for j = 0:max(U.meta.j)
 			for theta = 1:L
 				p = find(U.meta.j(1,:) == j &...
@@ -60,10 +60,9 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 			for p_psi = 1:numel(y_Psi.signal)
 				U_Psi.signal{p2} = y_Psi.signal{p_psi};
 				
-				U_Psi.meta.j(:,p2)     = j;
-				U_Psi.meta.j2(:,p2)    = y_Psi.meta.j2(:,p_psi) + j;
-				U_Psi.meta.theta(:,p2) = y_Psi.meta.theta2(:,p_psi);
-				U_Psi.meta.k(:,p2)     = y_Psi.meta.k2(:,p_psi);
+				U_Psi.meta.j(:,p2)      = [j; y_Psi.meta.j2(:,p_psi) + j];
+				U_Psi.meta.theta2(:,p2) = y_Psi.meta.theta2(:,p_psi);
+				U_Psi.meta.k(:,p2)      = y_Psi.meta.k2(:,p_psi);
 				
 				p2 = p2 + 1;
 			end
@@ -71,7 +70,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 	else  % second application, only compute low pass
 		for p = 1:numel(U_orb.signal)
 			
-			lastj = U_orb.meta.j2(end,p);
+			lastj = U_orb.meta.j(end,p);
 			w_options.J = J - lastj;
 			
 			% configure wavelet transform
