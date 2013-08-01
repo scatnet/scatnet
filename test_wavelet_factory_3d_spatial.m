@@ -27,7 +27,7 @@ sx2 = format_scat(Sx2);
 ssx = sum(sum(sx,3),2);
 ssx2 = sum(sum(sx2,3),2);
 plot([ssx, ssx2]);
-plot(log([ssx, ssx2]));
+%plot(log([ssx, ssx2]));
 legend('vanilla', 'spatial');
 
 %%

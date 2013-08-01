@@ -3,7 +3,7 @@ clear;
 x = uiuc_sample;
 x2 = rot90(x);
 
-options.J = 4;
+options.J = 5;
 options.precision = 'single';
 tic;
 [Wop,f1,f2] = wavelet_factory_3d_spatial(options, options, options);
