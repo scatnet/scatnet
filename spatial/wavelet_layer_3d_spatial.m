@@ -62,7 +62,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 				
 				U_Psi.meta.j(:,p2)      = [j; y_Psi.meta.j2(:,p_psi) + j];
 				U_Psi.meta.theta2(:,p2) = y_Psi.meta.theta2(:,p_psi);
-				U_Psi.meta.k(:,p2)      = y_Psi.meta.k2(:,p_psi);
+				U_Psi.meta.k2(:,p2)      = y_Psi.meta.k2(:,p_psi);
 				
 				p2 = p2 + 1;
 			end
