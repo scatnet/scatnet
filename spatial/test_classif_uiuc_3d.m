@@ -1,14 +1,14 @@
 %% spatial
 src = uiuc_src;
-options.J = 6;
+options.J = 5;
 options.M = 2;
 
 
 
 options.parallel = 0;
 w = wavelet_factory_3d_spatial(options, options, options);
-features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
-%features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
+%features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
+features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
 db = prepare_database(src, features, options);
 
 
