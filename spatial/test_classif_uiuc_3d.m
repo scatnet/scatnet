@@ -51,11 +51,21 @@ end
 %  0.6937    0.8689    0.9526
 % 3d J=6+log
 %  0.8874    0.9607    0.9874
+
+% %%%            renorm %%%%%%%%
+% 3d + renorm
+%  0.7725    0.9057    0.9748  ( vs 3d  0.6679    0.8660    0.9292)
+% 3d + renorm (order 2 only)
+%  0.8264    0.9172    0.9724
+% 3d + renorm + log 
+%  0.9015    0.9636    0.9868
+
+
 %%
 db2 = db;
-db2.features = log(db.features);
+db2.features = log(db.features(7:end-1,:));
 grid_train = [5,10,20];
-n_fold = 10;
+n_fold = 100;
 clear error_2d;
 for i_fold = 1:n_fold
 	for i_grid = 1:numel(grid_train)

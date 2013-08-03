@@ -55,7 +55,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 			
 			% copy signal and meta
 			U_Phi.signal{p} = y_Phi.signal{1};
-			U_Phi.meta.j(:,p) = [U_orb.meta.j(:,p), J];
+			U_Phi.meta.j(:,p) = [U_orb.meta.j(:,p); J];
 			
 			for p_psi = 1:numel(y_Psi.signal)
 				U_Psi.signal{p2} = y_Psi.signal{p_psi};
