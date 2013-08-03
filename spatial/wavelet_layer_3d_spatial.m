@@ -14,23 +14,31 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 	end
 	%%
 	J = getoptions(options, 'J', 4);
+	Q = filters.meta.Q;
 	w_options = options;
 	L = filters.meta.L;
 	%%
 	% if previous layer is output of 2d wavelet transform,
 	% extract the orbits
+	porb = 1;
 	if (~isfield(U.meta,'theta2'))
-		for j = 0:max(U.meta.j)
-			for theta = 1:L
-				p = find(U.meta.j(1,:) == j &...
-					U.meta.theta(1,:) == theta);
-				if (theta == 1)
-					tmp = prec(zeros([size(U.signal{p}), L]));
+		for j = 0:J-1
+			for q = 0:Q-1
+				for theta = 1:L
+					p = find(U.meta.j(1,:) == j &...
+						U.meta.theta(1,:) == theta &...
+						U.meta.q(1,:) == q);
+					if (theta == 1)
+						tmp = prec(zeros([size(U.signal{p}), L]));
+					end
+					tmp(:, :, theta) = U.signal{p};
 				end
-				tmp(:, :, theta) = U.signal{p};
+				U_orb.signal{porb} = tmp;
+				U_orb.meta.j(porb) = j;
+				U_orb.meta.q(porb) = q;
+				porb = porb + 1;
 			end
-			U_orb.signal{j+1} = tmp;
-			U_orb.meta.j(j+1) = j;
+			
 		end
 	else
 		U_orb = U;
@@ -43,11 +51,14 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_spatial(...
 		
 		for p = 1:numel(U_orb.signal)
 			j = U_orb.meta.j(end, p);
+			q = U_orb.meta.q(end, p);
 			
 			% configure wavelet transform
 			w_options.angular_range = 'zero_pi';
 			w_options.j_min         = 1;
 			w_options.J             = J - j;
+			w_options.q_mask        = zeros(1,Q);
+			w_options.q_mask(q + 1) = 1;
 			
 			% compute wavelet transform
 			[y_Phi, y_Psi] = wavelet_3d_spatial(U_orb.signal{p},...

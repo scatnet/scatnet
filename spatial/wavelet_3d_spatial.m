@@ -1,13 +1,16 @@
 function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 		filters, filters_rot, options)
 	%%
+	J = options.J;
+	Q = filters.meta.Q;
+	L = filters_rot.N / 2;
 	angular_range = options.angular_range;
 	precision = getoptions(options, 'precision', 'single');
 	oversampling_rot = getoptions(options, 'oversampling_rot', -1);
 	j_min = getoptions(options, 'j_min', 0);
+	q_mask = getoptions(options, 'q_mask', ones(1, Q));
 	calculate_psi = (nargout>=2); % do not compute any convolution
-	J = options.J;
-	L = filters_rot.N / 2;
+	
 	[N, M, T] = size(y);
 	
 	
@@ -44,11 +47,7 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 	
 	%% low pass filter spatial : cascade with h for every slice
 	% initialize structure
-	if strcmp(precision, 'single')
-		hy.signal{1} = single(y);
-	else
-		hy.signal{1} = y;
-	end
+	hy.signal{1} = prec(y);
 	hy.meta.j(1) = 0;
 	
 	% low pass spatial using a pyramid
@@ -141,56 +140,59 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 		if (strcmp(angular_range, 'zero_pi') && angular_res == 0)
 			g = filters.g.filter;
 			
+			
 			for j2 = j_min:J-1
-				for theta2 = 1:L
-					for theta = 1:L
-						% convolution with psi_{j1, theta + theta2}
-						theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
-						theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
-						tmp_slice = convsub2d_spatial(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL}, 0);
-						if (theta == 1) % allocate
-							tmp = prec(zeros([size(tmp_slice), 2*L]));
+				for q = find(q_mask==1)-1
+					for theta2 = 1:L
+						for theta = 1:L
+							% convolution with psi_{j1, theta + theta2}
+							theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
+							theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
+							tmp_slice = convsub2d_spatial(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL + L*q}, 0);
+							if (theta == 1) % allocate
+								tmp = prec(zeros([size(tmp_slice), 2*L]));
+							end
+							if (theta_sum_mod2L <= L)
+								tmp(:,:,theta) = tmp_slice;
+								tmp(:,:,theta+L) = conj(tmp_slice);
+							else
+								tmp(:,:,theta) = conj(tmp_slice);
+								tmp(:,:,theta+L) = tmp_slice;
+							end
 						end
-						if (theta_sum_mod2L <= L)
-							tmp(:,:,theta) = tmp_slice;
-							tmp(:,:,theta+L) = conj(tmp_slice);
+						
+						
+						% tmp can now be filtered along the orientation
+						tmp_f = fft(tmp, [], 3);
+						%% low pass angle
+						ds = min(2*L, max(filters_rot.J/filters_rot.Q - oversampling_rot, 0));
+						if (2^ds == 2*L)
+							% faster to compute the sum along the angle
+							y_Psi.signal{p} = sum(tmp, 3) / 2^(ds/2);
 						else
-							tmp(:,:,theta) = conj(tmp_slice);
-							tmp(:,:,theta+L) = tmp_slice;
+							y_Psi.signal{p} = ...
+								sub_conv_1d_along_third_dim_simple(tmp_f, phi_angle, ds);
 						end
-					end
-					
-					% tmp can now be filtered along the orientation
-					tmp_f = fft(tmp, [], 3);
-					%% low pass angle
-					ds = min(2*L, max(filters_rot.J/filters_rot.Q - oversampling_rot, 0));
-					if (2^ds == 2*L)
-						% faster to compute the sum along the angle
-						y_Psi.signal{p} = sum(tmp, 3) / 2^(ds/2);
-					else
-						y_Psi.signal{p} = ...
-							sub_conv_1d_along_third_dim_simple(tmp_f, phi_angle, ds);
-					end
-					y_Psi.meta.j2(p) = j2;
-					y_Psi.meta.theta2(p) = theta2;
-					y_Psi.meta.k2(p) = filters_rot.J;
-					p = p + 1;
-					
-					%% high pass angle
-					for k2 = 0:numel(filters_rot.psi.filter)-1
-						psi_angle = filters_rot.psi.filter{k2+1};
-						ds = max(k2/filters_rot.Q - oversampling_rot, 0);
-						y_Psi.signal{p} = ...
-							sub_conv_1d_along_third_dim_simple(tmp_f, psi_angle, ds);
 						y_Psi.meta.j2(p) = j2;
 						y_Psi.meta.theta2(p) = theta2;
-						y_Psi.meta.k2(p) = k2;
+						y_Psi.meta.k2(p) = filters_rot.J;
+						y_Psi.meta.q2(p) = q;
 						p = p + 1;
+						
+						%% high pass angle
+						for k2 = 0:numel(filters_rot.psi.filter)-1
+							psi_angle = filters_rot.psi.filter{k2+1};
+							ds = max(k2/filters_rot.Q - oversampling_rot, 0);
+							y_Psi.signal{p} = ...
+								sub_conv_1d_along_third_dim_simple(tmp_f, psi_angle, ds);
+							y_Psi.meta.j2(p) = j2;
+							y_Psi.meta.theta2(p) = theta2;
+							y_Psi.meta.k2(p) = k2;
+							y_Psi.meta.q2(p) = q;
+							p = p + 1;
+						end
+						
 					end
-					
-					
-					
-					
 				end
 			end
 		else
