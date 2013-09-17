@@ -53,7 +53,7 @@ function filters = morlet_filter_bank_2d_spatial(options)
 			g.filter{p}.coefft = single(g.filter{p}.coefft);
 		end
 		g.filter{p}.type = 'spatial_support';
-		g.meta.q(p) = 1;
+		g.meta.q(p) = 0;
 		g.meta.theta(p) = p;
 	end
 	

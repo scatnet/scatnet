@@ -1,15 +1,20 @@
 %% spatial
 src = uiuc_src;
-options.J = 5;
+options.J = 6;
+options.Q = 1;
 options.M = 2;
-
-
 
 options.parallel = 0;
 w = wavelet_factory_3d_spatial(options, options, options);
-%features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
-features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
+features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
+%%
+%features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
+% log before final avg
+%features{1} = @(x)(sum(sum(log(format_scat(scat(x,w))),2),3));
 db = prepare_database(src, features, options);
+
+%%
+save([rpath,'/uiuc_3d.mat'],'db');
 
 
 %% classif with 200 randomn partition and size 5 10 20
@@ -28,6 +33,7 @@ for i_fold = 1:n_fold
 		fprintf('fold %d n_train %g acc %g \n',i_fold, n_train, 1-error_2d(i_fold, i_grid));
 	end
 end
+mean(error_2d)
 % morlet
 %  0.5278    0.6775    0.8379
 % haar
@@ -60,10 +66,16 @@ end
 % 3d + renorm + log 
 %  0.9015    0.9636    0.9868
 
+% 3d J=5 Q=2
+%  0.6745    0.8773    0.9422
+% 3d J=5 Q=2 + log
+%  0.8696    0.9565    0.9875
 
+% 3d J=5 Q=1 + log before final avg
+%    0.8481    0.9549    0.9864
 %%
 db2 = db;
-db2.features = log(db.features(7:end-1,:));
+db2.features = log(db.features(:,:));
 grid_train = [5,10,20];
 n_fold = 100;
 clear error_2d;
