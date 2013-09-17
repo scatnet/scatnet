@@ -23,6 +23,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'gamma',1e-4);
 	opt = fill_struct(opt,'C',8);
 	opt = fill_struct(opt,'cv_folds',5);
+	opt = fill_struct(opt,'silent',0);
 	
 	if isempty(valid_set)
 		obj_class = [db.src.objects(train_set).class];
@@ -50,7 +51,9 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			opt1.C = C(r);
 			opt1.gamma = gamma(r);
 			
-			fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
+			if ~opt.silent
+				fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
+			end
 
 			tm0 = tic;
 			model = svm_train(db,train_set,opt1);
@@ -58,7 +61,9 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 
 			err(r,1) = classif_err(labels,valid_set,db.src);
 
-			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
+			if ~opt.silent
+				fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
+			end
 		end
 	end
 end

@@ -37,6 +37,7 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	options = fill_struct(options,'P',0);
 	options = fill_struct(options,'spline_order',3);
 	options = fill_struct(options,'precision','double');
+	options = fill_struct(options,'boundary','symm');
 	options = fill_struct(options,'filter_format','fourier_truncated');
 	
 	if options.Q ~= 1
@@ -78,13 +79,19 @@ function filters = spline_filter_bank_1d(sig_length,options)
 			2*sin(omega/2).^4.*cos(omega/2).^2+2/3*sin(omega/2).^6)./(105*2^8*sin(omega/2).^8));
 	end
 	
-	N = 2*sig_length;
+	if (strcmp(options.boundary, 'symm'))
+		N = 2*sig_length;
+	else
+		N = sig_length;
+	end
 	
 	filters.J = J;
 	
 	filters.N = N;
 	
 	filters.spline_order = spline_order;
+	
+	filters.boundary = options.boundary;
 	
 	filters.psi.filter = cell(1,J);
 	filters.phi = [];
