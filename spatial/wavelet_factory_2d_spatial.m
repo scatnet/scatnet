@@ -1,9 +1,8 @@
-% wavelet_factory_2d: Create wavelet cascade from filters
+% wavelet_factory_2d_spatial: Create wavelet cascade
 % Usage
-%    [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt, M)
+%    [Wop, filters] = wavelet_factory_2d_spatial(filt_opt, scat_opt)
 %
 % Input
-%    size_in: The size of the signals to be transformed.
 %    filt_opt: The filter options, same as for morlet_filter_bank_2d 
 %	 scat_opt: The scattering and wavelet options, same as
 %		wavelet_layer_1d/wavelet_1d.

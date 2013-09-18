@@ -1,13 +1,25 @@
 % renorm_sibling_layer : renormalize a layer of scattering
+%
 % Usage
-%   Sx_renorm = renorm_sibling_layer(Sx, op, sibling)
+%   layer_renorm = renorm_sibling_layer(Sx, op, sibling)
+%
 % Input
-%   layer (cell) : one layer of scattering
+%   layer (struct) : one layer of scattering
 %   op (function_handle) : to apply to siblings 3d matrix (L1 or L2 norm)
 %   sibling (function_handle) : returns the list of sibling of a path p
+%
 % Output
+%   layer_renorm (struct) : the renormalized layer of scattering
 %
 % Description
+%   renorm_sibling_layer is a generic function to renormalize a scattering
+%   network. It should not be used as is but as part of a 
+%   global renormalization strategy of the whole network. Examples of 
+%   such global network renormalization are :
+%       renorm_sibling_2d
+%       renorm_sibling_3d
+%
+
 
 function [layer_renorm, denom, partition_id_for_path] = ...
     renorm_sibling_layer(layer, op, sibling)
