@@ -13,13 +13,17 @@ all_feat = srcfun(fun, src);
 
 
 %% renorm L1 with smoothing 
-op = renorm_factory_L2_smoothing(0);
+op = renorm_factory_L2_smoothing(5);
 %scat_renorm = @(x)(renorm_sibling_2d(scat(x, w), op));
 renorm = @(x)(renorm_sibling_2d(x, op));
 feat_renorm = cellfun_monitor(renorm, all_feat);
 
 %% log renorm
-renorm = @(x)(scatfun(@log, x));
+%renorm = @(x)(scatfun(@log, x));
+%feat_renorm = cellfun_monitor(renorm, all_feat);
+
+%% renorm parent
+renorm = @(x)(renorm_parent_2d(x));
 feat_renorm = cellfun_monitor(renorm, all_feat);
 
 %% spatial average
