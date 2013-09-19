@@ -18,6 +18,10 @@ op = renorm_factory_L2_smoothing(0);
 renorm = @(x)(renorm_sibling_2d(x, op));
 feat_renorm = cellfun_monitor(renorm, all_feat);
 
+%% log renorm
+renorm = @(x)(scatfun(@log, x));
+feat_renorm = cellfun_monitor(renorm, all_feat);
+
 %% spatial average
 vec = @(Sx)(sum(sum(format_scat(Sx),2),3));
 feat_vec = cellfun_monitor(vec ,feat_renorm);
