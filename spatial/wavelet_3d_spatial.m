@@ -122,6 +122,7 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 			y_Psi.signal{p} = ...
 				sub_conv_1d_along_third_dim_simple(y_phi_f, psi_angle, ds);
 			y_Psi.meta.j2(p) = J;
+            y_Psi.meta.q2(p) = 0;
 			y_Psi.meta.theta2(p) = 0;
 			y_Psi.meta.k2(p) = k2;
 			p = p + 1;

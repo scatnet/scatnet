@@ -1,4 +1,4 @@
-%% simple example of use for renorm_sibling_2d
+%% simple example of use for renorm_sibling_2d_same_scale
 %% compute scattering
 clear;
 x = lena;
@@ -7,10 +7,10 @@ Wop = wavelet_factory_2d_spatial();
 Sx = scat(x, Wop);
 %% renormalize with L1 norm
 op = @(x)(sum(x,3));
-Sxrenorm = renorm_sibling_2d(Sx, op);
+Sx_renorm = renorm_sibling_2d_same_scale(Sx, op);
 
 
-%% more sophisticated example of use for renorm_sibling_2d
+%% more sophisticated example of use for renorm_sibling_2d_same_scale
 %% compute scattering
 clear;
 x = lena;
@@ -18,9 +18,10 @@ Wop = wavelet_factory_2d_spatial();
 Sx = scat(x, Wop);
 
 %% smooth a bit + L1 accross sibling
-op = renorm_factory_L1_smoothing(1);
-[Sx_renorm, siblings]  = renorm_sibling_2d(Sx, op);
+op = renorm_factory_L1_smoothing(2);
+[Sx_renorm, siblings]  = renorm_sibling_2d_same_scale(Sx, op);
 
+%%
 image_scat(Sx,0,0);
 
 %%
@@ -40,12 +41,12 @@ clear; close all;
 
 %% compute scattering
 x = lena;
-options.Q = 1;
+options.Q = 2;
 Wop = wavelet_factory_2d_spatial(options, options);
 Sx = scat(x, Wop);
 %% 
-op = renorm_factory_L1_smoothing(3);
-[Sx_renorm, siblings]  = renorm_sibling_2d(Sx, op);
+op = renorm_factory_L1_smoothing(1);
+[Sx_renorm, siblings]  = renorm_sibling_2d_same_scale(Sx, op);
 
 image_scat(Sx,0,0);
 image_scat(Sx_renorm,0,0);
