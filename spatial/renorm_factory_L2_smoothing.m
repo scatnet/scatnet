@@ -10,17 +10,17 @@
 % Output
 %   op (function_handle) : argument of renorm_sibling_*d
 
-function op = renorm_factory_L1_smoothing(sigma)
+function op = renorm_factory_L2_smoothing(sigma)
 
-    l1_op = @(x)(sum(x,3));
+    l2_op = @(x)(sqrt(sum(x.^2,3)));
     if (sigma == 0)
-        op = @(x)(l1_op(x) + 1E-20);
+        op = @(x)(l2_op(x) + 1E-20);
     else
        options.sigma_phi = 1;
        options.P = 2 + floor(2*sigma);
        filters = morlet_filter_bank_2d_spatial(options);
        h = filters.h.filter;
        smooth = @(x)(convsub2d_spatial(x, h, 0));
-        op = @(x)(smooth(l1_op(x)) + 1E-20); 
+       op = @(x)(smooth(l2_op(x)) + 1E-20); 
     end
 end

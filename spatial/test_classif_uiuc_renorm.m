@@ -5,25 +5,22 @@ options.Q = 1;
 options.M = 2;
 
 options.parallel = 0;
-w = wavelet_factory_2d_spatial(options, options);
+Wop = wavelet_factory_2d_spatial(options, options);
+
+%% compute all scattering
+fun = @(filename)(scat(imreadBW(filename), Wop));
+all_feat = srcfun(fun, src);
+
 
 %% renorm L1 with smoothing 
+op = renorm_factory_L2_smoothing(0);
+%scat_renorm = @(x)(renorm_sibling_2d(scat(x, w), op));
+renorm = @(x)(renorm_sibling_2d(x, op));
+feat_renorm = cellfun_monitor(renorm, all_feat);
 
-options.sigma_phi = 1;
-options.P = 4;
-filters = morlet_filter_bank_2d_spatial(options);
-h = filters.h.filter;
-smooth = @(x)(convsub2d_spatial(x, h, 0));
-%op = @(x)(smooth(sum(x,3)) + 1E-10);
-op = @(x)(sum(x,3));
+%% spatial average
+vec = @(Sx)(sum(sum(format_scat(Sx),2),3));
+feat_vec = cellfun_monitor(vec ,feat_renorm);
 
-
-scat_renorm = @(x)(renorm_sibling_2d(scat(x, w), op));
-
-
-features{1} = @(x)(sum(sum(format_scat(scat_renorm(x)),2),3));
-%%
-%features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
-% log before final avg
-%features{1} = @(x)(sum(sum(log(format_scat(scat(x,w))),2),3));
-db = prepare_database(src, features, options);
+%% format for classif
+db = cellsrc2db(feat_vec, src);
