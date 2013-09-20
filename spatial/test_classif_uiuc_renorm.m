@@ -26,16 +26,16 @@ Wop = wavelet_factory_3d_spatial(options, options, options);
 fun = @(filename)(scat(imreadBW(filename), Wop));
 all_feat = srcfun(fun, src);
 
+%%
 
-
-%% renorm L1/L2 with smoothing 
-op = renorm_factory_L2_smoothing(3);
-renorm = @(x)(renorm_sibling_3d(x, op));
-feat_renorm = cellfun_monitor(renorm, all_feat);
+% %% renorm L1/L2 with smoothing 
+% op = renorm_factory_L2_smoothing(3);
+% renorm = @(x)(renorm_sibling_3d(x, op));
+% feat_renorm = cellfun_monitor(renorm, all_feat);
 
 % %% log renorm
-%renorm = @(x)(scatfun(@log, x));
-%feat_renorm = cellfun_monitor(renorm, all_feat);
+renorm = @(x)(scatfun(@log, x));
+feat_renorm = cellfun_monitor(renorm, all_feat);
 
 % %% renorm parent
 %%renorm = @(x)(renorm_parent_3d(x));

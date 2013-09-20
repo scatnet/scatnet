@@ -29,7 +29,7 @@ for i_fold = 1:n_fold
 		prop = n_train/40;
 		[train_set, test_set] = create_partition(src, prop);
 		%train_opt.dim = n_train;
-        train_opt.C = 8*8;
+        train_opt.C = 64;
         train_opt.kernel_type = 'linear';
         train_opt.gamma = 10e-6;
 		model = svm_train(db, train_set, train_opt);
@@ -40,6 +40,32 @@ for i_fold = 1:n_fold
 end
 mean(error_2d)
  %0.5327    0.4545    0.3454
+ 
+ %%
+ %% gaussian svm 
+clear train_opt
+grid_train = [5,10,20];
+n_fold = 10;
+clear error_2d;
+for i_fold = 1:n_fold
+	for i_grid = 1:numel(grid_train)
+		n_train = grid_train(i_grid);
+		prop = n_train/40;
+		[train_set, test_set] = create_partition(src, prop);
+		%train_opt.dim = n_train;
+        
+        train_opt.kernel_type = 'gaussian';
+        train_opt.C = 0.0001;
+        train_opt.gamma = 0.001;
+        
+		model = svm_train(db, train_set, train_opt);
+		labels = svm_test(db, model, test_set);
+		error_2d(i_fold, i_grid) = classif_err(labels, test_set, src);
+		fprintf('fold %d n_train %g acc %g \n',i_fold, n_train, 1-error_2d(i_fold, i_grid));
+	end
+end
+mean(error_2d)
+ 
 %%
 mean(error_2d)
 
