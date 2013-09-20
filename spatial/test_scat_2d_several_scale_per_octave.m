@@ -4,5 +4,5 @@ Wop = wavelet_factory_2d_spatial(options, options);
 
 x = uiuc_sample;
 tic;
-sx = scat(x, Wop);
+[sx, ux] = scat(x, Wop);
 toc;

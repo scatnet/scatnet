@@ -1,10 +1,9 @@
-% morlet_filter_bank_2d : Build a bank of Morlet wavelet filters
+% morlet_filter_bank_2d_spatial : Build a bank of Morlet wavelet filters
 %
 % Usage
-%	filters = morlet_filter_bank_2d(size_in, options)
+%	filters = morlet_filter_bank_2d_spatial(size_in, options)
 %
 % Input
-% - size_in : <1x2 int> size of the input of the scattering
 % - options : [optional] <1x1 struct> contains the following optional fields
 %   - Q          : <1x1 int> the number of scale per octave
 %   - J          : <1x1 int> the total number of scale.
