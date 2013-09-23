@@ -1,5 +1,6 @@
 x = draw_circle([256,256], [128,128], 32, 2);
-
+%%
+x = lena
 %% spatial
 src = uiuc_src;
 options.J = 3;
