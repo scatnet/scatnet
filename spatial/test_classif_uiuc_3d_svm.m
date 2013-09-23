@@ -1,7 +1,7 @@
 %% spatial
 src = uiuc_src;
-options.J = 6;
-options.Q = 2;
+options.J = 5;
+options.Q = 1;
 options.M = 2;
 
 options.parallel = 0;

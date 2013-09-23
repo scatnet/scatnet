@@ -54,6 +54,7 @@ function filters = morlet_filter_bank_2d_spatial(options)
 		2*P+1,...
 		sigma_phi,...
 		precision);
+    h.filter.coefft = h.filter.coefft./sum(h.filter.coefft(:));
 	h.filter.type = 'spatial_support';
 	
 	angles = (0:L-1)  * pi / L;

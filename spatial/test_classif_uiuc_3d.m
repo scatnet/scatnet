@@ -19,7 +19,7 @@ save([rpath,'/uiuc_3d.mat'],'db');
 
 %% classif with 200 randomn partition and size 5 10 20
 grid_train = [5,10,20];
-n_fold = 10;
+n_fold = 100;
 clear error_2d;
 for i_fold = 1:n_fold
 	for i_grid = 1:numel(grid_train)
