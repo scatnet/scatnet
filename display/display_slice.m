@@ -35,8 +35,8 @@ function [sc1, sc2] = display_slice(S,t,scale,options)
 	sc1 = [S{m0+2}.signal{:}].';
 	sc2 = [S{m0+3}.signal{:}].';
 	
-	sc1 = mean(sc1(mask1,:),2);
-	sc2 = mean(sc2(mask2,:),2);
+	sc1 = mean(sc1(mask1,t),2);
+	sc2 = mean(sc2(mask2,t),2);
 	
 	clim = [min([sc1(:); sc2(:)]), max([sc1(:); sc2(:)])];
 	
