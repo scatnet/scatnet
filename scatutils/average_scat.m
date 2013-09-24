@@ -1,6 +1,6 @@
 % average_scat: Average successive frames of a scattering transform.
 % Usage
-%    S = aggregage_scat(S,T,step,window_fun)
+%    S = average_scat(S,T,step,window_fun)
 % Input
 %    S: A scattering transform.
 %    T: The length of the window with which to average.
@@ -30,14 +30,16 @@ function X = average_scat(X,T,step,window_fun)
 				res = X{m+1}.meta.resolution(p1);
 			end
 			N0 = size(X{m+1}.signal{p1},1);
-			if T < 2^res
+            
+            
+			if T < 2^res 
 				continue;
 			end
 			% calculate the T and step at current resolution
 			real_T = T/2^res;
 			real_step = max(1,step/2^res);
 			% calculate number of windows we get & allocate buffer
-			n_windows = floor(length(X{m+1}.signal{p1})/real_step);
+			n_windows = floor(size(X{m+1}.signal{p1},1)/real_step);
 			buf = zeros([real_T,n_windows,size(X{m+1}.signal{p1},3)]);
 			% since we want symmetric boundary conditions, we need to extend 
 			% the signal symmetrically
@@ -47,7 +49,9 @@ function X = average_scat(X,T,step,window_fun)
 				center = (k-1)*real_step+1;
 				% for a given center & T, calculate the corresponding indices
 				ind = ind0(mod(floor([center-real_T/2+1:center+real_T/2])-1,2*N0)+1);
-				buf(:,k,:) = X{m+1}.signal{p1}(ind,:);
+
+            buf(:,k,:) = X{m+1}.signal{p1}(ind,:,:);
+   
 			end
 			% for each segment, multiply by windowing kernel & sum
 			kernel = window_fun(size(buf,1));
@@ -55,7 +59,10 @@ function X = average_scat(X,T,step,window_fun)
 			buf = sum(buf,1);
 			
 			% get rid of dimension 1 & store result in X
-			buf = reshape(buf,[size(buf,2) size(buf,3)]);
+			
+
+            buf =permute(buf,[2 1 3]);
+           % size(buf)
 			X{m+1}.signal{p1} = buf;
 			X{m+1}.meta.resolution(p1) = res+log2(real_step);
 		end
