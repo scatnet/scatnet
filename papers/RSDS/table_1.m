@@ -7,15 +7,14 @@
 %
 % Scattering classification rates for KTH-TIPS databases
 %
-% NOTE THAT MAY SAVE YOU A LOT OF TIME : computing the scattering for the
-% whole database takes time. We provide precomputed scattering in the files
+% NOTE : Computing the scattering for the whole database takes time. 
+% We provide PRECOMPUTED scattering in the files
 %   precomputed/kth-tips/trans_scatt.mat
 %   precomputed/kth-tips/roto_trans_scatt.mat
 %   precomputed/kth-tips/roto_trans_scatt_log.mat
 %   precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat
 %   precomputed/kth-tips/roto_trans_scatt_log_scale_avg_multiscal_train.mat
-% This script uses these precomputed scattering.
-% You can compute the scattering yourself by changing the following line :
+% You can COMPUTE THE SCATTERING YOURSELF by changing the following line :
 %   use_precompted_scattering = 0;
 %
 % DOWNLOAD : The KTH-TIPS databased can be downloaded at
@@ -70,7 +69,7 @@ else
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
-    %save('./precomputed/kth-tips/trans_scatt.mat', 'trans_scatt');
+    save('./precomputed/kth-tips/trans_scatt.mat', 'trans_scatt');
     
     % format the database of feature
     db = cellsrc2db(trans_scatt, src);
@@ -147,7 +146,7 @@ else
     roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     % save scattering
-    %save('./precomputed/kth-tips/roto_trans_scatt.mat', 'roto_trans_scatt');
+    save('./precomputed/kth-tips/roto_trans_scatt.mat', 'roto_trans_scatt');
     
     % format the database of feature
     db = cellsrc2db(roto_trans_scatt, src);
@@ -291,18 +290,19 @@ else
         imresize_notoolbox(imreadBW(filename),[200 200]), sqrt(2), 4));
     
     % (2748 seconds on a 2.4 Ghz Intel Core i7)
-    roto_trans_scatt_all = srcfun(multi_fun, src);
+    roto_trans_scatt_multiscale = srcfun(multi_fun, src);
     
-    % a function handle that
-    %   - format the scattering in a 3d matrix
-    %   - remove margins
-    %   - average accross position
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1),2),3));
-    % (10 seconds on a 2.4 Ghz Intel Core i7)
-    roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
-    
+    %% log + spatial average 
+    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
+    multi_fun = @(x)(cellfun_monitor(vec, x));
+    roto_trans_scatt_multiscale_log_sp_avg = cellfun_monitor(multi_fun, roto_trans_scatt_multiscale);
+
+    %% scale average
+    fun = @(x)(mean(cell2mat(x),2));
+    roto_trans_scatt_log_scale_avg = cellfun_monitor(fun, roto_trans_scatt_multiscale_log_sp_avg);
+
     % save scattering
-    %save('./precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat', 'roto_trans_scatt_log_scale_avg');
+    save('./precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat', 'roto_trans_scatt_log_scale_avg');
     
     % format the database of feature
     db = cellsrc2db(roto_trans_scatt, src);
