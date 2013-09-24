@@ -69,12 +69,11 @@ else
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
-    save('./precomputed/kth-tips/trans_scatt.mat', 'trans_scatt');
-    
-    % format the database of feature
-    db = cellsrc2db(trans_scatt, src);
-    
+    save('./precomputed/kth-tips/trans_scatt.mat', 'trans_scatt'); 
 end
+% format the database of feature
+db = cellsrc2db(trans_scatt, src);
+   
 
 %% classification
 grid_train = [5,20,40];
@@ -147,10 +146,9 @@ else
     
     % save scattering
     save('./precomputed/kth-tips/roto_trans_scatt.mat', 'roto_trans_scatt');
-    
-    % format the database of feature
-    db = cellsrc2db(roto_trans_scatt, src);
 end
+% format the database of feature
+db = cellsrc2db(roto_trans_scatt, src);
 
 %% classification
 grid_train = [5,20,40];
@@ -212,15 +210,14 @@ else
     
     %save scattering
     save('./precomputed/kth-tips/roto_trans_scatt_log.mat', 'roto_trans_scatt_log');
-    
-    % format the database of feature
-    db = cellsrc2db(roto_trans_scatt_log, src);
 end
+% format the database of feature
+db = cellsrc2db(roto_trans_scatt_log, src);
 
 %% classification
 grid_train = [5,20,40];
 n_per_class = 81;
-n_fold = 10; % Note : very similar results can be obtained with 200 folds.
+n_fold = 100; % Note : very similar results can be obtained with 200 folds.
 clear error_2d;
 
 for i_fold = 1:n_fold
@@ -242,13 +239,13 @@ perf = 100*(1-mean(error_2d));
 perf_std = 100*std(error_2d);
 
 for i_grid = 1:numel(grid_train)
-    fprintf('kth-tips roto-trans scatt with %2d training : %.2f += %.2f \n', ...
+    fprintf('kth-tips roto_trans_scatt_log with %2d training : %.2f += %.2f \n', ...
         grid_train(i_grid), perf(i_grid), perf_std(i_grid));
 end
 % expected output :
-%   kth-tips roto-trans scatt with  5 training : 77.97 += 3.03 
-%   kth-tips roto-trans scatt with 20 training : 97.33 += 0.66 
-%   kth-tips roto-trans scatt with 40 training : 99.29 += 0.41 
+%   kth-tips roto_trans_scatt_log with  5 training : 77.77 += 3.74 
+%   kth-tips roto_trans_scatt_log with 20 training : 97.13 += 1.18 
+%   kth-tips roto_trans_scatt_log with 40 training : 99.31 += 0.61
 
 
 
@@ -294,7 +291,7 @@ else
     
     %% log + spatial average 
     fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
-    multi_fun = @(x)(cellfun_monitor(vec, x));
+    multi_fun = @(x)(cellfun_monitor(fun, x));
     roto_trans_scatt_multiscale_log_sp_avg = cellfun_monitor(multi_fun, roto_trans_scatt_multiscale);
 
     %% scale average
@@ -305,13 +302,13 @@ else
     save('./precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat', 'roto_trans_scatt_log_scale_avg');
     
     % format the database of feature
-    db = cellsrc2db(roto_trans_scatt, src);
+    db = cellsrc2db(roto_trans_scatt_log_scale_avg, src);
 end
 
 %% classification
 grid_train = [5,20,40];
 n_per_class = 81;
-n_fold = 10; % Note : very similar results can be obtained with 200 folds.
+n_fold = 100; % Note : very similar results can be obtained with 200 folds.
 clear error_2d;
 
 for i_fold = 1:n_fold
@@ -333,12 +330,12 @@ perf = 100*(1-mean(error_2d));
 perf_std = 100*std(error_2d);
 
 for i_grid = 1:numel(grid_train)
-    fprintf('kth-tips roto-trans scatt with %2d training : %.2f += %.2f \n', ...
+    fprintf('kth-tips roto_trans_scatt_log_scale_avg scatt with %2d training : %.2f += %.2f \n', ...
         grid_train(i_grid), perf(i_grid), perf_std(i_grid));
 end
 % expected output :
-%   kth-tips roto-trans scatt with  5 training : 71.01 += 3.51
-%   kth-tips roto-trans scatt with 20 training : 94.80 += 1.15
-%   kth-tips roto-trans scatt with 40 training : 99.29 += 0.54
+%   kth-tips roto_trans_scatt_log_scale_avg scatt with  5 training : 78.49 += 3.27 
+%   kth-tips roto_trans_scatt_log_scale_avg scatt with 20 training : 97.25 += 1.15 
+%   kth-tips roto_trans_scatt_log_scale_avg scatt with 40 training : 99.20 += 0.50 
 
 
