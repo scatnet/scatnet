@@ -69,7 +69,7 @@ else
         ,[200 200]), Wop));
     
     % compute all scattering
-    % (500 seconds on a 2.4 Ghz Intel Core i7)
+    % (800 seconds on a 2.4 Ghz Intel Core i7)
     trans_scatt_all = srcfun(fun, src);
     
     % a function handle that
@@ -77,7 +77,7 @@ else
     %   - remove margins
     %   - average accross position
     % (10 seconds on a 2.4 Ghz Intel Core i7)
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),0),2),3));
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
@@ -119,14 +119,14 @@ else
     %   - resize it to 200x200
     %   - compute its scattering
     fun = @(filename)(scat(imresize_notoolbox(imreadBW(filename),[200 200]), Wop));
-    % (800 seconds on a 2.4 Ghz Intel Core i7)
+    % (1000 seconds on a 2.4 Ghz Intel Core i7)
     roto_trans_scatt_all = srcfun(fun, src);
     
     % a function handle that
     %   - format the scattering in a 3d matrix
     %   - remove margins
     %   - average accross position
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1,[2,3]),2),3));
     % (10 seconds on a 2.4 Ghz Intel Core i7)
     roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
     
@@ -160,7 +160,7 @@ else
     %   - take the logarithm
     %   - remove margins
     %   - average accross position
-    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
+    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1,[2,3])),2),3));
     roto_trans_scatt_log = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     %save scattering
@@ -217,7 +217,7 @@ else
     roto_trans_scatt_multiscale = srcfun(multi_fun, src);
     
     %% log + spatial average 
-    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
+    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1,[2,3])),2),3));
     multi_fun = @(x)(cellfun_monitor(fun, x));
     roto_trans_scatt_multiscale_log_sp_avg = cellfun_monitor(multi_fun, roto_trans_scatt_multiscale);
 

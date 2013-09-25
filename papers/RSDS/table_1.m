@@ -30,7 +30,7 @@ path_to_db = '/Users/laurentsifre/TooBigForDropbox/Databases/KTH_TIPS';
 src = kthtips_src(path_to_db);
 db_name = 'kth-tips';
 
-use_precomputed_scattering = 1; % change to 0 to skip computation of scattering
+use_precomputed_scattering = 0; % change to 0 to skip computation of scattering
 
 grid_train = [5, 20, 40]; % number of training for classification
 nb_split = 10; % number of split for classification
@@ -68,10 +68,10 @@ else
     %%
     % a function handle that
     %   - format the scattering in a 3d matrix
-    %   - remove margins
+    %   - remove margins along dimension 2 and 3
     %   - average accross position
     % (10 seconds on a 2.4 Ghz Intel Core i7)
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),0),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1,[2,3]),2),3));
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
@@ -122,7 +122,7 @@ else
     %   - format the scattering in a 3d matrix
     %   - remove margins
     %   - average accross position
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1,[2,3]),2),3));
     % (10 seconds on a 2.4 Ghz Intel Core i7)
     roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
     
@@ -156,9 +156,9 @@ else
     % a function handle that
     %   - format the scattering in a 3d matrix
     %   - take the logarithm
-    %   - remove margins
+    %   - remove margins along dimension 2 and 3
     %   - average accross position
-    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(log(format_scat(Sx)),1,[2,3]),2),3));
     roto_trans_scatt_log = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     %save scattering
@@ -216,7 +216,7 @@ else
     roto_trans_scatt_multiscale = srcfun(multi_fun, src);
     
     %% log + spatial average 
-    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
+    fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1,[2,3])),2),3));
     multi_fun = @(x)(cellfun_monitor(fun, x));
     roto_trans_scatt_multiscale_log_sp_avg = ...
         cellfun_monitor(multi_fun, roto_trans_scatt_multiscale);
