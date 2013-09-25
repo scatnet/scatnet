@@ -5,32 +5,32 @@
 %   Laurent Sifre, Stephane Mallat
 %   Proc. IEEE CVPR 2013 Portland, Oregon
 %
-% Scattering classification rates for KTH-TIPS databases
+% Scattering classification rates for UIUC databases
 %
 % NOTE : Computing the scattering for the whole database takes time. 
 % We provide PRECOMPUTED scattering in the files
-%   precomputed/kth-tips/trans_scatt.mat
-%   precomputed/kth-tips/roto_trans_scatt.mat
-%   precomputed/kth-tips/roto_trans_scatt_log.mat
-%   precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat
-%   precomputed/kth-tips/roto_trans_scatt_log_scale_avg_multiscal_train.mat
+%   precomputed/uiuc/trans_scatt.mat
+%   precomputed/uiuc/roto_trans_scatt.mat
+%   precomputed/uiuc/roto_trans_scatt_log.mat
+%   precomputed/uiuc/roto_trans_scatt_log_scale_avg.mat
+%   precomputed/uiuc/roto_trans_scatt_log_scale_avg_multiscal_train.mat
 % You can COMPUTE THE SCATTERING YOURSELF by changing the following line :
 %   use_precomputed_scattering = 0;
 %
-% DOWNLOAD : The KTH-TIPS database can be downloaded at
-%   http://www.nada.kth.se/cvap/databases/kth-tips/kth_tips_grey_200x200.tar
+% DOWNLOAD : The UIUC database can be downloaded at
+%   http://www.nada.kth.se/cvap/databases/uiuc/kth_tips_grey_200x200.tar
 
 
 
 %% load the database
 clear; close all;
 % NOTE : the following line must be modified with the path to the
-% KTH-TIPS database in YOUR system.
-path_to_db = '/Users/laurentsifre/TooBigForDropbox/Databases/KTH_TIPS';
-src = kthtips_src(path_to_db);
-db_name = 'kth-tips';
+% uiuc database in YOUR system.
+path_to_db = '/Users/laurentsifre/TooBigForDropbox/Databases/cvr_uiuc';
+src = uiuc_src(path_to_db);
+db_name = 'uiuc';
 
-use_precomputed_scattering = 1; % change to 0 to skip computation of scattering
+use_precomputed_scattering = 0; % change to 0 to skip computation of scattering
 
 
 %% ---------------------------------------------------
@@ -237,7 +237,7 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 %% ---------------------------------------------------
 
 
-% TODO
+
 
 
 
