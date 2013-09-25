@@ -23,7 +23,7 @@ end
 
 %%
 options.J = 3;
-Wop = wavelet_factory_3d_spatial(options, options);
+Wop = wavelet_factory_3d_pyramid(options, options);
 
 for i = 1:N
 	scatt{i} = scat(x.signal{i}, Wop);

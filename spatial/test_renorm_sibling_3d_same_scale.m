@@ -4,7 +4,7 @@ x = uiuc_sample;
 %% compute roto-translation scattering of an image
 options.Q = 1;
 options.J = 5;
-Wop = wavelet_factory_3d_spatial(options, options, options);
+Wop = wavelet_factory_3d_pyramid(options, options, options);
 Sx = scat(x, Wop);
 
 %% L1 renormalization

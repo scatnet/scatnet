@@ -1,7 +1,7 @@
 clear;
 x = lena;
 options.J = 3;
-[Wop, filters] = wavelet_factory_3d_spatial;
+[Wop, filters] = wavelet_factory_3d_pyramid;
 h = filters.h.filter;
 K = 1;
 tic;

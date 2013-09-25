@@ -6,7 +6,7 @@ x2 = rot90(x);
 options.J = 5;
 options.precision = 'single';
 tic;
-[Wop,f1,f2] = wavelet_factory_3d_spatial(options, options, options);
+[Wop,f1,f2] = wavelet_factory_3d_pyramid(options, options, options);
 toc;
 tic;
 [Sx, Ux] = scat(x, Wop);

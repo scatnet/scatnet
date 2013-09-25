@@ -3,7 +3,7 @@ clear; close all;
 x = lena;
 %% compute roto-translation scattering of an image
 options.Q = 2;
-Wop = wavelet_factory_3d_spatial(options, options, options);
+Wop = wavelet_factory_3d_pyramid(options, options, options);
 Sx = scat(x, Wop);
 
 %% L1 renormalization

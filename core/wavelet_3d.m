@@ -107,7 +107,7 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		
 		% low pass angle 
 		phi_angle = filters_rot.phi.filter;
-		ds = max(filters_rot.J/filters_rot.Q - oversampling_rot, 0);
+		ds = floor(max(filters_rot.J/filters_rot.Q - oversampling_rot, 0));
 		if (2^ds == size(y_phi,3)) % if there is one coefft left, compute the sum
 			% is faster than convolving with a constant filter
 			y_Phi.signal{1} = sum(y_phi,3) / 2^(ds/2);

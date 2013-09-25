@@ -20,7 +20,7 @@ options.Q = 1;
 options.M = 2;
 
 options.parallel = 0;
-Wop = wavelet_factory_3d_spatial(options, options, options);
+Wop = wavelet_factory_3d_pyramid(options, options, options);
 
 %% compute all scattering
 fun = @(filename)(scat(imreadBW(filename), Wop));

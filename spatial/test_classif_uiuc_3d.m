@@ -5,7 +5,7 @@ options.Q = 1;
 options.M = 2;
 
 options.parallel = 0;
-w = wavelet_factory_3d_spatial(options, options, options);
+w = wavelet_factory_3d_pyramid(options, options, options);
 features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
 %%
 %features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
