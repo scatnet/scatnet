@@ -32,10 +32,19 @@ db_name = 'uiuc';
 
 use_precomputed_scattering = 0; % change to 0 to skip computation of scattering
 
+grid_train = [5, 10, 20]; % number of training for classification
+nb_split = 10; % number of split for classification
+
+
+
 
 %% ---------------------------------------------------
 %% ----------------- trans_scatt ---------------------
 %% ---------------------------------------------------
+
+
+
+
 
 
 %% compute scattering of all images in the database
@@ -78,14 +87,16 @@ end
 db = cellsrc2db(trans_scatt, src);
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
+
+
 
 
 %% ---------------------------------------------------
 %% --------------- roto_trans_scatt ------------------
 %% ---------------------------------------------------
+
+
 
 
 
@@ -126,8 +137,6 @@ end
 db = cellsrc2db(roto_trans_scatt, src);
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
@@ -137,6 +146,8 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 %% ---------------------------------------------------
 %% ------------- roto_trans_scatt_log ----------------
 %% ---------------------------------------------------
+
+
 
 
 feature_name = 'roto_trans_scatt_log';
@@ -159,8 +170,6 @@ end
 db = cellsrc2db(roto_trans_scatt_log, src);
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
@@ -224,8 +233,6 @@ else
 end
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 

@@ -32,6 +32,8 @@ db_name = 'kth-tips';
 
 use_precomputed_scattering = 1; % change to 0 to skip computation of scattering
 
+grid_train = [5, 20, 40]; % number of training for classification
+nb_split = 10; % number of split for classification
 
 %% ---------------------------------------------------
 %% ----------------- trans_scatt ---------------------
@@ -40,7 +42,8 @@ use_precomputed_scattering = 1; % change to 0 to skip computation of scattering
 
 %% compute scattering of all images in the database
 feature_name = 'trans_scatt';
-precomputed_path = sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+precomputed_path = ...
+    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
 if (use_precomputed_scattering)
     load(precomputed_path);
 else
@@ -62,13 +65,13 @@ else
     % compute all scattering
     % (500 seconds on a 2.4 Ghz Intel Core i7)
     trans_scatt_all = srcfun(fun, src);
-    
+    %%
     % a function handle that
     %   - format the scattering in a 3d matrix
     %   - remove margins
     %   - average accross position
     % (10 seconds on a 2.4 Ghz Intel Core i7)
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),0),2),3));
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
@@ -78,9 +81,9 @@ end
 db = cellsrc2db(trans_scatt, src);
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
+
+
 
 
 %% ---------------------------------------------------
@@ -89,9 +92,12 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
 
+
+
 %% compute scattering of all images in the database
 feature_name = 'roto_trans_scatt';
-precomputed_path = sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+precomputed_path = ...
+    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
 if (use_precomputed_scattering)
     load(precomputed_path);
 else
@@ -107,7 +113,8 @@ else
     %   - read the image
     %   - resize it to 200x200
     %   - compute its scattering
-    fun = @(filename)(scat(imresize_notoolbox(imreadBW(filename),[200 200]), Wop));
+    fun = @(filename)...
+        (scat(imresize_notoolbox(imreadBW(filename),[200 200]), Wop));
     % (800 seconds on a 2.4 Ghz Intel Core i7)
     roto_trans_scatt_all = srcfun(fun, src);
     
@@ -126,8 +133,6 @@ end
 db = cellsrc2db(roto_trans_scatt, src);
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
@@ -139,8 +144,12 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 %% ---------------------------------------------------
 
 
+
+
 feature_name = 'roto_trans_scatt_log';
-precomputed_path = sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+precomputed_path = ...
+    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+
 if (use_precomputed_scattering)
     load(precomputed_path);
 else
@@ -159,8 +168,6 @@ end
 db = cellsrc2db(roto_trans_scatt_log, src);
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
@@ -181,7 +188,8 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 %% compute scattering of all images in the database
 
 feature_name = 'roto_trans_scatt_log_scale_avg';
-precomputed_path = sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+precomputed_path = ...
+    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
 
 if (use_precomputed_scattering)
     load(precomputed_path);
@@ -210,11 +218,13 @@ else
     %% log + spatial average 
     fun = @(Sx)(mean(mean(log(remove_margin(format_scat(Sx),1)),2),3));
     multi_fun = @(x)(cellfun_monitor(fun, x));
-    roto_trans_scatt_multiscale_log_sp_avg = cellfun_monitor(multi_fun, roto_trans_scatt_multiscale);
+    roto_trans_scatt_multiscale_log_sp_avg = ...
+        cellfun_monitor(multi_fun, roto_trans_scatt_multiscale);
 
     %% scale average
     fun = @(x)(mean(cell2mat(x),2));
-    roto_trans_scatt_log_scale_avg = cellfun_monitor(fun, roto_trans_scatt_multiscale_log_sp_avg);
+    roto_trans_scatt_log_scale_avg = ...
+        cellfun_monitor(fun, roto_trans_scatt_multiscale_log_sp_avg);
 
     % save scattering
     save(precomputed_path, 'roto_trans_scatt_log_scale_avg');
@@ -224,8 +234,6 @@ else
 end
 
 %% classification
-grid_train = [5,20,40];
-nb_split = 10;
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
