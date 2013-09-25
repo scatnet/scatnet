@@ -17,7 +17,7 @@ options.J = 4;
 %%
 profile on;
 options.j_min = 1;
-[y_Phi, y_Psi] = wavelet_3d_spatial(y, filters, filters_rot, options);
+[y_Phi, y_Psi] = wavelet_3d_pyramid(y, filters, filters_rot, options);
 profile off;
 
 %%
@@ -25,4 +25,4 @@ profile off;
 %% low pass only
 y = rand(480,640,4);
 options.angular_range = 'zero_2pi';
-y_Phi = wavelet_3d_spatial(y, filters, filters_rot, options);
+y_Phi = wavelet_3d_pyramid(y, filters, filters_rot, options);
