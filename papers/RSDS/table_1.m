@@ -28,6 +28,7 @@ clear; close all;
 % KTH-TIPS database in YOUR system.
 path_to_db = '/Users/laurentsifre/TooBigForDropbox/Databases/KTH_TIPS';
 src = kthtips_src(path_to_db);
+db_name = 'kth-tips';
 
 use_precompted_scattering = 1; % change to 0 to skip computation of scattering
 
@@ -38,8 +39,9 @@ use_precompted_scattering = 1; % change to 0 to skip computation of scattering
 
 
 %% compute scattering of all images in the database
+precomputed_path = ['./precomputed/',db_name,'/trans_scatt.mat'];
 if (use_precompted_scattering)
-    load('./precomputed/kth-tips/trans_scatt.mat');
+    load(precomputed_path);
 else
     %configure scattering
     options.J = 5; % number of octaves
@@ -69,7 +71,7 @@ else
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
-    save('./precomputed/kth-tips/trans_scatt.mat', 'trans_scatt'); 
+    save(precomputed_path, 'trans_scatt'); 
 end
 % format the database of feature
 db = cellsrc2db(trans_scatt, src);
@@ -90,8 +92,8 @@ for i_fold = 1:n_fold
         model = affine_train(db, train_set, train_opt);
         labels = affine_test(db, model, test_set);
         error_2d(i_fold, i_grid) = classif_err(labels, test_set, src);
-        fprintf('fold %d n_train %g acc %g \n', ...
-            i_fold, n_train, 1-error_2d(i_fold, i_grid));
+        fprintf('fold %3d nb train %2d accuracy %.2f \n', ...
+            i_fold, n_train, 100*(1-error_2d(i_fold, i_grid)));
     end
 end
 
@@ -117,8 +119,9 @@ end
 
 
 %% compute scattering of all images in the database
+precomputed_path = ['./precomputed/',db_name,'/roto_trans_scatt.mat'];
 if (use_precompted_scattering)
-    load('./precomputed/kth-tips/roto_trans_scatt.mat');
+    load(precomputed_path);
 else
     % configure scattering
     options.J = 5; % number of octaves
@@ -145,7 +148,7 @@ else
     roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     % save scattering
-    save('./precomputed/kth-tips/roto_trans_scatt.mat', 'roto_trans_scatt');
+    save(precomputed_path, 'roto_trans_scatt');
 end
 % format the database of feature
 db = cellsrc2db(roto_trans_scatt, src);
@@ -165,8 +168,8 @@ for i_fold = 1:n_fold
         model = affine_train(db, train_set, train_opt);
         labels = affine_test(db, model, test_set);
         error_2d(i_fold, i_grid) = classif_err(labels, test_set, src);
-        fprintf('fold %d n_train %g acc %g \n', ...
-            i_fold, n_train, 1-error_2d(i_fold, i_grid));
+        fprintf('fold %3d nb train %2d accuracy %.2f \n', ...
+            i_fold, n_train, 100*(1-error_2d(i_fold, i_grid)));
     end
 end
 
@@ -196,9 +199,9 @@ end
 
 
 
-
+precomputed_path = ['./precomputed/',db_name,'/roto_trans_scatt_log.mat'];
 if (use_precompted_scattering)
-    load('./precomputed/kth-tips/roto_trans_scatt_log.mat');
+    load(precomputed_path);
 else
     % a function handle that
     %   - format the scattering in a 3d matrix
@@ -209,7 +212,7 @@ else
     roto_trans_scatt_log = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     %save scattering
-    save('./precomputed/kth-tips/roto_trans_scatt_log.mat', 'roto_trans_scatt_log');
+    save(precomputed_path);
 end
 % format the database of feature
 db = cellsrc2db(roto_trans_scatt_log, src);
@@ -229,8 +232,8 @@ for i_fold = 1:n_fold
         model = affine_train(db, train_set, train_opt);
         labels = affine_test(db, model, test_set);
         error_2d(i_fold, i_grid) = classif_err(labels, test_set, src);
-        fprintf('fold %d n_train %g acc %g \n', ...
-            i_fold, n_train, 1-error_2d(i_fold, i_grid));
+        fprintf('fold %3d nb train %2d accuracy %.2f \n', ...
+            i_fold, n_train, 100*(1-error_2d(i_fold, i_grid)));
     end
 end
 
@@ -265,8 +268,9 @@ end
 
 
 %% compute scattering of all images in the database
+precomputed_path = ['./precomputed/',db_name,'/roto_trans_scatt_log_scale_avg.mat'];
 if (use_precompted_scattering)
-    load('./precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat');
+    load(precomputed_path);
 else
     % configure scattering
     options.J = 5; % number of octaves
@@ -299,7 +303,7 @@ else
     roto_trans_scatt_log_scale_avg = cellfun_monitor(fun, roto_trans_scatt_multiscale_log_sp_avg);
 
     % save scattering
-    save('./precomputed/kth-tips/roto_trans_scatt_log_scale_avg.mat', 'roto_trans_scatt_log_scale_avg');
+    save(precomputed_path, 'roto_trans_scatt_log_scale_avg');
     
     % format the database of feature
     db = cellsrc2db(roto_trans_scatt_log_scale_avg, src);
@@ -320,8 +324,8 @@ for i_fold = 1:n_fold
         model = affine_train(db, train_set, train_opt);
         labels = affine_test(db, model, test_set);
         error_2d(i_fold, i_grid) = classif_err(labels, test_set, src);
-        fprintf('fold %d n_train %g acc %g \n', ...
-            i_fold, n_train, 1-error_2d(i_fold, i_grid));
+        fprintf('fold %3d nb train %2d accuracy %.2f \n', ...
+            i_fold, n_train, 100*(1-error_2d(i_fold, i_grid)));
     end
 end
 
@@ -337,5 +341,23 @@ end
 %   kth-tips roto_trans_scatt_log_scale_avg scatt with  5 training : 78.49 += 3.27 
 %   kth-tips roto_trans_scatt_log_scale_avg scatt with 20 training : 97.25 += 1.15 
 %   kth-tips roto_trans_scatt_log_scale_avg scatt with 40 training : 99.20 += 0.50 
+
+
+
+
+
+
+
+
+
+
+
+%% ---------------------------------------------------
+%% - roto_trans_scatt_log_scale_avg_multiscal_train --
+%% ---------------------------------------------------
+
+
+
+
 
 
