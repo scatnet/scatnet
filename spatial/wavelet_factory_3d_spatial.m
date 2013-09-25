@@ -22,7 +22,7 @@ function [Wop, filters, filters_rot] = wavelet_factory_3d_spatial(filt_opt, filt
 	end
 	
 	% first layer : usual 2d wavelet transform
-	Wop{1} = @(x)(wavelet_layer_2d_spatial(x, filters, scat_opt));
+	Wop{1} = @(x)(wavelet_layer_2d_pyramid(x, filters, scat_opt));
 	Wop{2} = @(x)(wavelet_layer_3d_spatial(x, filters, filters_rot, scat_opt));
 	Wop{3} = @(x)(wavelet_layer_3d_spatial(x, filters, filters_rot, scat_opt));
 	

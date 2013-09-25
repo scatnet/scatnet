@@ -1,4 +1,4 @@
-function [x_phi, x_psi] = wavelet_2d_spatial(x, filters, options)
+function [x_phi, x_psi] = wavelet_2d_pyramid(x, filters, options)
 	
 	% retrieve options
 	options.null = 1;

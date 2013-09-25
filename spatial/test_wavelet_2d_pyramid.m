@@ -7,7 +7,7 @@ filters = morlet_filter_bank_2d_spatial(options);
 
 tic;
 for k = 1:K
-	[x_phi, x_psi] = wavelet_2d_spatial(x, filters, options);
+	[x_phi, x_psi] = wavelet_2d_pyramid(x, filters, options);
 end
 toc;
 ux = modulus_layer(x_psi);

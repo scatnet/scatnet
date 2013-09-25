@@ -1,4 +1,4 @@
-function [U_phi, U_psi] = wavelet_layer_2d_spatial(U, filters, options)
+function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
 	% with psi if the user does not get U_psi
@@ -31,7 +31,7 @@ function [U_phi, U_psi] = wavelet_layer_2d_spatial(U, filters, options)
 		
 		if (calculate_psi)
 			% compute wavelet transform
-			[x_phi, x_psi] = wavelet_2d_spatial(x, filters, w_options);
+			[x_phi, x_psi] = wavelet_2d_pyramid(x, filters, w_options);
 			
 			% copy signal and meta for phi
 			U_phi.signal{p} = x_phi.signal{1};
@@ -57,7 +57,7 @@ function [U_phi, U_psi] = wavelet_layer_2d_spatial(U, filters, options)
 			
 		else
 			% compute only low pass
-			x_phi = wavelet_2d_spatial(x, filters, w_options);
+			x_phi = wavelet_2d_pyramid(x, filters, w_options);
 			
 			% copy signal and meta for phi
 			U_phi.signal{p} = x_phi.signal{1};

@@ -31,6 +31,6 @@ function [Wop, filters] = wavelet_factory_2d_spatial(filt_opt, scat_opt)
 	
 	% wavelet transforms :
 	for m = 1:scat_opt.M+1
-		Wop{m} = @(x)(wavelet_layer_2d_spatial(x, filters, scat_opt));
+		Wop{m} = @(x)(wavelet_layer_2d_pyramid(x, filters, scat_opt));
 	end
 end
