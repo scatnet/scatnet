@@ -1,5 +1,5 @@
 % convolve x with filterfilter and subsample by 2^ds
-function x_conv_psi_unpad_sub = convsub2d_spatial(x, filter, ds)
+function x_conv_psi_unpad_sub = conv_sub_2d(x, filter, ds)
 	if (strcmp(filter.type,'spatial_support'))
 		filt = filter.coefft;
 		P = floor(size(filt,1)/2);

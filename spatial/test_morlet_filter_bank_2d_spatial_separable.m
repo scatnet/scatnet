@@ -6,6 +6,6 @@ x = lena;
 
 tic;
 for k = 1:10
-xfilt = convsub2d_spatial(x, filt, 0);
+xfilt = conv_sub_2d(x, filt, 0);
 end
 toc;

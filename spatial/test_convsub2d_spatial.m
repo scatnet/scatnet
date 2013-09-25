@@ -5,9 +5,9 @@ x = lena;
 x = single(x);
 
 filter = filters.h.filter;
-x_h = convsub2d_spatial(x, filter, 1);
+x_h = conv_sub_2d(x, filter, 1);
 filter = filters.g.filter{5};
-x_g = convsub2d_spatial(x, filter, 0);
+x_g = conv_sub_2d(x, filter, 0);
 subplot(121);
 imagesc(x_h);
 subplot(122);
@@ -31,13 +31,13 @@ end
 toc;
 tic;
 for k = 1:10
-	xpsi = convsub2d_spatial(x, filter, 0);
+	xpsi = conv_sub_2d(x, filter, 0);
 end
 toc;
 
 tic;
 for k = 1:10
-	xpsi_sep = convsub2d_spatial(x, filter_sep, 0);
+	xpsi_sep = conv_sub_2d(x, filter_sep, 0);
 end
 toc;
 subplot(131);

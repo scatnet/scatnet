@@ -56,13 +56,13 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 		for theta = 1:T % filter each slice
 			if (theta == 1) % allocate when size is known
 				tmp_slice = ...
-					convsub2d_spatial(hy.signal{j}(:,:,theta), h, 1);
+					conv_sub_2d(hy.signal{j}(:,:,theta), h, 1);
 				tmp = prec(zeros([size(tmp_slice), T]));
 				tmp(:,:,theta) = tmp_slice;
 			else
 				clear tmp_slice;
 				tmp(:,:,theta) = ...
-					convsub2d_spatial(hy.signal{j}(:,:,theta), h, 1);
+					conv_sub_2d(hy.signal{j}(:,:,theta), h, 1);
 			end
 		end
 		hy.signal{j+1} = tmp;
@@ -149,7 +149,7 @@ function [y_Phi, y_Psi] = wavelet_3d_spatial(y,...
 							% convolution with psi_{j1, theta + theta2}
 							theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
 							theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
-							tmp_slice = convsub2d_spatial(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL + L*q}, 0);
+							tmp_slice = conv_sub_2d(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL + L*q}, 0);
 							if (theta == 1) % allocate
 								tmp = prec(zeros([size(tmp_slice), 2*L]));
 							end

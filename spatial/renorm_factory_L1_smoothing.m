@@ -20,7 +20,7 @@ function op = renorm_factory_L1_smoothing(sigma)
        options.P = 2 + floor(2*sigma);
        filters = morlet_filter_bank_2d_spatial(options);
        h = filters.h.filter;
-       smooth = @(x)(convsub2d_spatial(x, h, 0));
+       smooth = @(x)(conv_sub_2d(x, h, 0));
         op = @(x)(smooth(l1_op(x)) + 1E-20); 
     end
 end

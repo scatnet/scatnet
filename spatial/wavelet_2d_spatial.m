@@ -19,7 +19,7 @@ function [x_phi, x_psi] = wavelet_2d_spatial(x, filters, options)
 	% low pass
 	h = filters.h.filter;
 	for j = 1:J
-		hx.signal{j+1} = convsub2d_spatial(hx.signal{j}, h, 1);
+		hx.signal{j+1} = conv_sub_2d(hx.signal{j}, h, 1);
 		hx.meta.j(j+1) = j;
 	end
 	x_phi.signal{1} = hx.signal{J+1};
@@ -37,7 +37,7 @@ function [x_phi, x_psi] = wavelet_2d_spatial(x, filters, options)
 			for pf = 1:numel(g)
 				q = filters.g.meta.q(pf);
 				if (q_mask(q+1))
-					gx.signal{p} = convsub2d_spatial(hx.signal{j+1}, g{pf}, 0);
+					gx.signal{p} = conv_sub_2d(hx.signal{j+1}, g{pf}, 0);
 					gx.meta.j(p) = j;
 					gx.meta.q(p) = q;
 					gx.meta.theta(p) = filters.g.meta.theta(pf);

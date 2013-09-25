@@ -16,7 +16,7 @@ function YconvZ = roto_trans_conv(Y, Yftheta, z1, z2, theta2, q, dstheta)
 		for theta = 1:L
 			theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
 			theta_sum_modL  =  1 + mod(theta + theta2 - 2, L);
-			tmp_slice = convsub2d_spatial(Y(:,:,theta), z2{theta_sum_modL + L*q}, 0);
+			tmp_slice = conv_sub_2d(Y(:,:,theta), z2{theta_sum_modL + L*q}, 0);
 			if (theta == 1) % allocate when size is known
 				YconvZ1 = prec(zeros([size(tmp_slice), 2*L]));
 			end

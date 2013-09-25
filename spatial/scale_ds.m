@@ -8,7 +8,7 @@ for i = 1:nb_scale-1
     
     h{i} = filters.h.filter;
     
-    tmp = convsub2d_spatial(x, h{i}, 0);
+    tmp = conv_sub_2d(x, h{i}, 0);
     xds{i+1} = downsample_noninteger(tmp, step);
 end
 

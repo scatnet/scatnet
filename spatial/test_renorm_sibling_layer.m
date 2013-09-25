@@ -21,7 +21,7 @@ options.sigma_phi = 1;
 options.P = 4;
 filters = morlet_filter_bank_2d_spatial(options);
 h = filters.h.filter;
-smooth = @(x)(convsub2d_spatial(x, h, 0));
+smooth = @(x)(conv_sub_2d(x, h, 0));
 op = @(x)(smooth(sum(x,3)));
 
 %% renormalize
