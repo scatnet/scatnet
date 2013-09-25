@@ -16,7 +16,7 @@
 % Example of use 
 %   %% compute scattering
 %   x = lena;
-%   Wop = wavelet_factory_2d_spatial();
+%   Wop = wavelet_factory_2d_pyramid();
 %   Sx = scat(x, Wop);
 %   %% renormalize with L1 norm
 %   op = @(x)(sum(x,3));

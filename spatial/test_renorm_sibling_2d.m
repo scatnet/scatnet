@@ -3,7 +3,7 @@
 clear;
 x = lena;
 %%
-Wop = wavelet_factory_2d_spatial();
+Wop = wavelet_factory_2d_pyramid();
 Sx = scat(x, Wop);
 %% renormalize with L1 norm
 op = @(x)(sum(x,3));
@@ -14,7 +14,7 @@ Sxrenorm = renorm_sibling_2d(Sx, op);
 %% compute scattering
 clear;
 x = lena;
-Wop = wavelet_factory_2d_spatial();
+Wop = wavelet_factory_2d_pyramid();
 Sx = scat(x, Wop);
 
 %% smooth a bit + L1 accross sibling
@@ -41,7 +41,7 @@ clear; close all;
 %% compute scattering
 x = lena;
 options.Q = 1;
-Wop = wavelet_factory_2d_spatial(options, options);
+Wop = wavelet_factory_2d_pyramid(options, options);
 Sx = scat(x, Wop);
 %% 
 op = renorm_factory_L1_smoothing(3);

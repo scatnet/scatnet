@@ -5,7 +5,7 @@ options.M = 2;
 
 options.type = 'morlet';
 options.parallel = 0;
-w = wavelet_factory_2d_spatial(options, options);
+w = wavelet_factory_2d_pyramid(options, options);
 features{1} = @(x)(sum(sum(format_scat(scat(x,w)),2),3));
 %features{1} = @(x)(sum(sum(format_scat(renorm_scat_spatial(scat(x,w))),2),3));
 db = prepare_database(src, features, options);

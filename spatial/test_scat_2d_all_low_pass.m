@@ -4,5 +4,5 @@ options.J = 4;
 x = uiuc_sample;
 
 
-Wop = wavelet_factory_2d_spatial(options, options);
+Wop = wavelet_factory_2d_pyramid(options, options);
 Sx = scat(x, Wop);

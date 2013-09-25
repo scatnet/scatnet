@@ -1,7 +1,7 @@
 %% simple example of use of renorm_sibling_layer
 %% compute scattering
 clear; close all;
-Wop = wavelet_factory_2d_spatial();
+Wop = wavelet_factory_2d_pyramid();
 x = uiuc_sample;
 Sx = scat(x, Wop);
 %% extract the second layer

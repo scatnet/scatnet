@@ -15,5 +15,5 @@ x = uiuc_sample;
 filt_opt.type = 'haar';
 scat_opt.J = 5;
 scat_opt.M = 3;
-Wop = wavelet_factory_2d_spatial(filt_opt, scat_opt);
+Wop = wavelet_factory_2d_pyramid(filt_opt, scat_opt);
 Sx = scat(x, Wop);

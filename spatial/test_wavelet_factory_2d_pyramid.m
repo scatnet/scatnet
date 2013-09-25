@@ -9,7 +9,7 @@ options.P = 2;
 options.L = 6;
 options.J = 4;
 options.precision = 'single';
-[Wop, filters] = wavelet_factory_2d_spatial(options, options);
+[Wop, filters] = wavelet_factory_2d_pyramid(options, options);
 tic;
 [Sx, Ux] = scat(x, Wop);
 toc;

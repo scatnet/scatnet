@@ -2,7 +2,7 @@ x = uiuc_sample;
 
 
 opt.J = 6;
-w = wavelet_factory_2d_spatial(opt, opt);
+w = wavelet_factory_2d_pyramid(opt, opt);
 sx = scat(x, w);
 
 

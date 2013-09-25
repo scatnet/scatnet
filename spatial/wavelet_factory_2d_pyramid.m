@@ -1,6 +1,6 @@
-% wavelet_factory_2d_spatial: Create wavelet cascade
+% wavelet_factory_2d_pyramid: Create wavelet cascade
 % Usage
-%    [Wop, filters] = wavelet_factory_2d_spatial(filt_opt, scat_opt)
+%    [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 %
 % Input
 %    filt_opt: The filter options, same as for morlet_filter_bank_2d 
@@ -12,7 +12,7 @@
 %       form.
 %    filters: A cell array of the filters used in defining the wavelets.
 
-function [Wop, filters] = wavelet_factory_2d_spatial(filt_opt, scat_opt)
+function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 	
 	filt_opt.null = 1;
 	scat_opt.null = 1;
