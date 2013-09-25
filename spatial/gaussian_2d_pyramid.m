@@ -1,4 +1,4 @@
-% function gau = gaussian_2d_spatial(P, sigma, precision)
+% function gau = gaussian_2d_pyramid(P, sigma, precision)
 % TODO : REDO DOC
 %
 % input :
@@ -12,7 +12,7 @@
 % output :
 % - gab : <NxM double> the morlet filter in spatial domain
 
-function gau = gaussian_2d_spatial(N, M, sigma, precision, offset)
+function gau = gaussian_2d_pyramid(N, M, sigma, precision, offset)
 	if (~exist('offset', 'var'))
 		offset = [1 + floor(N/2), 1 + floor(M/2)];
 	end

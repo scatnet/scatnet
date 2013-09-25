@@ -15,7 +15,7 @@
 % output :
 % - gab : <NxM double> the morlet filter in spatial domain
 
-function gab = morlet_2d_spatial(N, M, sigma, slant, xi, theta, precision, offset)
+function gab = morlet_2d_pyramid(N, M, sigma, slant, xi, theta, precision, offset)
 	
 	if ~exist('offset', 'var')
 		offset = [1 + floor(N/2), 1 + floor(M/2)];
