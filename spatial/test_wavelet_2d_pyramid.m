@@ -3,7 +3,7 @@ x = uiuc_sample;
 options.P = 2;
 options.J = 5;
 K = 10;
-filters = morlet_filter_bank_2d_spatial(options);
+filters = morlet_filter_bank_2d_pyramid(options);
 
 tic;
 for k = 1:K

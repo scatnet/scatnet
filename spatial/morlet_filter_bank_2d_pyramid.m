@@ -1,10 +1,9 @@
-% morlet_filter_bank_2d : Build a bank of Morlet wavelet filters
+% morlet_filter_bank_2d_pyramid : Build a bank of Morlet wavelet filters
 %
 % Usage
-%	filters = morlet_filter_bank_2d(size_in, options)
+%	filters = morlet_filter_bank_2d_pyramid(size_in, options)
 %
 % Input
-% - size_in : <1x2 int> size of the input of the scattering
 % - options : [optional] <1x1 struct> contains the following optional fields
 %   - Q          : <1x1 int> the number of scale per octave
 %   - J          : <1x1 int> the total number of scale.
@@ -32,7 +31,7 @@
 %   - phi.meta.k(p,1)
 %   - meta : <1x1 struct> global parameters of the filter bank
 
-function filters = morlet_filter_bank_2d_spatial_separable(options)
+function filters = morlet_filter_bank_2d_pyramid(options)
 	
 	options.null = 1;
 	
@@ -42,23 +41,21 @@ function filters = morlet_filter_bank_2d_spatial_separable(options)
 	sigma_phi  = getoptions(options, 'sigma_phi',  0.8);
 	sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
 	xi_psi     = getoptions(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);
+	slant_psi  = getoptions(options, 'slant_psi',  4/L);
 	
+	P = getoptions(options, 'P', 3); % the size of the support is 2*P + 1
 	
-	P = getoptions(options, 'P', 3) % the size of the support is 2*P + 1
+	precision  = getoptions(options, 'precision', 'single');% if single
+	% then the filter is in 32 bits float.
 	
 	% low pass filter h
-	filter_spatial= gabor_2d(2*P+2,...
-		2*P+2,...
+	
+	h.filter.coefft = gaussian_2d_spatial(2*P+1,...
+		2*P+1,...
 		sigma_phi,...
-		1,...
-		0,...
-		0,...
-		[0,0]);
-	tmp = fftshift(filter_spatial);
-	tmp = tmp(2:2*P+2, 2:2*P+2);
-	h.filter.coefft{1} = tmp(:,P+1);
-	h.filter.coefft{2} = tmp(:,P+1);
-	h.filter.type = 'spatial_support_separable';
+		precision);
+    h.filter.coefft = h.filter.coefft./sum(h.filter.coefft(:));
+	h.filter.type = 'spatial_support';
 	
 	angles = (0:L-1)  * pi / L;
 	p = 1;
@@ -70,15 +67,14 @@ function filters = morlet_filter_bank_2d_spatial_separable(options)
 			angle = angles(theta);
 			scale = 2^(q/Q);
 			
-			tmp = morlet_2d_spatial(P, ...
+			g.filter{p}.coefft = morlet_2d_spatial(2*P+1,...
+				2*P+1, ...
 				sigma_psi*scale,...
-				1,...
+				slant_psi,...
 				xi_psi/scale,...
-				angle) ;
-			
-			g.filter{p}.coefft{1} = tmp(:,P+1);
-			g.filter{p}.coefft{2} = transp(tmp(P+1,:));
-			g.filter{p}.type = 'spatial_support_separable';
+				angle,...
+				precision) ;
+			g.filter{p}.type = 'spatial_support';
 			
 			g.meta.q(p) = q;
 			g.meta.theta(p) = theta;
@@ -95,6 +91,7 @@ function filters = morlet_filter_bank_2d_spatial_separable(options)
 	filters.meta.sigma_phi = sigma_phi;
 	filters.meta.sigma_psi = sigma_psi;
 	filters.meta.xi_psi = xi_psi;
+	filters.meta.slant_psi = slant_psi;
 	filters.meta.P = P;
 	
 	

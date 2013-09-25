@@ -22,7 +22,7 @@ function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 	filt_opt = fill_struct(filt_opt, 'type', 'morlet');
 	switch (filt_opt.type)
 		case 'morlet'	
-			filters = morlet_filter_bank_2d_spatial(filt_opt);
+			filters = morlet_filter_bank_2d_pyramid(filt_opt);
 			
 		case 'haar'
 			filters = haar_filter_bank_2d_spatial(filt_opt);

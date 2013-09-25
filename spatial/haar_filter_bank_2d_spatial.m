@@ -21,7 +21,7 @@
 %   - phi.meta.k(p,1)
 %   - meta : <1x1 struct> global parameters of the filter bank
 
-function filters = morlet_filter_bank_2d_spatial(options)
+function filters = morlet_filter_bank_2d_pyramid(options)
 	
 	options.null = 1;
 	precision  = getoptions(options, 'precision', 'single');% if single

@@ -6,7 +6,7 @@ function [Wop, filters, filters_rot] = wavelet_factory_3d_spatial(filt_opt, filt
 	
 	precision = getoptions(scat_opt, 'precision', 'single');
 	% filters :
-	filters = morlet_filter_bank_2d_spatial(filt_opt);
+	filters = morlet_filter_bank_2d_pyramid(filt_opt);
 	
 	% filters along angular variable
 	sz = filters.meta.L * 2; % L orientations between 0 and pi

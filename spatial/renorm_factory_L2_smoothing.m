@@ -18,7 +18,7 @@ function op = renorm_factory_L2_smoothing(sigma)
     else
        options.sigma_phi = 1;
        options.P = 2 + floor(2*sigma);
-       filters = morlet_filter_bank_2d_spatial(options);
+       filters = morlet_filter_bank_2d_pyramid(options);
        h = filters.h.filter;
        smooth = @(x)(conv_sub_2d(x, h, 0));
        op = @(x)(smooth(l2_op(x)) + 1E-20); 

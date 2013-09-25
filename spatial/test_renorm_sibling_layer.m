@@ -19,7 +19,7 @@ layer_renorm = renorm_sibling_layer(layer, op, sibling);
 %% smooth a bit + L1 norm instead of just L1 norm
 options.sigma_phi = 1;
 options.P = 4;
-filters = morlet_filter_bank_2d_spatial(options);
+filters = morlet_filter_bank_2d_pyramid(options);
 h = filters.h.filter;
 smooth = @(x)(conv_sub_2d(x, h, 0));
 op = @(x)(smooth(sum(x,3)));

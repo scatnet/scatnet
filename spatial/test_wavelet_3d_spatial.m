@@ -1,5 +1,5 @@
 
-filters = morlet_filter_bank_2d_spatial();
+filters = morlet_filter_bank_2d_pyramid();
 
 sz = filters.meta.L * 2; % L orientations between 0 and pi
 % periodic convolutions along angles
