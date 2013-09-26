@@ -27,6 +27,7 @@ clear; close all;
 % NOTE : the following line must be modified with the path to the
 % KTH-TIPS database in YOUR system.
 path_to_db = '/Users/laurentsifre/TooBigForDropbox/Databases/KTH_TIPS';
+path_to_precomputed = '/Users/laurentsifre/TooBigForDropbox/Results/RSDS/precomputed';
 src = kthtips_src(path_to_db);
 db_name = 'kth-tips';
 
@@ -42,10 +43,10 @@ nb_split = 10; % number of split for classification
 
 %% compute scattering of all images in the database
 feature_name = 'trans_scatt';
-precomputed_path = ...
-    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+precomputed_filename = ...
+    sprintf('%s/%s/%s.mat',path_to_precomputed, db_name, feature_name);
 if (use_precomputed_scattering)
-    load(precomputed_path);
+    load(precomputed_filename);
 else
     %configure scattering
     options.J = 5; % number of octaves
@@ -53,7 +54,7 @@ else
     options.M = 2; % scattering orders
     
     % build the wavelet transform operators for scattering
-    Wop = wavelet_factory_2d_spatial(options, options);
+    Wop = wavelet_factory_2d_pyramid(options, options);
     
     % a function handle that
     %   - read the image
@@ -75,7 +76,7 @@ else
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
-    save(precomputed_path, 'trans_scatt'); 
+    save(precomputed_filename, 'trans_scatt'); 
 end
 % format the database of feature
 db = cellsrc2db(trans_scatt, src);
@@ -96,10 +97,10 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 %% compute scattering of all images in the database
 feature_name = 'roto_trans_scatt';
-precomputed_path = ...
-    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
+precomputed_filename = ...
+    sprintf('%s/%s/%s.mat',path_to_precomputed, db_name, feature_name);
 if (use_precomputed_scattering)
-    load(precomputed_path);
+    load(precomputed_filename);
 else
     % configure scattering
     options.J = 5; % number of octaves
@@ -107,7 +108,7 @@ else
     options.M = 2; % scattering orders
     
     % build the wavelet transform operators for scattering
-    Wop = wavelet_factory_3d_spatial(options, options, options);
+    Wop = wavelet_factory_3d_pyramid(options, options, options);
     
     % a function handle that
     %   - read the image
@@ -127,7 +128,7 @@ else
     roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     % save scattering
-    save(precomputed_path, 'roto_trans_scatt');
+    save(precomputed_filename, 'roto_trans_scatt');
 end
 % format the database of feature
 db = cellsrc2db(roto_trans_scatt, src);
@@ -147,11 +148,10 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 
 
 feature_name = 'roto_trans_scatt_log';
-precomputed_path = ...
-    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
-
+precomputed_filename = ...
+    sprintf('%s/%s/%s.mat',path_to_precomputed, db_name, feature_name);
 if (use_precomputed_scattering)
-    load(precomputed_path);
+    load(precomputed_filename);
 else
     % a function handle that
     %   - format the scattering in a 3d matrix
@@ -162,7 +162,7 @@ else
     roto_trans_scatt_log = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     %save scattering
-    save(precomputed_path);
+    save(precomputed_filename);
 end
 % format the database of feature
 db = cellsrc2db(roto_trans_scatt_log, src);
@@ -188,11 +188,10 @@ rsds_classif(db, db_name, feature_name, grid_train, nb_split);
 %% compute scattering of all images in the database
 
 feature_name = 'roto_trans_scatt_log_scale_avg';
-precomputed_path = ...
-    sprintf('./precomputed/%s/%s.mat', db_name, feature_name);
-
+precomputed_filename = ...
+    sprintf('%s/%s/%s.mat',path_to_precomputed, db_name, feature_name);
 if (use_precomputed_scattering)
-    load(precomputed_path);
+    load(precomputed_filename);
 else
     % configure scattering
     options.J = 5; % number of octaves
@@ -200,7 +199,7 @@ else
     options.M = 2; % scattering orders
     
     % build the wavelet transform operators for scattering
-    Wop = wavelet_factory_3d_spatial(options, options, options);
+    Wop = wavelet_factory_3d_pyramid(options, options, options);
     
     % a function handle that compute scattering given an image
     fun = @(x)(scat(x, Wop));
@@ -227,7 +226,7 @@ else
         cellfun_monitor(fun, roto_trans_scatt_multiscale_log_sp_avg);
 
     % save scattering
-    save(precomputed_path, 'roto_trans_scatt_log_scale_avg');
+    save(precomputed_filename, 'roto_trans_scatt_log_scale_avg');
     
     % format the database of feature
     db = cellsrc2db(roto_trans_scatt_log_scale_avg, src);
