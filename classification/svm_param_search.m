@@ -23,7 +23,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'gamma',1e-4);
 	opt = fill_struct(opt,'C',8);
 	opt = fill_struct(opt,'cv_folds',5);
-	opt = fill_struct(opt,'silent',0);
+    opt = fill_struct(opt,'w',0);
 	
 	if isempty(valid_set)
 		obj_class = [db.src.objects(train_set).class];
@@ -35,7 +35,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 		cvvalid_set = cvvalid_set;
 		
 		for f = 1:opt.cv_folds
-			[err(:,f),C,gamma] = svm_param_search(db, ...
+			[err(:,f),C,gamma] =w_svm_param_search(db, ...
 				train_set(cvtrain_set),train_set(cvvalid_set),opt);
 			
 			[cvtrain_set,cvvalid_set] = ...
@@ -50,20 +50,22 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			opt1 = opt;
 			opt1.C = C(r);
 			opt1.gamma = gamma(r);
+            
+            %added line
+            
+            opt1.w= opt.w;
 			
-			if ~opt.silent
-				fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
-			end
+			fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
 
 			tm0 = tic;
+            %db_weights=calc_train_weights(db,train_set);
 			model = svm_train(db,train_set,opt1);
-			labels = svm_test(db,model,valid_set);
+            labels = svm_test(db,model,valid_set);
 
-			err(r,1) = classif_err(labels,valid_set,db.src);
-
-			if ~opt.silent
-				fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
-			end
+			err(r,1) = classif_mean_err(labels,valid_set,db.src);
+             % err(r,1)=classif_err(labels,valid_set,db.src);
+             
+			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
 		end
 	end
 end

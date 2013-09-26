@@ -38,6 +38,8 @@ function model = svm_train(db,train_set,opt)
 	
 	opt = fill_struct(opt,'gamma',1e-4);
 	opt = fill_struct(opt,'C',8);
+    opt = fill_struct(opt, 'w',0);
+    
 	
 	ind_features = [];
 	feature_class = [];
@@ -104,8 +106,14 @@ function model = svm_train(db,train_set,opt)
 				params = [params ' -g ' num2str(opt.gamma)];
 			end
 		end
-	end
-
+    end
+    
+    
+    if opt.w == 1
+        db_weights=calc_train_weights(db, train_set);
+        params = [params db_weights];
+    end
+    
 	model.full_test_kernel = opt.full_test_kernel;
 
 	model.train_set = train_set;
@@ -118,3 +126,34 @@ function model = svm_train(db,train_set,opt)
 			single(features),params,ind_features);
 	end
 end
+
+
+function db_weights=calc_train_weights(db,train_set)
+
+% the weight of a particular class is the inverse of the total
+%number of its features.
+
+
+ind_objs={};
+ind_feats={};
+nb_feats=[];
+
+db_weights=[];
+for k=1:length(db.src.classes)
+    ind_objs{k}=find([db.src.objects.class]==k);
+    
+
+    ind_feats{k}=[db.indices{ind_objs{k}}];
+   
+
+         mask2=ismember(ind_feats{k},[db.indices{train_set}]);
+         ind_maxp2=find(mask2>0);
+         ind_feats{k}=ind_feats{k}(ind_maxp2);
+         
+   
+    nb_feats(k)=numel(ind_feats{k});
+
+    db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))];
+end
+end
+
