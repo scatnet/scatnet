@@ -1,4 +1,4 @@
-% wavelet_2d : Compute the wavelet transform of an image
+% WAVELET_2D Compute the wavelet transform of an image
 %
 % Usage
 %	[x_phi, x_psi] = wavelet_2d(x, filters)
