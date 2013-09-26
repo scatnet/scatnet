@@ -69,10 +69,11 @@ else
     %%
     % a function handle that
     %   - format the scattering in a 3d matrix
+    %   - remove order 0
     %   - remove margins along dimension 2 and 3
     %   - average accross position
     % (10 seconds on a 2.4 Ghz Intel Core i7)
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1,[2,3]),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),[1,0,1,1,1,1]),2),3));
     trans_scatt = cellfun_monitor(fun ,trans_scatt_all);
     
     % save scattering
@@ -83,8 +84,6 @@ db = cellsrc2db(trans_scatt, src);
 
 %% classification
 rsds_classif(db, db_name, feature_name, grid_train, nb_split);
-
-
 
 
 %% ---------------------------------------------------
@@ -123,7 +122,7 @@ else
     %   - format the scattering in a 3d matrix
     %   - remove margins
     %   - average accross position
-    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),1,[2,3]),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(format_scat(Sx),[1,0,1,1,1,1]),2),3));
     % (10 seconds on a 2.4 Ghz Intel Core i7)
     roto_trans_scatt = cellfun_monitor(fun ,roto_trans_scatt_all);
     

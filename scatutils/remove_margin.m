@@ -17,7 +17,7 @@ function x2 = remove_margin(x, margins)
     x2 = x;
     
     x2 = x2(1+margins(1):N-margins(2),:,:);
-    x2 = x2(1+margins(3):M-margins(4),:,:);
-    x2 = x2(1+margins(5):P-margins(6),:,:);
+    x2 = x2(:,1+margins(3):M-margins(4),:);
+    x2 = x2(:,:,1+margins(5):P-margins(6));
     
 end
