@@ -1,11 +1,10 @@
-% a script to reproduce table 1 of paper :
+%% a script to reproduce table 1 of RSDS paper :
 %
+% REFERENCE :
 %   ``Rotation, Scaling and Deformation Invariant Scattering
 %   for Texture Discrimination"
 %   Laurent Sifre, Stephane Mallat
 %   Proc. IEEE CVPR 2013 Portland, Oregon
-%
-% Scattering classification rates for KTH-TIPS databases
 %
 % NOTE : Computing the scattering for the whole database takes time. 
 % We provide PRECOMPUTED scattering in the files
@@ -157,7 +156,7 @@ else
     %   - take the logarithm
     %   - remove margins along dimension 2 and 3
     %   - average accross position
-    fun = @(Sx)(mean(mean(remove_margin(log(format_scat(Sx)),1,[2,3]),2),3));
+    fun = @(Sx)(mean(mean(remove_margin(log(format_scat(Sx)),[1,0,1,1,1,1]),2),3));
     roto_trans_scatt_log = cellfun_monitor(fun ,roto_trans_scatt_all);
     
     %save scattering

@@ -1,13 +1,17 @@
-% scat: Compute the scattering transform
+% SCAT Compute the scattering transform
+%
 % Usage
-%    [S, U] = scat(x, Wop) 
+%    [S, U] = SCAT(x, Wop) 
+%
 % Input
 %    x (numeric): The input signal.
 %    Wop (cell of function handles): Linear operators used to generate a new 
 %       layer from the previous one.
+%
 % Output
 %    S (cell): The scattering coefficients.
 %    U (cell): Intermediate covariant modulus coefficients.
+%
 % Description
 %    The signal x is decomposed using linear operators Wop and modulus 
 %    operators, creating scattering invariants S and intermediate covariant
@@ -30,6 +34,9 @@
 %    The invariant part of the linear operator is therefore output as a scat-
 %    tering coefficient, and the modulus covariant part V is assigned to the 
 %    next layer of U.
+%
+% See also : WAVELET_FACTORY_1D, WAVELET_FACTORY_2D, 
+%   WAVELET_FACTORY_2D_PYRAMID,
 
 function [S, U] = scat(x, Wop)
 	% Initialize signal and meta
