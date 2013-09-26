@@ -35,8 +35,8 @@
 %    tering coefficient, and the modulus covariant part V is assigned to the 
 %    next layer of U.
 %
-% See also : WAVELET_FACTORY_1D, WAVELET_FACTORY_2D, 
-%   WAVELET_FACTORY_2D_PYRAMID,
+% See also 
+%   WAVELET_FACTORY_1D, WAVELET_FACTORY_2D, WAVELET_FACTORY_2D_PYRAMID
 
 function [S, U] = scat(x, Wop)
 	% Initialize signal and meta
