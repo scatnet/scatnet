@@ -19,7 +19,7 @@ function X = average_scat_mo(X,T,step,window_fun)
 	end
 	
 	if nargin < 4
-		window_fun = @hanning;
+		window_fun = @hanning_standalone;
 	end
 	
 	for m = length(X)-1:-1:0
