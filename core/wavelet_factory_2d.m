@@ -12,8 +12,7 @@
 %
 % Output
 %    Wop (cell of function handle): A cell array of wavelet transforms 
-%    needed for the scattering trans-
-%       form.
+%    required for the scattering transform.
 %    filters (cell): A cell array of the filters used in defining the wavelets.
 %
 % Description

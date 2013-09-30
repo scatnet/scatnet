@@ -9,8 +9,8 @@
 %    options (structure): options of the wavelet transform
 %
 % Output
-%    x_phi (cell): The scattering coefficients
-%    x_psi (cell): Intermediate covariant modulus coefficients
+%    x_phi (cell): Low pass part of the wavelet transform
+%    x_psi (cell): Wavelet coeffcients of the wavelet transform
 %    meta_phi (structure): meta information about x_phi
 %    meta_psi (structure): meta information about x_psi
 %
