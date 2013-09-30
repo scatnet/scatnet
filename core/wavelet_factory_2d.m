@@ -24,13 +24,26 @@
 %
 % See also
 %    WAVELET_2D, MORLET_FILTER_BANK_2D 
-
 function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
-	
     % Options
-	filt_opt.null = 1;
-	scat_opt.null = 1;
-	scat_opt = fill_struct(scat_opt, 'M', 2);
+    % check options white list
+    
+    if(nargin<3)
+        scat_opt=struct;
+    end
+    
+    if(nargin<2)
+        filt_opt=struct;
+    end
+    
+    white_list_filt = {'filter_type', 'precision', 'Q', 'J', 'L',...
+        'sigma_phi','sigma_psi','xi_psi','slant_psi'};
+    white_list_scat = {'M', 'oversampling', 'precision_4byte'};
+    
+    check_options_white_list(filt_opt, white_list_filt);
+    check_options_white_list(scat_opt, white_list_scat);
+    
+    scat_opt = fill_struct(scat_opt, 'M', 2);
 	
 	% Create filters
 	filters = morlet_filter_bank_2d(size_in, filt_opt);

@@ -1,12 +1,15 @@
-% function Rotmat = rotation_matrix_2d(theta)
+% ROTATION_MATRIX_2D computes a 2-by-2 rotation matrix for a given angle
 %
-% input :
-% - theta : <1x1 double> angle in radian
+% Usage
+%    rotmat = ROTATION_MATRIX_2D(theta)	
+% 
+% Input
+%    theta (numeric): the angle of the rotation
 %
-% output :
-% - Rotmat : <2x2 double> rotation matrix corresponding to matlab's
-%     convention of image coordinates
+% Ouput
+%    rotmat : 2-by-2 rotation matrix corresponding to the axis convention
+%    of matlab for image coordinates
 
-function Rotmat = rotation_matrix_2d(theta)	
-	Rotmat=[cos(theta) sin(theta) ; - sin(theta) cos(theta) ];
+function rotmat = rotation_matrix_2d(theta)	
+	rotmat=[cos(theta) sin(theta) ; - sin(theta) cos(theta) ];
 end
