@@ -22,27 +22,31 @@
 %
 % See also 
 %   WAVELET_2D, CONV_SUB_2D, WAVELET_FACTORY_2D_PYRAMID
-
-
 function [x_phi, x_psi] = wavelet_2d(x, filters, options)
-	if nargin<3
-		options = struct();
-	end
 	
-	options = fill_struct(options, 'x_resolution',0);	
-	precision_4byte = getoptions(options, 'precision_4byte', 1);
-	
-	% Options
-	oversampling = getoptions(options, 'oversampling', 1);
-	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
-	
+    if(nargin<3)
+		options = struct;
+    end
+    
+    white_list = {'x_resolution', 'precision', 'psi_mask'};
+    check_options_white_list(pptions, white_list);
+    
+    % Options
+    options = fill_struct(options, 'x_resolution',0);	
+    options = fill_struct(options, 'precision','single');	
+	options = fill_struct(options, 'psi_mask', ...
+    ones(1,numel(filters.psi.filter)));
+    
+    precision = options.precision;
+    oversampling = options.oversampling;
+    psi_mask = options.psi_mask;
+    
 	% Size
 	lastres = options.x_resolution;
 	margins = filters.meta.margins / 2^lastres;
 	
     % Padding and fft
 	xf = fft2(pad_signal(x, filters.meta.size_filter/2^lastres, [], 0));
-	
 	Q = filters.meta.Q;
 	
 	% Low pass filtering, downsampling and unpading
@@ -73,7 +77,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 		x_psi.meta.resolution(1,p) = lastres+ds;
 	end
 	
-	if(precision_4byte)
+	if(strcmp(precision,'single'))
 		x_phi = single(x_phi);
 		x_psi = cellfun(@single, x_psi, 'UniformOutput', 0);
 	end
