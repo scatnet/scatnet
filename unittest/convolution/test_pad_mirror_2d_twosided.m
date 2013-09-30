@@ -19,12 +19,12 @@ classdef test_pad_mirror_2d_twosided < matlab.unittest.TestCase
         
         
         function testIllegalArg(testcase)
-            %% 
+            %%
             x = rand(17,17);
             margins = 3;
             didError = 0;
-            try 
-               pad_mirror_2d_twosided(x, margins);
+            try
+                pad_mirror_2d_twosided(x, margins);
             catch
                 didError = 1;
             end
@@ -38,7 +38,78 @@ classdef test_pad_mirror_2d_twosided < matlab.unittest.TestCase
             margins = [10, 10];
             x_paded = pad_mirror_2d_twosided(x, margins);
             %%
+            actual = size(x_paded);
+            expected = size(x) + 2 * margins;
+            %%
+            testcase.assertEqual(actual, expected);
+        end
+        
+        function testCornerCases(testcase)
+            %%
+            x  = rand(1,100);
+            margins = [10, 10];
+            x_paded = pad_mirror_2d_twosided(x, margins);
+            %%
+            actual = size(x_paded);
+            expected = size(x) + 2 * margins;
+            %%
+            testcase.assertEqual(actual, expected);
             
+            %%
+            x  = rand(1,100);
+            margins = [10, 10];
+            x_paded = pad_mirror_2d_twosided(x, margins);
+            %%
+            actual = size(x_paded);
+            expected = size(x) + 2 * margins;
+            %%
+            testcase.assertEqual(actual, expected);
+            
+            %%
+            x  = rand(100,1);
+            margins = [10, 10];
+            x_paded = pad_mirror_2d_twosided(x, margins);
+            %%
+            actual = size(x_paded);
+            expected = size(x) + 2 * margins;
+            %%
+            testcase.assertEqual(actual, expected);
+            
+            %%
+            x  = rand(1,1);
+            margins = [10, 10];
+            x_paded = pad_mirror_2d_twosided(x, margins);
+            %%
+            actual = size(x_paded);
+            expected = size(x) + 2 * margins;
+            %%
+            testcase.assertEqual(actual, expected);
+            
+            %%
+            x  = rand(1,1);
+            margins = [0, 10];
+            x_paded = pad_mirror_2d_twosided(x, margins);
+            %%
+            actual = size(x_paded);
+            expected = size(x) + 2 * margins;
+            %%
+            testcase.assertEqual(actual, expected);
+        end
+        
+        function testRandomnSizes(testcase)
+            for i = 1:100
+                sz = 1 + floor(100*rand(1,2));
+                margins = floor(100*rand(1,2));
+                
+                x = rand(sz);
+                x_paded = pad_mirror_2d_twosided(x, margins);
+                %%
+                actual = size(x_paded);
+                expected = size(x) + 2 * margins;
+                %%
+                testcase.assertEqual(actual, expected);
+                
+            end
         end
     end
 end
