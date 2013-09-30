@@ -15,6 +15,7 @@
 %
 % See also :
 %   FILL_STRUCT
+%   CHECK_OPTIONS_WHITE_LIST
 
 function [] = check_options_white_list(options, white_list)
     fn = fieldnames(options);

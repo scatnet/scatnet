@@ -1,0 +1,1 @@
+suite = {'test_','DocPolynomTest'};
