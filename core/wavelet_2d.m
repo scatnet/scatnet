@@ -29,7 +29,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
     end
     
     white_list = {'x_resolution', 'precision', 'psi_mask'};
-    check_options_white_list(pptions, white_list);
+    check_options_white_list(options, white_list);
     
     % Options
     options = fill_struct(options, 'x_resolution',0);	

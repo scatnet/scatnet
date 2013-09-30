@@ -12,7 +12,7 @@
 %    center of the filter
 %
 % Output
-%    gab(numeric) : N-by-M Gaussian function
+%    gab (numeric): N-by-M Gaussian function
 %
 % Description
 %    Computes a Gaussian centered in offset and of standard deviation
