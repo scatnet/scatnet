@@ -1,3 +1,21 @@
+% CHECK_OPTIONS_WHITE_LIST Check that all fields of a struct are valid
+% 
+% Usage
+%   CHECK_OPTIONS_WHITE_LIST(options, white_list)
+%
+% Input
+%   options (struct): a structure with optional fields
+%   white_list (cell of string): containing the valid fields
+% 
+% Ouput
+%   none   
+%
+% Description
+%   Will crash with an error if the input options contains invalid fields
+%
+% See also :
+%   FILL_STRUCT
+
 function [] = check_options_white_list(options, white_list)
     fn = fieldnames(options);
     invalid_fields = setdiff(fn, white_list);
