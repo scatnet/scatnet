@@ -4,37 +4,48 @@
 %   [x_phi, x_psi] = WAVELET_2D_PYRAMID(x, filters, options)
 %
 % Input
-%   x (numeric): The input signal
-%   filters (struct): A 2d pyramid filter bank, typically obtained with
+%   x (numeric): the input signal
+%   filters (struct): a 2d pyramid filter bank, typically obtained with
 %       MORLET_FILTER_BANK_2D_PYRAMID
-%   options (struct): containing the optional following fields :
-%       - J : the maximum scale
-%       - precision : 'single' or 'double')
-%       - j_min : the minimum scale to compute 
-%       - q_mask : a mask on the q (scale per octave) filter parameters
+%   options (struct): containing the following optional fields :
+%       J : the maximum scale
+%       precision : 'single' or 'double')
+%       j_min : the minimum scale to compute 
+%       q_mask : a mask on the q (scale per octave) filter parameters
 %
 %
 % Output
+%   x_phi (layer): x filtered with the low pass filter 
+%   x_psi (layer): x filtered with all the high pass filters
+%   options (struct): the computed options
 %
 % Description
+%   Compute the wavelet transform of input signal x with a FAST WAVELET
+%   TRANSFORM (FWT) http://en.wikipedia.org/wiki/Fast_wavelet_transform
+%   FWT is a cascade of alternate convolutions with conjugate mirror
+%   filters h and g, and downsampling. Convolutions are prefarably 
+%   implemented in spatial domain.
 %
 % See also
+%   MORLET_FILTER_BANK_2D_PYRAMID
+%   WAVELET_LAYER_2D_PYRAMID
+%   CONV_SUB_2D
 
 
-function [x_phi, x_psi] = wavelet_2d_pyramid(x, filters, options)
+function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     
     % check options white list
-    options_white_list = {'J', 'precision', 'j_min', 'q_mask'};
+    white_list = {'J', 'precision', 'j_min', 'q_mask'};
+    check_options_white_list(options, white_list);
     
     % retrieve options
-    options.null = 1;
-    precision = getoptions(options, 'precision', 'single');
-    J = getoptions(options, 'J', 4);
-    j_min = getoptions(options, 'j_min',0);
-    q_mask = getoptions(options,'q_mask', ones(1, filters.meta.Q));
+    options = fill_struct(options, 'precision', 'single');
+    options = fill_struct(options, 'J', 4);
+    options = fill_struct(options, 'j_min',0);
+    options = fill_struct(options,'q_mask', ones(1, filters.meta.Q));
     
     % initialize structure
-    if strcmp(precision, 'single')
+    if strcmp(options.precision, 'single')
         hx.signal{1} = single(x);
     else
         hx.signal{1} = x;
@@ -43,12 +54,12 @@ function [x_phi, x_psi] = wavelet_2d_pyramid(x, filters, options)
     
     % low pass
     h = filters.h.filter;
-    for j = 1:J
+    for j = 1:options.J
         hx.signal{j+1} = conv_sub_2d(hx.signal{j}, h, 1);
         hx.meta.j(j+1) = j;
     end
-    x_phi.signal{1} = hx.signal{J+1};
-    x_phi.meta.j(1) = hx.meta.j(J+1);
+    x_phi.signal{1} = hx.signal{options.J+1};
+    x_phi.meta.j(1) = hx.meta.j(options.J+1);
     if (all_low_pass == 1)
         x_phi.all_low_pass = hx;
     end
@@ -58,7 +69,7 @@ function [x_phi, x_psi] = wavelet_2d_pyramid(x, filters, options)
         p = 1;
         g = filters.g.filter;
         gx.signal = {};
-        for j = j_min:J-1
+        for j = options.j_min:options.J-1
             for pf = 1:numel(g)
                 q = filters.g.meta.q(pf);
                 if (q_mask(q+1))
