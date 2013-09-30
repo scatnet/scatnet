@@ -10,12 +10,12 @@
 %   options (struct): containing the following optional fields :
 %       J : the maximum scale
 %       precision : 'single' or 'double')
-%       j_min : the minimum scale to compute 
+%       j_min : the minimum scale to compute
 %       q_mask : a mask on the q (scale per octave) filter parameters
 %       all_low_pass : output all intermediate low pass filtering
 %
 % Output
-%   x_phi (layer): x filtered with the low pass filter 
+%   x_phi (layer): x filtered with the low pass filter
 %   x_psi (layer): x filtered with all the high pass filters
 %   options (struct): the computed options
 %
@@ -23,7 +23,7 @@
 %   Compute the wavelet transform of input signal x with a FAST WAVELET
 %   TRANSFORM (FWT) http://en.wikipedia.org/wiki/Fast_wavelet_transform
 %   FWT is a cascade of alternate convolutions with conjugate mirror
-%   filters h and g, and downsampling. Convolutions are prefarably 
+%   filters h and g, and downsampling. Convolutions are prefarably
 %   implemented in spatial domain.
 %
 % See also
@@ -35,6 +35,7 @@
 function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     
     % check options white list
+    if (~exist('options','var')), options = struct(); end
     white_list = {'J', 'precision', 'j_min', 'q_mask', 'all_low_pass'};
     check_options_white_list(options, white_list);
     
@@ -61,11 +62,14 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     end
     x_phi.signal{1} = hx.signal{options.J+1};
     x_phi.meta.j(1) = hx.meta.j(options.J+1);
-     if (options.all_low_pass == 1)
+    
+    % intermediate low pass may be usefull (e.g. for roto-translation 
+    % wavelets of type phi(u) psi(theta) )
+    if (options.all_low_pass == 1)
         x_phi.all_low_pass = hx;
     end
     
-    if (nargout>1)
+    if (nargout>1) % otherwise do not high pass compute x_psi 
         % high passes
         p = 1;
         g = filters.g.filter;
