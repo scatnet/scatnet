@@ -1,1 +1,2 @@
-suite = {'test_','DocPolynomTest'};
+suite = matlab.unittest.TestSuite.fromFolder(pwd);
+suite.run;

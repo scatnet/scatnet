@@ -7,7 +7,7 @@ options.L = 3;
 field_list = {'J', 'M', 'aa'};
 
 %%
-options2 = sub_options(options, field_list)
+options2 = sub_options(options, field_list);
 
 
 

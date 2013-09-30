@@ -1,4 +1,7 @@
-% example of unit test with matlab
+% TEST_SCAT Test case for SCAT
+%
+% See also 
+%   SCAT
 classdef test_scat < matlab.unittest.TestCase
     methods(Test)
         function testArgs(testcase)

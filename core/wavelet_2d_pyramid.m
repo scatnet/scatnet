@@ -12,7 +12,7 @@
 %       precision : 'single' or 'double')
 %       j_min : the minimum scale to compute 
 %       q_mask : a mask on the q (scale per octave) filter parameters
-%
+%       all_low_pass : output all intermediate low pass filtering
 %
 % Output
 %   x_phi (layer): x filtered with the low pass filter 
@@ -35,14 +35,15 @@
 function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     
     % check options white list
-    white_list = {'J', 'precision', 'j_min', 'q_mask'};
+    white_list = {'J', 'precision', 'j_min', 'q_mask', 'all_low_pass'};
     check_options_white_list(options, white_list);
     
     % retrieve options
     options = fill_struct(options, 'precision', 'single');
     options = fill_struct(options, 'J', 4);
     options = fill_struct(options, 'j_min',0);
-    options = fill_struct(options,'q_mask', ones(1, filters.meta.Q));
+    options = fill_struct(options, 'q_mask', ones(1, filters.meta.Q));
+    options = fill_struct(options, 'all_low_pass', 0);
     
     % initialize structure
     if strcmp(options.precision, 'single')
@@ -60,7 +61,7 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     end
     x_phi.signal{1} = hx.signal{options.J+1};
     x_phi.meta.j(1) = hx.meta.j(options.J+1);
-    if (all_low_pass == 1)
+     if (options.all_low_pass == 1)
         x_phi.all_low_pass = hx;
     end
     
@@ -72,7 +73,7 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
         for j = options.j_min:options.J-1
             for pf = 1:numel(g)
                 q = filters.g.meta.q(pf);
-                if (q_mask(q+1))
+                if (options.q_mask(q+1))
                     gx.signal{p} = conv_sub_2d(hx.signal{j+1}, g{pf}, 0);
                     gx.meta.j(p) = j;
                     gx.meta.q(p) = q;

@@ -2,7 +2,7 @@ function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
 	% with psi if the user does not get U_psi
-	all_low_pass = getoptions(options, 'all_low_pass',0);
+	options = fill_struct(options, 'all_low_pass',0);
 	
 	if ~isfield(U.meta,'theta')
 		U.meta.theta = zeros(0,size(U.meta.j,2));
@@ -10,7 +10,8 @@ function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
 	J = getoptions(options, 'J', 4);
 	Q = filters.meta.Q;
 	
-	w_options = options;
+	w_options = sub_options(options, {'J', 'precision', 'j_min', 'q_mask', 'all_low_pass'});
+    
 	p2 = 1;
 	for p = 1:numel(U.signal)
 		x = U.signal{p};
@@ -38,7 +39,7 @@ function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
 			U_phi.meta.j(:,p) = [U.meta.j(:,p); J];
 			U_phi.meta.q(:,p) = U.meta.q(:,p);
 			U_phi.meta.theta(:,p) = U.meta.theta(:,p);
-			if (all_low_pass == 1)
+			if (options.all_low_pass == 1)
 				U_phi.all_low_pass{p} = x_phi.all_low_pass;
 			end
 			
