@@ -1,3 +1,26 @@
+% WAVELET_LAYER_2D Compute the wavelet transform from the scattering
+% coefficients of the previous layer
+%
+% Usage
+%    [U_phi, U_psi] = WAVELET_LAYER_2D(U, filters, options)
+%
+% Input
+%    U (numeric): the input scattering coefficients.
+%    filters (cell of function handles): Linear operators used to generate a new 
+%       layer from the previous one.
+%    options (structure): optionnal
+%
+% Output
+%    U_phi (cell): Averaged wavelet coefficients
+%    U_psi (cell): Intermediate wavelet coefficients
+%
+% Description
+%    Given inputs scattering coefficients corresponding to a layer, 
+%    WAVELET_LAYER_2D computes the wavelet transform coefficients of the 
+%    next layer using WAVELET_2D.
+%
+% See also 
+%   WAVELET_2D, WAVELET_LAYER_1D
 function [U_phi, U_psi] = wavelet_layer_2d(U, filters, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
