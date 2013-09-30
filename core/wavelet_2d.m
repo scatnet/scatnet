@@ -1,30 +1,53 @@
-% WAVELET_2D Compute the wavelet transform of an image
+% WAVELET_2D Compute the wavelet transform of a signal x
 %
 % Usage
-%	[x_phi, x_psi] = wavelet_2d(x, filters)
+%    [x_phi, x_psi, meta_phi, meta_psi] = WAVELET_2D(x, filters, options)
+%
+% Input
+%    x (numeric): the input signal
+%    filters (cell): cell containing the filters
+%    options (structure): options of the wavelet transform
+%
+% Output
+%    x_phi (cell): Low pass part of the wavelet transform
+%    x_psi (cell): Wavelet coeffcients of the wavelet transform
+%    meta_phi (structure): meta information about x_phi
+%    meta_psi (structure): meta information about x_psi
+%
+% Description
+%    WAVELET_2D computes a wavelet transform, using the signal and the
+%    filters in the Fourier domain. The signal is padded in order to avoid
+%    border effects.
+%
+%    The meta information concerning the signal x_phi, x_psi(scale, angle, 
+%    resolution) can be found in meta_phi and meta_psi.
+%
+% See also 
+%   WAVELET_2D, CONV_SUB_2D, WAVELET_FACTORY_2D_PYRAMID
+
 
 function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
 	if nargin<3
 		options = struct();
 	end
 	
-	options = fill_struct(options, 'x_resolution',0);
-	
+	options = fill_struct(options, 'x_resolution',0);	
 	precision_4byte = getoptions(options, 'precision_4byte', 1);
 	
-	% option retrieving
+	% Options
 	oversampling = getoptions(options, 'oversampling', 1);
 	psi_mask = getoptions(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
 	
-	% precomputation
+	% Size
 	lastres = options.x_resolution;
 	margins = filters.meta.margins / 2^lastres;
-	% mirror padding and fft
+	
+    % Padding and fft
 	xf = fft2(pad_signal(x, filters.meta.size_filter/2^lastres, [], 0));
 	
 	Q = filters.meta.Q;
 	
-	% low pass filtering, downsampling and unpading
+	% Low pass filtering, downsampling and unpading
 	J = filters.phi.meta.J;
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
