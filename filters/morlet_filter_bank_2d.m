@@ -33,17 +33,39 @@
 %   - meta : <1x1 struct> global parameters of the filter bank
 
 function filters = morlet_filter_bank_2d(size_in, options)
+    if(nargin<2)
+		options = struct;
+    end
+
 	
-	options.null = 1;
-	
-	Q = getoptions(options, 'Q', 1); % number of scale per octave
-	J = getoptions(options, 'J', 4); % total number of scales
-	L = getoptions(options, 'L', 8); % number of orientations
-	
-	sigma_phi  = getoptions(options, 'sigma_phi',  0.8);
-	sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
-	xi_psi     = getoptions(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);
-	slant_psi  = getoptions(options, 'slant_psi',  4/L);
+    
+    white_list = {'Q', 'L', 'sigma_phi','sigma_psi','xi_psi','slant_psi'};
+    check_options_white_list(options, white_list);
+    
+    % Options
+    options = fill_struct(options, 'Q',1);	
+    options = fill_struct(options, 'L',8);
+    options = fill_struct(options, 'J',4);
+    J = options.J;
+    Q = options.Q;
+    L = options.L;
+	options = fill_struct(options, 'sigma_phi',  0.8);	
+    options = fill_struct(options, 'sigma_psi',  0.8);	
+    options = fill_struct(options, 'sigma_psi',  0.8);	
+    options = fill_struct(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);	
+    options = fill_struct(options, 'slant_psi',  4/L);	
+    options = fill_struct(options, 'P',  3);	
+    P = options.P;
+	options = fill_struct(options, 'precision', 'single');	
+	precision = options.precision;
+    
+    
+    
+    
+	sigma_phi  = options.sigma_phi;
+	sigma_psi  = options.sigma_psi;
+	xi_psi     = options.xi_psi;
+	slant_psi  = options.slant_psi;
 	
 	res_max = floor(J/Q);
 	% compute margin for padding
