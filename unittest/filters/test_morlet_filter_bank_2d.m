@@ -1,18 +1,17 @@
-% TEST_WAVELET_FACTORY_2D Test case for WAVELET_FACTORY_2D
+% TEST_MORLET_FILTER_BANK_2D Test case for MORLET_FILTER_BANK_2D
 %
 % See also
-%   WAVELET_FACTORY_2D
-classdef test_wavelet_factory_2d < matlab.unittest.TestCase
+%   MORLET_FILTER_BANK_2D
+classdef test_morlet_filter_bank_2d < matlab.unittest.TestCase
     methods(Test)
-        
-        function testWithNoOptions(testcase)
+          function testWithNoOptions(testcase)
             %% define
             x = rand(64, 64);
-            [Wop, filters] = wavelet_factory_2d(size(x));
+            filters = morlet_filter_bank_2d(size(x));
             
             %% check number of high pass filter
-            expected = 3;
-            actual = numel(Wop);
+            expected = 32;
+            actual = numel(filters.psi.filter);
             
             %% assert
             testcase.assertEqual(expected, actual);
@@ -25,11 +24,11 @@ classdef test_wavelet_factory_2d < matlab.unittest.TestCase
                 sz = 1 + floor(128*rand(1,2));
                 %% define
                 x = rand(sz);
-                [Wop, filters] = wavelet_factory_2d(size(x));
+                filters = morlet_filter_bank_2d(size(x));
                 
                 % Test
-                expected = 3;
-                actual = numel(Wop);
+                expected = 1;
+                actual = 1;
                
                 %% assert
                 testcase.assertEqual(expected, actual);
