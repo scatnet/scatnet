@@ -1,4 +1,4 @@
-% GABOR_2D computes the 2-D elliptic gabor wavelet given a set of 
+% GABOR_2D computes the 2-D elliptic Gabor wavelet given a set of 
 % parameters
 %
 % Usage
@@ -21,15 +21,15 @@
 %    domain
 %
 % Description
-%    Compute a gabor wavelet. When used with xi = 0, and slant = 1, this 
+%    Compute a Gabor wavelet. When used with xi = 0, and slant = 1, this 
 %    implements a gaussian
 %
-%    Morlet wavelets have a non-negligeable DC component which is
+%    Gabor wavelets have a non-negligeable DC component which is
 %    removed for scattering computation. To avoid this problem, one can use
 %    MORLET_2D_NODC.
 %
 % See also
-%    MORLET_2D_NODC
+%    MORLET_2D_NODC, MORLET_2D_PYRAMID
 
 function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset, precision)
 	

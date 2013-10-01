@@ -8,7 +8,7 @@
 %    options (structure): Options of the bank of filters. Optional, with
 %    fields:
 %       Q (numeric): number of scale per octave
-%       J (numeric): total number of scale.
+%       P (numeric): 
 %       L (numeric): number of orientations
 %       sigma_phi (numeric): standard deviation of the low pass phi_0
 %       sigma_psi (numeric): standard deviation of the envelope of the
@@ -17,8 +17,7 @@
 %       slant_psi (numeric): excentricity of the elliptic enveloppe of the
 %       high-pass psi_0 (the smaller slant, the larger orientation
 %       resolution)
-%       margins (numeric): 1-by-2 vector for the horizontal and vertical 
-%       margin for mirror pading of signal
+%       precision (string): 'single' or 'double'
 %
 % Output
 %    filters (struct):  filters, with the fields
@@ -38,7 +37,7 @@ function filters = morlet_filter_bank_2d_pyramid(options)
 		options = struct;
     end
     
-    white_list = {'Q', 'L', 'sigma_phi','sigma_psi','xi_psi','slant_psi'};
+    white_list = {'Q', 'L', 'P', 'sigma_phi','sigma_psi','xi_psi','slant_psi','precision'};
     check_options_white_list(options, white_list);
     
     % Options
@@ -48,19 +47,27 @@ function filters = morlet_filter_bank_2d_pyramid(options)
     L = options.L;
 	options = fill_struct(options, 'sigma_phi',  0.8);	
     options = fill_struct(options, 'sigma_psi',  0.8);	
-    options = fill_struct(options, 'sigma_psi',  0.8);	
     options = fill_struct(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);	
     options = fill_struct(options, 'slant_psi',  4/L);	
     options = fill_struct(options, 'P',  3);	
     P = options.P;
-	options = fill_struct(options, 'precision', 'single');	
+	
+    % then the filter is in 32 bits float.
+    options = fill_struct(options, 'precision', 'single');	
 	precision = options.precision;
 	
-	% then the filter is in 32 bits float.
+    
 	
+	sigma_phi = options.sigma_phi;
+    sigma_psi = options.sigma_psi;
+    xi_psi = options.xi_psi;
+    slant_psi = options.slant_psi;
+    
+    
+    
 	% low pass filter h
 	
-	h.filter.coefft = gaussian_2d_pyramid(2*P+1,...
+	h.filter.coefft = gaussian_2d(2*P+1,...
 		2*P+1,...
 		sigma_phi,...
 		precision);

@@ -21,6 +21,7 @@
 %
 % See also 
 %   WAVELET_2D, WAVELET_LAYER_1D
+
 function [A, V] = wavelet_layer_2d(U, filters, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
