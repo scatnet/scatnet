@@ -24,6 +24,7 @@
 %
 % See also
 %    WAVELET_2D, MORLET_FILTER_BANK_2D 
+
 function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     % Options
     % check options white list
