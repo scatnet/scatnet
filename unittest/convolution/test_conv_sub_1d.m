@@ -20,7 +20,7 @@ classdef test_conv_sub_1d < matlab.unittest.TestCase
             
             filt_opt = generate_random_options(white_list,type,values);
             filters = morlet_filter_bank_1d(sig_length,filt_opt);
-            filter = filters.psi.filter{sig_length,filt_opt};
+            filter = filters.psi.filter{randi(jsig-ds)};
             
             for j=1:jsig
                 y_old = old_conv_sub_1d(xf,filter,ds); % see below
