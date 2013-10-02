@@ -1,0 +1,130 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Introduction to wavelet_2d</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-02"><meta name="DC.source" content="demo_wavelet_2d.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Introduction to <b>wavelet_2d</b></h1><!--introduction--><p><b>wavelet_2d</b> is a function able to compute the Wavelet transform of a signal. Given <img src="demo_wavelet_2d_eq67674.png" alt="$$ J \in \bf{N} $$">, the Wavelet transform of a signal <img src="demo_wavelet_2d_eq95974.png" alt="$$ x \in \bf{R}^N $$"> is given by</p><p><img src="demo_wavelet_2d_eq14492.png" alt="$$ Wf(x) =\{x\ast \phi_J, x\ast\psi_{\lambda}\}_{\lambda \in \mathcal{P}} $$"> where in our case <img src="demo_wavelet_2d_eq28056.png" alt="$\mathcal{P}=\{\lambda=2^{-j}r,r \in G_+, j<J\}$"> is the index of a set of filters.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Usage</a></li><li><a href="#2">Description</a></li><li><a href="#3">Options</a></li></ul></div><h2>Usage<a name="1"></a></h2><p>[x_phi, x_psi] = <b>wavelet_2d</b>(x, filters, options) whose help is given in <a href="matlab:doc('wavelet_2d')">wavelet_2d</a>.</p><h2>Description<a name="2"></a></h2><p>It is possible to create some wavelet filters with wavelet_factory_2d for instance. The filters size have to be adapted to the size of the input signal <img src="demo_wavelet_2d_eq43551.png" alt="$x$">.</p><pre class="codeinput">x = lena;
+filters = morlet_filter_bank_2d(size(x));
+[x_phi,x_psi]=wavelet_2d(lena,filters);
+figure,
+
+subplot(2,1,1)
+imagesc(imag(x_psi.signal{1}))
+axis <span class="string">off</span>
+title(<span class="string">'Imaginary part of the first wavelet transform coefficient'</span>);
+subplot(2,1,2)
+imagesc(imag(x_psi.signal{1}))
+axis <span class="string">off</span>
+title(<span class="string">'Real part of the first wavelet transform coefficient'</span>);
+</pre><img vspace="5" hspace="5" src="demo_wavelet_2d_01.png" alt=""> <h2>Options<a name="3"></a></h2><p>Several options are available with wavelet_2d that allow the user to change the output or the way to compute the output.</p><div><ul><li>options.x_resolution = 0 changes the resolution on which the wavelet transform is computed by a factor 2.</li><li>options.precision = 'single' allows to compute either with 'double' or 'single'.</li><li>options.oversampling = 1 oversamples the signal by a factor 2. &pound; options.psi_mask = [1 ... 1] is of a size the number of filters and allows to compute the signal only when the corresponding wavelet has a '1' in its psi_mask.</li></ul></div><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%  Introduction to *wavelet_2d*
+% *wavelet_2d* is a function able to compute the Wavelet transform of a
+% signal. Given $$ J \in \bf{N} $$, the Wavelet transform of a signal 
+% $$ x \in \bf{R}^N $$
+% is given by
+%
+% $$ Wf(x) =\{x\ast \phi_J, x\ast\psi_{\lambda}\}_{\lambda \in \mathcal{P}} $$
+% where in our case $\mathcal{P}=\{\lambda=2^{-j}r,r \in G_+, j<J\}$ is the
+% index of a set of filters.
+%
+%% Usage
+% [x_phi, x_psi] = *wavelet_2d*(x, filters, options) whose help is given in
+% <matlab:doc('wavelet_2d') wavelet_2d>.
+%
+%% Description
+% It is possible to create some wavelet filters with wavelet_factory_2d for 
+% instance. The filters size have to be adapted to the size of the input
+% signal $x$.
+
+x = lena;
+filters = morlet_filter_bank_2d(size(x));
+[x_phi,x_psi]=wavelet_2d(lena,filters);
+figure,
+
+subplot(2,1,1)
+imagesc(imag(x_psi.signal{1}))
+axis off
+title('Imaginary part of the first wavelet transform coefficient');
+subplot(2,1,2)
+imagesc(imag(x_psi.signal{1}))
+axis off
+title('Real part of the first wavelet transform coefficient');
+
+%% Options
+% Several options are available with wavelet_2d that allow the user to
+% change the output or the way to compute the output.
+% 
+% * options.x_resolution = 0 changes the resolution on which
+% the wavelet transform is computed by a factor 2.
+% * options.precision = 'single' allows to compute either with 'double' or
+% 'single'.
+% * options.oversampling = 1 oversamples the signal by a factor 2.
+% £ options.psi_mask = [1 ... 1] is of a size the number of filters and
+% allows to compute the signal only when the corresponding wavelet has a
+% '1' in its psi_mask.
+
+##### SOURCE END #####
+--></body></html>

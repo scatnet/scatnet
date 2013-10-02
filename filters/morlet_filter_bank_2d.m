@@ -1,4 +1,4 @@
-% MORLET_FILTER_BANK_2D_PYRAMID Compute a bank of Morlet wavelet filters in
+% MORLET_FILTER_BANK_2D Compute a bank of Morlet wavelet filters in
 % the Fourier domain.
 %
 % Usage
