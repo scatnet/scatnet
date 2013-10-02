@@ -25,7 +25,6 @@ hold on;
 for j = 1:numel(filters.psi.filter)
     psi = realize_filter(filters.psi.filter{j});
     psi_squared = abs(psi).^2/2;
-    h_psi = plot(psi_squared, 'Color', rgb_blue);
     if (j == 1)
         littlewood = psi_squared;
     else
@@ -38,17 +37,21 @@ for j = 1:numel(filters.psi.filter)
     end
     littlewood = littlewood + psi_squared_flip;
 end
-legend(h_psi,'Bandpass filters');
-%set(h_psi,'interpreter','latex');
 phi = realize_filter(filters.phi.filter);
 phi_squared = abs(phi).^2;
 littlewood = littlewood + phi_squared;
-h_phi = plot(phi_squared, 'Color', rgb_green);
-legend(h_phi,'$\textrm{Lowpass filters }\phi$');
-set(h_phi,'interpreter','latex');
-h_littlewood = plot(littlewood, 'Color', rgb_red);
-legend(h_littlewood,'$\textrm{Littlewood-Paley sum}$');
-set(h,'interpreter','latex');
+plot(littlewood, 'Color', rgb_red);
+plot(phi_squared, 'Color', rgb_green);
+
+for j=1:numel(filters.psi.filter)
+    psi = realize_filter(filters.psi.filter{j});
+    psi_squared = abs(psi).^2/2;
+    plot(psi_squared,'Color',rgb_blue);
+end
+
+plot(phi_squared, 'Color', rgb_green);
+
+legend('Littlewood-Paley sum','Lowpass filter','Bandpass filters');
 xlabel('Samples');
 ylabel('Amplitude');
 hold off;
