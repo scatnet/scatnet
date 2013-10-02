@@ -10,9 +10,11 @@ v=v.X;
 fparam.filter_type = {'gabor_1d','morlet_1d'};
 fparam.B = [8 4];
 fparam.Q = 4*fparam.B;
- 
-fparam.J(1) = T_to_J(1024,fparam.Q(1));
-fparam.J(2) = T_to_J(65536,fparam.Q(2));
+
+T = [1024 65536];
+
+fparam.J = T_to_J(T,fparam);
+%fparam.J(2) = T_to_J(65536,fparam.Q(2));
 
 options.oversampling = 5;
 options.M = 2;
