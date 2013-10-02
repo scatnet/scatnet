@@ -1,7 +1,4 @@
-% this script 
-% 1 - evaluates speedup of convolution and subsampling with periodization
-%   before ifft over naive method
-% 2 - verifies that the fast and naive approach give same results
+% this function checks that the fast and naive approachs give same results
 
 function test_conv_sub_1d
 sig_length = 4096;
