@@ -20,16 +20,20 @@
 x = lena;
 filters = morlet_filter_bank_2d(size(x));
 [x_phi,x_psi]=wavelet_2d(lena,filters);
-figure,
+figure;
 
-subplot(2,1,1)
-imagesc(imag(x_psi.signal{1}))
+colormap gray;
+
+subplot(1,2,1)
+imagesc(real(x_psi.signal{1}))
+axis square
 axis off
-title('Imaginary part of the first wavelet transform coefficient');
-subplot(2,1,2)
+title({'Real part of the first';'wavelet transform coefficient'});
+subplot(1,2,2)
 imagesc(imag(x_psi.signal{1}))
+axis square
 axis off
-title('Real part of the first wavelet transform coefficient');
+title({'Imaginary part of the first';'wavelet transform coefficient'});
 
 %% Options
 % Several options are available with wavelet_2d that allow the user to
