@@ -14,7 +14,12 @@
 %
 % Description
 %    J is calculated using the formula T = 4B/phi_bw_multiplier*2^((J-1)/Q), 
-%    where B, phi_bw_multiplier and Q are taken from the filt_opt structure.
+%    where B, phi_bw_multiplier and Q are taken from the filt_opt
+%    structure.
+%    Note that this function still works if filt_opt.Q and/or filt_opt.B
+%    are vectors. In this case, it provides a vector of the same length.
+%    This generalisation is useful when computing J for several layers in a
+%    scattering network, each layer having a different quality factor.
 %
 % See also
 %   DEFAULT_FILTER_OPTIONS, MORLET_FILTER_BANK_1D
