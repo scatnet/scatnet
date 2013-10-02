@@ -10,11 +10,11 @@
 %    This function computes, at every frequency, the Littlewood-Paley sum
 %    of the filter bank, i.e. the total power spectral density
 %    \sum_{j, \theta} |\hat{\psi_j} (\omega)|^2 + |\hat{\phi_J}(\omega)|^2
-%    If this sum is between (1-epsilon) and 1, the associated wavelet
-%    transform is proved to be contractive and almost unitary.
-%    NB : this function has a 2D counterpart, namely DISPLAY_FILTER_2D.
+%    If this sum is between (1-epsilon) and 1 for small epsilon, the
+%    associated wavelet transform is proved to be contractive and almost
+%    unitary.
 % See also
-%   DISPLAY_FILTER_2D, FILTER_BANK
+%   DISPLAY_LITTLEWOOD_PALEY_2D, FILTER_BANK
 
 function littlewood = plot_littlewood_paley_1d(filters)
 rgb_red = [0.8,0,0];
@@ -25,7 +25,7 @@ hold on;
 for j = 1:numel(filters.psi.filter)
     psi = realize_filter(filters.psi.filter{j});
     psi_squared = abs(psi).^2/2;
-    plot(psi_squared, 'Color', rgb_blue);
+    h_psi = plot(psi_squared, 'Color', rgb_blue);
     if (j == 1)
         littlewood = psi_squared;
     else
@@ -38,11 +38,19 @@ for j = 1:numel(filters.psi.filter)
     end
     littlewood = littlewood + psi_squared_flip;
 end
+legend(h_psi,'Bandpass filters');
+%set(h_psi,'interpreter','latex');
 phi = realize_filter(filters.phi.filter);
 phi_squared = abs(phi).^2;
 littlewood = littlewood + phi_squared;
-plot(phi_squared, 'Color', rgb_green);
-plot(littlewood, 'Color', rgb_red);
+h_phi = plot(phi_squared, 'Color', rgb_green);
+legend(h_phi,'$\textrm{Lowpass filters }\phi$');
+set(h_phi,'interpreter','latex');
+h_littlewood = plot(littlewood, 'Color', rgb_red);
+legend(h_littlewood,'$\textrm{Littlewood-Paley sum}$');
+set(h,'interpreter','latex');
+xlabel('Samples');
+ylabel('Amplitude');
 hold off;
 end
 
