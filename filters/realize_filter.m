@@ -33,9 +33,9 @@ function filter_f = realize_filter(filter, N)
 	end
 	
 	if ~isempty(N)
-		j0 = log2(length(filter_f)/N);
+		j0 = log2(size(filter_f)./N);
 	else
-		j0 = 0;
+		j0 = [0 0];
 	end
-	filter_f = filter_f(1:2^j0:end);
+	filter_f = filter_f(1:2^j0(1):end,1:2^j0(2):end);
 end
