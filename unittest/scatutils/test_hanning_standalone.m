@@ -1,4 +1,4 @@
-% TEST_PHANNING_STANDALONE Test case for HANNING_STANDALONE
+% TEST_HANNING_STANDALONE Test case for HANNING_STANDALONE
 %
 % See also
 %   HANNING (Signal Processing Toolbox)
