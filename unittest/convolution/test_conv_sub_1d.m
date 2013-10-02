@@ -13,7 +13,7 @@ classdef test_conv_sub_1d < matlab.unittest.TestCase
             xf = fft(x);
             ds = randi(jsig)-1;
             
-            white_list = {{'type'}};
+            white_list = {'type'};
             type = {'d'};
             values = ...
                 {{'fourier','fourier_multires','fourier_truncated'}};
