@@ -1,17 +1,19 @@
-function img = display_littlewood_paley_2d(filters)
-	% function img = display_littlewood_paley(filterbank)
-	% display the littlehood paley of the fine-resolution filters of the
-	% filterbank
-	% that is :
-	% \sum_{j, \theta} |\hat{\psi_j} (\omega)|^2 + |\hat{\phi_J}(\omega)|^2
-	%
-	% input :
-	% - filters : <1x1 struct> filter bank typically obtained with
-	%       morlet_filter_bank_2d.m
-	% output :
-	% - img : <NxM double> image of the littlewood paley
-	
-	lp = littlewood_paley_2d(filters);
-	img = fftshift(lp{1});
+% DISPLAY_LITTLEWOOD_PALEY_2D Display Littlewood-Paley sum of a filter bank
+%
+% Usage
+%    littlewood = display_littlewood_paley_2d(filters);
+%
+% Input
+%    filters (struct): filter bank (see FILTER_BANK)
+%
+% Description
+%    The function computes the Littlewood-Paley sum of the filter bank and 
+%    displays it. It also outputs the sum.
+% See also
+%   LITTLEWOOD_PALEY, PLOT_LITTLEWOOD_PALEY_1D, FILTER_BANK
+
+function littlewood = display_littlewood_paley_2d(filters)
+	lp = littlewood_paley(filters);
+	img = fftshift(lp);
 	imagesc(img);
 end
