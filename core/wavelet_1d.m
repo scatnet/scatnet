@@ -22,6 +22,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	options = fill_struct(options, 'x_resolution',0);
 	options = fill_struct(options, 'phi_renormalize',0);
 	options = fill_struct(options, 'renormalize_epsilon',2^(-20));
+    options = fill_struct(options, 'use_abs','0');
 	
 	N = size(x,1);
 	
@@ -38,6 +39,11 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	x = pad_signal(x, N_padded, filters.boundary);
 	
 	xf = fft(x,[],1);
+    
+    if options.use_abs==1
+        xf_abs=fft(abs(x),[],1);
+    end
+    
 	
 	ds = round(log2(2*pi/phi_bw)) - ...
 	     j0 - ...
@@ -53,9 +59,17 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	x_phi = reshape(x_phi, [size(x_phi,1) 1 size(x_phi,2)]);
 	
 	if options.phi_renormalize
+        if options.use_abs==0
 		x_renorm = real(conv_sub_1d(xf, filters.phi.filter, 0));
 		x = x./(x_renorm+options.renormalize_epsilon*2^(j0/2));
 		xf = fft(x,[],1);
+        
+        else 
+        x_renorm = real(conv_sub_1d(xf_abs, filters.phi.filter, 0));
+		x = x./(x_renorm+options.renormalize_epsilon*2^(j0/2));
+		xf = fft(x,[],1);  
+        end
+        
 	end
 	
 	x_psi = cell(1, numel(filters.psi.filter));
