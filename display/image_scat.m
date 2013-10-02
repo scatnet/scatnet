@@ -1,19 +1,23 @@
-% image_scat_layer : return scattering outputs images next to each other
+% IMAGE_SCAT return scattering outputs images next to each other
 %
 % Usage
-%	image_scat_layer(S{3}) return all the images of the third layer
-%	of scattering S embeded next to each other in a large image
-%	with their meta in the upper left hand corner
+%   IMAGE_SCAT(S, renorm, dsp_legend)
 %	
 % Input
-%	Scatt : <struct> a layer of a scattering (either U or S)
-%	renorm : <1x1 int> [default = 1] if 1 renormalize each path by its max
-%	dsp_legend <1x1 int> [default = 1] if 1 display legend
+%	Scatt (cell): layers of  scattering (either U or S)
+%	renorm (boolean): if 1 renormalize each path by its max. Default
+%	value is set to 1.
+%	dsp_legend (boolean): if set to 1, display legend. Default value is 1
 %
-% Output
-%	big_img : <?x? double> a large image where all path are concatenated
+% Description
+%	Display the scattering coefficients in an image. Concerning the third 
+%   layer, thescattering coefficients are embeded next to each other in a 
+%   large image with their meta in the upper left hand corner
+%
+% See also
+%   IMAGE_SCAT_LAYER
 
-function [] = image_scat(S, renorm, dsp_legend)
+function image_scat(S, renorm, dsp_legend)
 	
 	for m = 1:numel(S);
 		figure(m);

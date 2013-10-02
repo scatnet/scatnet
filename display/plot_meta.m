@@ -1,12 +1,11 @@
-% plot_meta : plot all the meta of all orders of the scattering
+% PLOT_META plot all the meta of all orders of the scattering
 %
 % Usage 
-%   plot_meta(S) display a matrix of plot. Each column of this matrix
-%		corresponds to a scattering order. Each column of this matrix
-%		corresponds to a meta field (e.g. j, theta) 
+%   plot_meta(S)
 %
 % Input
-%	S : <1x? cell> the output of scat 
+%	S (cell): the output of scat 
+
 
 function plot_meta(S)
 	

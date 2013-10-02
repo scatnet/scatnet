@@ -27,7 +27,7 @@ big_img = ones(N_margin*J, (2*L+1)*N_margin);
 
 
 % low pass : first on the left
-filt_for_disp = display_filter_2d(filters.phi.filter, n);
+filt_for_disp = display_filter_2d(filters.phi.filter,'r', n);
 M = max(abs(filt_for_disp(:)));
 if (renorm == 0)
   M = 1;
@@ -38,7 +38,7 @@ big_img((1:N)+N_margin ,(1:N)) = imag(filt_for_disp)/M;
 % high pass
 for p = 1:numel(filters.psi.filter)
   filter = filters.psi.filter{p};
-  filt_for_disp = display_filter_2d(filter, n);
+  filt_for_disp = display_filter_2d(filter,'r', n);
   M = max(abs(filt_for_disp(:)));
   if (renorm == 0)
     M = 1;

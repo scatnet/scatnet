@@ -1,19 +1,32 @@
-% function gab = morlet_2d_noDC(N, M, sigma, slant, xi, theta, offset)
+% MORLET_2D_NODC computes the 2-D elliptic Morlet filter given a set of 
+% parameters in Fourier domain
 %
-% 2d elliptic morlet filter (with analytic formulae)
+% Usage
+%    gab = MORLET_2D_NODC(N, M, sigma, slant, xi, theta, offset)
 %
-% input :
-% - N      : <1x1 int> first dimension of the filter
-% - M      : <1x1 int> second dimension of the filter
-% - sigma0 : <1x1 double> the width of the envelope
-% - slant  : <1x1 double> the excentricity of the elliptic envelope
+% Input
+%    N (numeric): width of the filter
+%    M (numeric): height of the filter
+%    sigma (numeric): standard deviation of the envelope
+%    slant (numeric): excentricity of the elliptic envelope
 %            (the smaller slant, the larger angular resolution)
-% - xi     : <1x1 double> the frequency peak
-% - theta  : <1x1 double> the orientation in radians of the filter
-% - offset : [optional] <2x1 double> : the offset location
+%    xi (numeric):  the frequency peak
+%    theta (numeric): orientation in radians of the filter
+%    offset (numeric): 2-D vector reprensting the offset location.
+%    Optional
+% 
+% Output
+%    gab(numeric) : N-by-M matrix representing the gabor filter in spatial
+%    domain
 %
-% output :
-% - gab : <NxM double> the morlet filter in spatial domain
+% Description
+%    Compute a Morlet wavelet in Fourier domain. 
+%
+%    Morlet wavelets have a 0 DC component.
+%
+% See also
+%    GABOR_2D, MORLET_2D_PYRAMID
+
 
 function gab = morlet_2d_noDC(N, M, sigma, slant, xi, theta, offset)
 	
@@ -26,7 +39,7 @@ function gab = morlet_2d_noDC(N, M, sigma, slant, xi, theta, offset)
 	y = y - ceil(N/2) - 1 - offset(2);
 	
 	Rth = rotation_matrix_2d(theta);
-	A = inv(Rth) * [1/sigma^2, 0 ; 0 slant^2/sigma^2] * Rth ;
+	A = Rth\ [1/sigma^2, 0 ; 0 slant^2/sigma^2] * Rth ;
 	s = x.* ( A(1,1)*x + A(1,2)*y) + y.*(A(2,1)*x + A(2,2)*y ) ;
 	
 	%normalize sucht that the maximum of fourier modulus is 1

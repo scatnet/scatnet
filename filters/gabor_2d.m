@@ -1,34 +1,42 @@
-% function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset)
+% GABOR_2D computes the 2-D elliptic Gabor wavelet given a set of 
+% parameters
 %
-% 2d elliptic gabor filter
+% Usage
+%    gab = GABOR_2D(N, M, sigma0, slant, xi, theta, offset, precision)
 %
-% inputs :
-% - N      : <1x1 int>    first dimension of the filter
-% - M      : <1x1 int>    second dimension of the filter
-% - sigma0 : <1x1 double> the width of the envelope
-% - slant  : <1x1 double> the excentricity of the elliptic envelope
+% Input
+%    N (numeric): width of the filter
+%    M (numeric): height of the filter
+%    sigma0 (numeric): standard deviation of the envelope
+%    slant (numeric): excentricity of the elliptic envelope
 %            (the smaller slant, the larger angular resolution)
-% - xi     : <1x1 double> the frequency peak
-% - theta  : <1x1 double> the orientation in radians of the filter
-% - offset : [optional] <2x1 double>  the offset location
+%    xi (numeric):  the frequency peak
+%    theta (numeric): orientation in radians of the filter
+%    offset (numeric): 2-D vector reprensting the offset location.
+%    Optional
+%    precision (string): precision of the computation. Optional
+% 
+% Output
+%    gab(numeric) : N-by-M matrix representing the gabor filter in spatial
+%    domain
 %
-% output :
-% - gab : <NxM double> the gabor filter in spatial domain
+% Description
+%    Compute a Gabor wavelet. When used with xi = 0, and slant = 1, this 
+%    implements a gaussian
 %
-% WARNING :
-% morlet wavelets have a non-negligeable DC component
-% which is damageable to scattering
-% conseder the use of morlet_2d.m or morlet_2d_noDC.m
+%    Gabor wavelets have a non-negligeable DC component which is
+%    removed for scattering computation. To avoid this problem, one can use
+%    MORLET_2D_NODC.
 %
-% NOTE :
-% when used with xi = 0, and slant = 1, this implements a gaussian
+% See also
+%    MORLET_2D_NODC, MORLET_2D_PYRAMID
 
 function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset, precision)
 	
 	if ~exist('offset','var')
 		offset = [0,0];
 	end
-	if ~exist('precisin', 'var')
+	if ~exist('precision', 'var')
 		precision = 'double';
 	end
 	
@@ -38,9 +46,9 @@ function gab = gabor_2d(N, M, sigma0, slant, xi, theta, offset, precision)
 	x = x - offset(1);
 	y = y - offset(2);
 	Rth = rotation_matrix_2d(theta);
-	A = inv(Rth) * [1/sigma0^2, 0 ; 0 slant^2/sigma0^2] * Rth ;
+	A = Rth \ [1/sigma0^2, 0 ; 0 slant^2/sigma0^2] * Rth ;
 	s = x.* ( A(1,1)*x + A(1,2)*y) + y.*(A(2,1)*x + A(2,2)*y ) ;
-	%normalize sucht that the maximum of fourier modulus is 1
+	% Normalization
 	gabc = exp( - s/2 + 1i*(x*xi*cos(theta) + y*xi*sin(theta)));
 	gab = 1/(2*pi*sigma0*sigma0/slant)*fftshift(gabc);
 	

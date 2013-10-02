@@ -1,26 +1,37 @@
-function filt_for_disp = display_filter_2d(filter, n, rorim)
-% function filt = display_filter_spatial(filter, n, rorim)
-% displays and returns the spatially centered cropped version of a filters
+% DISPLAY_FILTER_2D Display and return the spatially centered cropped
+% version of a filter
 %
-% inputs :
-% - filter : <1x1 struct> a filter
-% - n : <1x1 int> the size of the window we want to look at
-% - rorim : [optional] <string> real or imaginary part ('r' or 'i')
+% Usage
+%	filt_for_disp = DISPLAY_FILTER_2D(filter, rorim, n)
 %
-% outputs :
-% - filt_for_disp : the spatially centered cropped version of the filter
+% Input
+%    filter (struct): a filter from a wavelet factory (for instance).
+%    rorim (string): 'r' real part, 'i' imaginary part
+%    n (numeric): size of the window, only for 'fourier_multires' type of
+%    function
+%
+% Output
+%    filt_for_disp (numerical): displayed (real) image.
+%
+% Description
+%    Display the real or imaginary part of a filter and returns it.
+% 
+% See also
+% WAVELET_FACTORY_2D, WAVELET_FACTORY_2D_PYRAMID
 
+function filt_for_disp = display_filter_2d(filter, rorim, n)
 if ~exist('rorim','var')
   rorim='r';
 end
 
 switch filter.type
   case 'fourier_multires'
-    filtf=  filter.coefft{1};
+    filtf = filter.coefft{1};
     [H, W] = size(filtf);
     filt = fftshift(ifft2(filtf));
     filt_for_disp = (filt(floor(H/2)-n+1:floor(H/2)+n+1,floor(W/2)-n+1:floor(W/2)+n+1));
-    
+   case 'spatial_support'
+    filt_for_disp = filter.coefft;
   otherwise
     error('not yet supported'); 
 end
