@@ -39,13 +39,11 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	
 	xf = fft(x,[],1);
 	
-	ds = round(log2(2*pi/phi_bw)) - ...
-	     j0 - ...
-	     options.oversampling;
+	ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
 	ds = max(ds, 0);
 	
 	x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
-	x_phi = unpad_signal(x_phi, ds, N);
+    x_phi = unpad_signal(x_phi, ds, N);
 	meta_phi.j = -1;
 	meta_phi.bandwidth = phi_bw;
 	meta_phi.resolution = j0+ds;
