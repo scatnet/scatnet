@@ -141,7 +141,7 @@ To calculate the appropriate \mcode{J} necessary for a given window size \mcode{
 \begin{lstlisting}
 	filt_opt.J = T_to_J(T, filt_opt);
 \end{lstlisting}
-This will ensure that the maximum wavelet scale, and thus the averaging scale of the lowpass filter, will be approximately \mcode{T}.
+This will ensure that the maximum wavelet scale, and thus the averaging scale of the lowpass filter, will be approximately \mcode{T}. Note that the previous prototype, \mcode{T_to_J(T,Q,B,phi_bw_multiplier)} is no longer supported in this version.
 
 \subsection{1D Spline Filters}
 The spline wavelet filter bank is an unitary filter bank as defined in \cite{mallatbook}. As a result, the scattering transform defined using these filters has perfect energy conservation \cite{stephane}.
