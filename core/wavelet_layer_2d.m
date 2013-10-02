@@ -1,11 +1,11 @@
-% WAVELET_LAYER_2D Compute the wavelet transform from the scattering
-% coefficients of the previous layer
+% WAVELET_LAYER_2D Compute the wavelet transform from the modulus wavelet
+% coefficients of the previous layer of a scattering network
 %
 % Usage
 %    [A, V] = WAVELET_LAYER_2D(U, filters, options)
 %
 % Input
-%    U (numeric): input scattering coefficients.
+%    U (numeric): input modulus wavelet coefficients.
 %    filters (cell of function handles): Linear operators used to generate a new 
 %       layer from the previous one.
 %    options (structure): optionnal
@@ -15,12 +15,13 @@
 %    V (cell): Wavelet coefficients of the next layer
 %
 % Description
-%    Given inputs scattering coefficients corresponding to a layer, 
+%    Given inputs modulus wavelet coefficients corresponding to a layer, 
 %    WAVELET_LAYER_2D computes the wavelet transform coefficients of the 
 %    next layer using WAVELET_2D.
 %
 % See also 
 %   WAVELET_2D, WAVELET_LAYER_1D
+
 function [A, V] = wavelet_layer_2d(U, filters, options)
 	
 	calculate_psi = (nargout>=2); % do not compute any convolution
@@ -51,22 +52,22 @@ function [A, V] = wavelet_layer_2d(U, filters, options)
 		options.x_resolution = U.meta.resolution(p);
 		
 		% compute wavelet transform
-		[x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options);
+		[x_phi, x_psi] = wavelet_2d(x, filters, options);
 		
 		% copy signal and meta for phi
-		A.signal{p} = x_phi;
+		A.signal{p} = x_phi.signal{1};
 		A.meta.j(:,p) = [U.meta.j(:,p); filters.phi.meta.J];
 		A.meta.theta(:,p) = U.meta.theta(:,p);
-		A.meta.resolution(1,p) = meta_phi.resolution;
+		A.meta.resolution(1,p) = x_phi.meta.resolution;
 		
 		% copy signal and meta for psi
 		for p_psi = find(options.psi_mask)
-			V.signal{p2} = x_psi{p_psi};
+			V.signal{p2} = x_psi.signal{p_psi};
 			V.meta.j(:,p2) = [U.meta.j(:,p);...
 				filters.psi.meta.j(p_psi)];
 			V.meta.theta(:,p2) = [U.meta.theta(:,p);...
 				filters.psi.meta.theta(p_psi)];
-			V.meta.resolution(1,p2) = meta_psi.resolution(p_psi);
+			V.meta.resolution(1,p2) = x_psi.meta.resolution(p_psi);
 			p2 = p2 +1;
 		end
 		

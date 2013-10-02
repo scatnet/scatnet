@@ -12,14 +12,18 @@
 %    center of the filter
 %
 % Output
-%    gab(numeric) : N-by-M Gaussian function
+%    gab (numeric): N-by-M Gaussian function
 %
 % Description
 %    Computes a Gaussian centered in offset and of standard deviation
 %    sigma.
 
 function gau = gaussian_2d(N, M, sigma, precision, offset)
-	if (~exist('offset', 'var'))
+    if ~exist('precision', 'var')
+		precision = 'single';
+	end
+
+    if (~exist('offset', 'var'))
 		offset = [1 + floor(N/2), 1 + floor(M/2)];
 	end
 	

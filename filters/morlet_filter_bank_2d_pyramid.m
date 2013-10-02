@@ -1,56 +1,73 @@
-% morlet_filter_bank_2d_pyramid : Build a bank of Morlet wavelet filters
+% MORLET_FILTER_BANK_2D_PYRAMID Compute a bank of Morlet wavelet filters in
+% the spatial domain.
 %
 % Usage
-%	filters = morlet_filter_bank_2d_pyramid(size_in, options)
+%	filters = MORLET_FILTER_BANK_2D_PYRAMID(options)
 %
 % Input
-% - options : [optional] <1x1 struct> contains the following optional fields
-%   - Q          : <1x1 int> the number of scale per octave
-%   - J          : <1x1 int> the total number of scale.
-%   - L   : <1x1 int> the number of orientations
-%   - sigma_phi  : <1x1 double> the width of the low pass phi_0
-%   - sigma_psi  : <1x1 double> the width of the envelope
-%                                   of the high pass psi_0
-%   - xi_psi     : <1x1 double> the frequency peak
-%                                   of the high_pass psi_0
-%   - slant_psi  : <1x1 double> the excentricity of the elliptic
-%  enveloppe of the high_pass psi_0 (the smaller slant, the larger
-%                                      orientation resolution)
-%   - margins    : <1x2 int> the horizontal and vertical margin for
-%                             mirror pading of signal
+%    options (structure): Options of the bank of filters. Optional, with
+%    fields:
+%       Q (numeric): number of scale per octave
+%       P (numeric): 
+%       L (numeric): number of orientations
+%       sigma_phi (numeric): standard deviation of the low pass phi_0
+%       sigma_psi (numeric): standard deviation of the envelope of the
+%       high-pass psi_0
+%       xi_psi (numeric): the frequency peak of the high-pass psi_0
+%       slant_psi (numeric): excentricity of the elliptic enveloppe of the
+%       high-pass psi_0 (the smaller slant, the larger orientation
+%       resolution)
+%       precision (string): 'single' or 'double'
 %
 % Output
-% - filters : <1x1 struct> contains the following fields
-%   - psi.filter{p}.type : <string> 'fourier_multires'
-%   - psi.filter{p}.coefft{res+1} : <?x? double> the fourier transform
-%                          of the p high pass filter at resolution res
-%   - psi.meta.k(p,1)     : its scale index
-%   - psi.meta.theta(p,1) : its orientation scale
-%   - phi.filter.type     : <string>'fourier_multires'
-%   - phi.filter.coefft
-%   - phi.meta.k(p,1)
-%   - meta : <1x1 struct> global parameters of the filter bank
+%    filters (struct):  filters, with the fields
+%        g (struct): high-pass filter g, with the following fields:
+%            filter (cell): cell of structure containing the coefficients
+%            type (string): takes the value 'spatial_support'
+%        h (struct): low-pass filter h
+%            filter (cell): cell of structure containing the coefficients
+%            type (string): takes the value 'spatial_support'
+%        meta (struct): contains meta-information on (g,h)
+%
+% Description
+%    Compute the Morlet filter bank in the spatial domain. 
 
 function filters = morlet_filter_bank_2d_pyramid(options)
+    if(nargin<1)
+		options = struct;
+    end
+    
+    white_list = {'Q', 'L', 'P', 'sigma_phi','sigma_psi','xi_psi','slant_psi','precision'};
+    check_options_white_list(options, white_list);
+    
+    % Options
+    options = fill_struct(options, 'Q',1);	
+    options = fill_struct(options, 'L',8);
+    Q = options.Q;
+    L = options.L;
+	options = fill_struct(options, 'sigma_phi',  0.8);	
+    options = fill_struct(options, 'sigma_psi',  0.8);	
+    options = fill_struct(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);	
+    options = fill_struct(options, 'slant_psi',  4/L);	
+    options = fill_struct(options, 'P',  3);	
+    P = options.P;
 	
-	options.null = 1;
+    % then the filter is in 32 bits float.
+    options = fill_struct(options, 'precision', 'single');	
+	precision = options.precision;
 	
-	Q = getoptions(options, 'Q', 1); % number of scale per octave
-	L = getoptions(options, 'L', 8); % number of orientations
+    
 	
-	sigma_phi  = getoptions(options, 'sigma_phi',  0.8);
-	sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
-	xi_psi     = getoptions(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);
-	slant_psi  = getoptions(options, 'slant_psi',  4/L);
-	
-	P = getoptions(options, 'P', 3); % the size of the support is 2*P + 1
-	
-	precision  = getoptions(options, 'precision', 'single');% if single
-	% then the filter is in 32 bits float.
-	
+	sigma_phi = options.sigma_phi;
+    sigma_psi = options.sigma_psi;
+    xi_psi = options.xi_psi;
+    slant_psi = options.slant_psi;
+    
+    
+    
 	% low pass filter h
 	
-	h.filter.coefft = gaussian_2d_pyramid(2*P+1,...
+	h.filter.coefft = gaussian_2d(2*P+1,...
 		2*P+1,...
 		sigma_phi,...
 		precision);

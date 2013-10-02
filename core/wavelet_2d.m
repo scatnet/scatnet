@@ -28,12 +28,13 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 		options = struct;
     end
     
-    white_list = {'x_resolution', 'precision', 'psi_mask'};
-    check_options_white_list(pptions, white_list);
+    white_list = {'x_resolution', 'precision', 'psi_mask','oversampling','M'};
+    check_options_white_list(options, white_list);
     
     % Options
     options = fill_struct(options, 'x_resolution',0);	
-    options = fill_struct(options, 'precision','single');	
+    options = fill_struct(options, 'precision','single');
+    options = fill_struct(options, 'oversampling',1);	
 	options = fill_struct(options, 'psi_mask', ...
     ones(1,numel(filters.psi.filter)));
     
@@ -53,33 +54,34 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
 	J = filters.phi.meta.J;
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
-	x_phi = real(conv_sub_2d(xf, filters.phi.filter, ds));
-	x_phi = unpad_signal(x_phi, ds*[1 1], size(x));
+	x_phi.signal{1} = real(conv_sub_2d(xf, filters.phi.filter, ds));
+	x_phi.signal{1} = unpad_signal(x_phi.signal{1}, ds*[1 1], size(x));
 	
 	x_phi.meta.j = -1;
 	x_phi.meta.theta = -1;
 	x_phi.meta.resolution = lastres+ds;
 	
 	% high pass filtering, downsampling and unpading
-	x_psi = {};
+	x_psi = struct;
 	x_psi.meta.j = -1*ones(1, numel(filters.psi.filter));
 	x_psi.meta.theta = -1*ones(1, numel(filters.psi.filter));
 	x_psi.meta.resolution = -1*ones(1, numel(filters.psi.filter));
+    x_psi.signal={};
 	for p = find(psi_mask)
 		j = filters.psi.meta.j(p);
 		ds = max(floor(j/Q)- lastres - oversampling, 0);
 		margins = filters.meta.margins / 2^(lastres+ds);
-		x_psi{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);
-		x_psi{p} = unpad_signal(x_psi{p}, ds*[1 1], size(x));
-		
+		x_psi.signal{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);
+		x_psi.signal{p} = unpad_signal(x_psi.signal{p}, ds*[1 1], size(x));
 		x_psi.meta.j(1,p) = filters.psi.meta.j(p);
 		x_psi.meta.theta(1,p) = filters.psi.meta.theta(p);
 		x_psi.meta.resolution(1,p) = lastres+ds;
-	end
+    end
 	
+    
 	if(strcmp(precision,'single'))
-		x_phi = single(x_phi);
-		x_psi = cellfun(@single, x_psi, 'UniformOutput', 0);
+		x_phi.signal{1} = single(x_phi.signal{1});
+		x_psi.signal = cellfun(@single, x_psi.signal, 'UniformOutput', 0);
 	end
 	
 end

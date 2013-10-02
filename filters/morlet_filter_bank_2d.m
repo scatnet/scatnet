@@ -1,72 +1,83 @@
-% morlet_filter_bank_2d : Build a bank of Morlet wavelet filters
+% MORLET_FILTER_BANK_2D Compute a bank of Morlet wavelet filters in
+% the Fourier domain.
 %
 % Usage
-%	filters = morlet_filter_bank_2d(size_in, options)
+%	filters = MORLET_FILTER_BANK_2D(size_in, options)
 %
-% Input 
-% - size_in : <1x2 int> size of the input of the scattering
-% - options : [optional] <1x1 struct> contains the following optional fields
-%   - Q          : <1x1 int> the number of scale per octave
-%   - J          : <1x1 int> the total number of scale.
-%   - L   : <1x1 int> the number of orientations
-%   - sigma_phi  : <1x1 double> the width of the low pass phi_0
-%   - sigma_psi  : <1x1 double> the width of the envelope
-%                                   of the high pass psi_0
-%   - xi_psi     : <1x1 double> the frequency peak
-%                                   of the high_pass psi_0
-%   - slant_psi  : <1x1 double> the excentricity of the elliptic
-%  enveloppe of the high_pass psi_0 (the smaller slant, the larger
-%                                      orientation resolution)
-%   - margins    : <1x2 int> the horizontal and vertical margin for 
-%                             mirror pading of signal
+% Input
+%    options (structure): Options of the bank of filters. Optional, with
+%    fields:
+%       Q (numeric): number of scale per octave
+%       J (numeric): total number of scale.
+%       L (numeric): number of orientations
+%       sigma_phi (numeric): standard deviation of the low pass phi_0
+%       sigma_psi (numeric): standard deviation of the envelope of the
+%       high-pass psi_0
+%       xi_psi (numeric): the frequency peak of the high-pass psi_0
+%       slant_psi (numeric): excentricity of the elliptic enveloppe of the
+%       high-pass psi_0 (the smaller slant, the larger orientation
+%       resolution)
+%       margins (numeric): 1-by-2 vector for the horizontal and vertical 
+%       margin for mirror pading of signal
 %
-% Output 
-% - filters : <1x1 struct> contains the following fields
-%   - psi.filter{p}.type : <string> 'fourier_multires'
-%   - psi.filter{p}.coefft{res+1} : <?x? double> the fourier transform
-%                          of the p high pass filter at resolution res
-%   - psi.meta.k(p,1)     : its scale index
-%   - psi.meta.theta(p,1) : its orientation scale
-%   - phi.filter.type     : <string>'fourier_multires'
-%   - phi.filter.coefft
-%   - phi.meta.k(p,1)
-%   - meta : <1x1 struct> global parameters of the filter bank
+% Output
+%    filters (struct):  filters, with the fields
+%        psi (struct): high-pass filter psi, with the following fields:
+%            filter (cell): cell of structure containing the coefficients
+%            type (string): takes the value 'fourier_multires'
+%        phi (struct): low-pass filter phi
+%            filter (cell): cell of structure containing the coefficients
+%            type (string): takes the value 'fourier_multires'
+%        meta (struct): contains meta-information on (g,h)
+%
+% Description
+%    Compute the Morlet filter bank in the Fourier domain.
 
 function filters = morlet_filter_bank_2d(size_in, options)
+    if(nargin<2)
+		options = struct;
+    end
+
 	
-	options.null = 1;
-	
-	Q = getoptions(options, 'Q', 1); % number of scale per octave
-	J = getoptions(options, 'J', 4); % total number of scales
-	L = getoptions(options, 'L', 8); % number of orientations
-	
-	sigma_phi  = getoptions(options, 'sigma_phi',  0.8);
-	sigma_psi  = getoptions(options, 'sigma_psi',  0.8);
-	xi_psi     = getoptions(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);
-	slant_psi  = getoptions(options, 'slant_psi',  4/L);
+    
+    white_list = {'Q', 'L', 'J', 'sigma_phi','sigma_psi','xi_psi','slant_psi'};
+    check_options_white_list(options, white_list);
+    
+    % Options
+    options = fill_struct(options, 'Q',1);	
+    options = fill_struct(options, 'L',8);
+    options = fill_struct(options, 'J',4);
+    J = options.J;
+    Q = options.Q;
+    L = options.L;
+	options = fill_struct(options, 'sigma_phi',  0.8);	
+    options = fill_struct(options, 'sigma_psi',  0.8);	
+    options = fill_struct(options, 'sigma_psi',  0.8);	
+    options = fill_struct(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);	
+    options = fill_struct(options, 'slant_psi',  4/L);	
+    
+    sigma_phi  = options.sigma_phi;
+	sigma_psi  = options.sigma_psi;
+	xi_psi     = options.xi_psi;
+	slant_psi  = options.slant_psi;
 	
 	res_max = floor(J/Q);
-	% compute margin for padding
-	% make sure size_in is multiple of 2^res_max
-	%if (sum(size_in/2^res_max == floor(size_in/2^res_max))~=2)
-	%	error('size_in must be multiple of downsampling');
-	%end
-	margins_default = 2*sigma_phi*2^((J-1)/Q);
+    
+    
+    % Default margin
+    margins_default = 2*sigma_phi*2^((J-1)/Q);
 	margins_default = min(2^res_max * ceil(margins_default/2^res_max), ...
 		size_in);
-	margins = ...
-		getoptions(options, 'margins', margins_default);
-	% make sure margin is multiple of 2^res_max
-	%if (sum(margins/2^res_max == floor(margins/2^res_max))~=2)
-	%	error('margin must be multiple of downsampling');
-	%end
+	options = fill_struct(options, 'margins', margins_default);
+    margins = options.margins;
+    
+    
 	size_filter = size_in + margins;
 	size_filter = ceil(size_filter/2^res_max)*2^res_max;
 	
 	phi.filter.type = 'fourier_multires';
 	
 	% compute all resolution of the filters
-	
 	for res = 0:res_max
 		
 		N = ceil(size_filter(1) / 2^res);

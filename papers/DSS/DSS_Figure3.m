@@ -3,7 +3,7 @@ run_name ='DSS_Figure3'
 fparam.filter_type = {'gabor_1d'};
  %fparam.B = 8;
  fparam.Q = 4;
- fparam.J= T_to_J(128,fparam.Q);
+ fparam.J= T_to_J(128,fparam);
  fparam.filter_format='fourier';
 
  

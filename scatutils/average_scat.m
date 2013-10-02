@@ -11,15 +11,13 @@
 %    S: The scattering transform with each signal averaged over a window of
 %       length N using the window function specified.
 
-% TODO make own hanning function, not dependent on signal processing tbx
-
 function X = average_scat(X,T,step,window_fun)
 	if nargin < 3
 		step = T/2;
 	end
 	
 	if nargin < 4
-		window_fun = @hanning;
+		window_fun = @hanning_standalone;
 	end
 	
 	for m = length(X)-1:-1:0

@@ -26,7 +26,7 @@ classdef test_wavelet_2d_pyramid < matlab.unittest.TestCase
         function testWithRandomSize(testcase)
             for i = 1:32
                 %%
-                sz = 1 + floor(128*rand(1,2))                
+                sz = 1 + floor(128*rand(1,2)) ;               
                 %% define
                 x = rand(sz);
                 filters = morlet_filter_bank_2d_pyramid();

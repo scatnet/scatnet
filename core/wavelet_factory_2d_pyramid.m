@@ -14,17 +14,28 @@
 
 function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 	
-	filt_opt.null = 1;
-	scat_opt.null = 1;
+    if(nargin<1)
+        filt_opt=struct;
+    end
+    if(nargin<2)
+        scat_opt=struct;
+    end
+
+	% filt_opt.null = 1; EDOUARD 01/10/13
+	% scat_opt.null = 1; EDOUARD 01/10/13
 	scat_opt = fill_struct(scat_opt, 'M', 2);
 	
 	% filters :
 	filt_opt = fill_struct(filt_opt, 'type', 'morlet');
 	switch (filt_opt.type)
-		case 'morlet'	
+		case 'morlet'
+            %%%%%% 01/10/13 EDOUARD
+            filt_opt=rmfield(filt_opt,'type');
 			filters = morlet_filter_bank_2d_pyramid(filt_opt);
 			
 		case 'haar'
+            %%%%%% 01/10/13 EDOUARD
+            filt_opt=rmfield(filt_opt,'type');
 			filters = haar_filter_bank_2d_spatial(filt_opt);
 			
 	end

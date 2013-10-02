@@ -20,10 +20,12 @@
 %    used for the successive wavelet transforms. Here, only the morlet
 %    filter bank is used.
 %
-%    If M is not specified, its value is set automatically to 2.
+%    If M is not specified, its value is set automatically to 2.WHAT IS M
+%    ?????????????????? SHOULD It BE HERE ?
 %
 % See also
 %    WAVELET_2D, MORLET_FILTER_BANK_2D 
+
 function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     % Options
     % check options white list
@@ -38,7 +40,7 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     
     white_list_filt = {'filter_type', 'precision', 'Q', 'J', 'L',...
         'sigma_phi','sigma_psi','xi_psi','slant_psi'};
-    white_list_scat = {'M', 'oversampling', 'precision_4byte'};
+    white_list_scat = { 'oversampling', 'precision_4byte'};
     
     check_options_white_list(filt_opt, white_list_filt);
     check_options_white_list(scat_opt, white_list_scat);
