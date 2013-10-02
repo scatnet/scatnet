@@ -14,8 +14,9 @@
 %    length, not including the first and last zero-weighted samples.
 
 function window = hanning_standalone(window_length)
-	half_length = (window_length+rem(window_length,2))/2;
+    oddity = rem(window_length,2);
+	half_length = (window_length+oddity)/2;
 	half_window = 0.5 * (1-cos(2*pi*(1:half_length)'/(window_length+1)));
-    window = [half_window; half_window(end:-1:1)];
+    window = [half_window; half_window(end-oddity:-1:1)];
 end
 
