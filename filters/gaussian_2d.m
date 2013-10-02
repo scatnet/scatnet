@@ -19,7 +19,11 @@
 %    sigma.
 
 function gau = gaussian_2d(N, M, sigma, precision, offset)
-	if (~exist('offset', 'var'))
+    if ~exist('precision', 'var')
+		precision = 'single';
+	end
+
+    if (~exist('offset', 'var'))
 		offset = [1 + floor(N/2), 1 + floor(M/2)];
 	end
 	

@@ -2,7 +2,7 @@
 % parameters in spatial domain
 %
 % Usage
-%    gab = MORLET_2D_PYRAMID(N, M, sigma, slant, xi, theta, offset)
+%    gab = MORLET_2D_PYRAMID(N, M, sigma, slant, xi, theta, precision, offset)
 %
 % Input
 %    N (numeric): width of the filter
@@ -30,7 +30,11 @@
 
 
 function gab = morlet_2d_pyramid(N, M, sigma, slant, xi, theta, precision, offset)
-	
+
+	if ~exist('precision', 'var')
+		precision = 'single';
+	end
+
 	if ~exist('offset', 'var')
 		offset = [1 + floor(N/2), 1 + floor(M/2)];
 	end

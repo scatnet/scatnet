@@ -1,11 +1,11 @@
-% WAVELET_LAYER_2D Compute the wavelet transform from the scattering
-% coefficients of the previous layer
+% WAVELET_LAYER_2D Compute the wavelet transform from the modulus wavelet
+% coefficients of the previous layer of a scattering network
 %
 % Usage
 %    [A, V] = WAVELET_LAYER_2D(U, filters, options)
 %
 % Input
-%    U (numeric): input scattering coefficients.
+%    U (numeric): input modulus wavelet coefficients.
 %    filters (cell of function handles): Linear operators used to generate a new 
 %       layer from the previous one.
 %    options (structure): optionnal
@@ -15,7 +15,7 @@
 %    V (cell): Wavelet coefficients of the next layer
 %
 % Description
-%    Given inputs scattering coefficients corresponding to a layer, 
+%    Given inputs modulus wavelet coefficients corresponding to a layer, 
 %    WAVELET_LAYER_2D computes the wavelet transform coefficients of the 
 %    next layer using WAVELET_2D.
 %

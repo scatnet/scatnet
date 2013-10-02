@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>demo_pad_mirror_2d_twosided</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-02"><meta name="DC.source" content="demo_pad_mirror_2d_twosided.m"><style type="text/css">
+      --><title>Creating one filter</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-02"><meta name="DC.source" content="demo_individual_filter.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,46 +65,82 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% DEMO_PAD_MIRROR_2D_TWOSIDED Demonstrate usage of PAD_MIRROR_2D_TWOSIDED</span>
-<span class="comment">%</span>
-<span class="comment">% See also</span>
-<span class="comment">%   PAD_MIRROR_2D_TWOSIDED</span>
+  </style></head><body><div class="content"><h1>Creating one filter</h1><!--introduction--><p>In this demo, we will show how to build some filters in spatial domain or Fourier domain. Gabor, Morlet and Gaussian filters are pointed out.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Reviewed functions</a></li><li><a href="#3">Demonstration</a></li></ul></div><h2>Reviewed functions<a name="1"></a></h2><p>The following function will be demonstrated:</p><div><ol><li>gabor_2d</li><li>gaussian_2d</li><li>morlet_2d_noDC</li><li>morlet_2d_pyramid</li></ol></div><h2>Demonstration<a name="3"></a></h2><p>Here are shown 4 examples of filters:</p><pre class="codeinput">N=50;
+M=50;
+sigma=10;
+slant=3;
+theta=pi/3;
+xi=2;
 
-clear; close <span class="string">all</span>;
-
-x = uiuc_sample;
-margins = [10, 100];
-x_paded = pad_mirror_2d_twosided(x, margins);
-
-subplot(121);
-imagesc(x);
-title(<span class="string">'original image'</span>);
-subplot(122);
-imagesc(x_paded);
-title(<span class="string">'image paded (10 vertical 100 horizontal)'</span>);
-
-colormap <span class="string">gray</span>;
-</pre><img vspace="5" hspace="5" src="demo_pad_mirror_2d_twosided_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+gab = gabor_2d(N, M, sigma, slant, xi, theta);
+morlet = morlet_2d_noDC(N, M, sigma, slant, xi, theta);
+gab2 = morlet_2d_pyramid(N, M, sigma, slant, xi, theta);
+gaussian = gaussian_2d(N, M, sigma);
+subplot(2,2,1)
+imagesc(real(gab));
+axis <span class="string">off</span>
+title(<span class="string">'Real part of Gabor wavelet in Fourier domain'</span>)
+subplot(2,2,2)
+imagesc(real(morlet));
+axis <span class="string">off</span>
+title(<span class="string">'Real part of Morlet wavelet in Fourier domain'</span>)
+subplot(2,2,3)
+imagesc(real(gab2));
+axis <span class="string">off</span>
+title(<span class="string">'Real part of Morlet wavelet in Spatial domain'</span>)
+subplot(2,2,4)
+imagesc(gaussian);
+axis <span class="string">off</span>
+title(<span class="string">'Gaussian wavelet'</span>)
+</pre><img vspace="5" hspace="5" src="demo_individual_filter_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-% DEMO_PAD_MIRROR_2D_TWOSIDED Demonstrate usage of PAD_MIRROR_2D_TWOSIDED
+%% Creating one filter
+% In this demo, we will show how to build some filters in spatial domain or
+% Fourier domain. Gabor, Morlet and Gaussian filters are pointed out.
+%
+%% Reviewed functions
+% The following function will be demonstrated:
+%%
 % 
-% See also
-%   PAD_MIRROR_2D_TWOSIDED
+% # gabor_2d
+% # gaussian_2d
+% # morlet_2d_noDC
+% # morlet_2d_pyramid
+%
+%% Demonstration
+%
+% Here are shown 4 examples of filters:
 
-clear; close all;
+N=50;
+M=50;
+sigma=10;
+slant=3;
+theta=pi/3;
+xi=2;
 
-x = uiuc_sample;
-margins = [10, 100];
-x_paded = pad_mirror_2d_twosided(x, margins);
+gab = gabor_2d(N, M, sigma, slant, xi, theta);
+morlet = morlet_2d_noDC(N, M, sigma, slant, xi, theta);
+gab2 = morlet_2d_pyramid(N, M, sigma, slant, xi, theta);
+gaussian = gaussian_2d(N, M, sigma);
+subplot(2,2,1)
+imagesc(real(gab));
+axis off
+title('Real part of Gabor wavelet in Fourier domain')
+subplot(2,2,2)
+imagesc(real(morlet));
+axis off
+title('Real part of Morlet wavelet in Fourier domain')
+subplot(2,2,3)
+imagesc(real(gab2));
+axis off
+title('Real part of Morlet wavelet in Spatial domain')
+subplot(2,2,4)
+imagesc(gaussian);
+axis off
+title('Gaussian wavelet')
 
-subplot(121);
-imagesc(x);
-title('original image');
-subplot(122);
-imagesc(x_paded);
-title('image paded (10 vertical 100 horizontal)');
 
-colormap gray;
+
 
 ##### SOURCE END #####
 --></body></html>

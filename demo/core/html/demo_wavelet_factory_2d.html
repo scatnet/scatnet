@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>demo_pad_mirror_2d_twosided</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-02"><meta name="DC.source" content="demo_pad_mirror_2d_twosided.m"><style type="text/css">
+      --><title>Introduction to wavelet_factory_2d</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-02"><meta name="DC.source" content="demo_wavelet_factory_2d.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,46 +65,43 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% DEMO_PAD_MIRROR_2D_TWOSIDED Demonstrate usage of PAD_MIRROR_2D_TWOSIDED</span>
-<span class="comment">%</span>
-<span class="comment">% See also</span>
-<span class="comment">%   PAD_MIRROR_2D_TWOSIDED</span>
+  </style></head><body><div class="content"><h1>Introduction to <b>wavelet_factory_2d</b></h1><!--introduction--><p><b>wavelet_factory_2d</b> is computing operators(except the modulus) and filters required to compute the next layer of a scattering network.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Usage</a></li><li><a href="#2">Description</a></li><li><a href="#3">Options</a></li></ul></div><h2>Usage<a name="1"></a></h2><p>[Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt), documentation is given in <a href="matlab:doc('wavelet_factory_2d')">wavelet_factory_2d</a></p><h2>Description<a name="2"></a></h2><p>Given a size image, some filters options and scattering options, this function comput the linear operators necessar to compute the next coefficients of scattering.</p><pre class="codeinput">x = lena;
 
-clear; close <span class="string">all</span>;
+<span class="comment">% Create $ U[\empty]x $</span>
+[Wop, filters] = wavelet_factory_2d(size(x));
 
-x = uiuc_sample;
-margins = [10, 100];
-x_paded = pad_mirror_2d_twosided(x, margins);
-
-subplot(121);
-imagesc(x);
-title(<span class="string">'original image'</span>);
-subplot(122);
-imagesc(x_paded);
-title(<span class="string">'image paded (10 vertical 100 horizontal)'</span>);
-
-colormap <span class="string">gray</span>;
-</pre><img vspace="5" hspace="5" src="demo_pad_mirror_2d_twosided_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+<span class="comment">% Then one can apply Wop as in *scat*. Please reference to its</span>
+<span class="comment">% documentation.</span>
+</pre><h2>Options<a name="3"></a></h2><p>filt_opt has the same fields as in <b>morlet_filter_bank_2d</b>.</p><p>scat_opt has the same fields as in <b>wavelet_layer_2d</b>.</p><p>See their documentation for more details.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-% DEMO_PAD_MIRROR_2D_TWOSIDED Demonstrate usage of PAD_MIRROR_2D_TWOSIDED
-% 
-% See also
-%   PAD_MIRROR_2D_TWOSIDED
+%%  Introduction to *wavelet_factory_2d*
+% *wavelet_factory_2d* is computing operators(except the modulus) and 
+% filters required to compute the next layer of a scattering network.
+%
+%% Usage
+% [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt), documentation is given in
+% <matlab:doc('wavelet_factory_2d') wavelet_factory_2d>
+%
+%% Description
+% Given a size image, some filters options and scattering options, this
+% function comput the linear operators necessar to compute the next
+% coefficients of scattering.
 
-clear; close all;
+x = lena;
 
-x = uiuc_sample;
-margins = [10, 100];
-x_paded = pad_mirror_2d_twosided(x, margins);
+% Create $ U[\empty]x $
+[Wop, filters] = wavelet_factory_2d(size(x));
 
-subplot(121);
-imagesc(x);
-title('original image');
-subplot(122);
-imagesc(x_paded);
-title('image paded (10 vertical 100 horizontal)');
+% Then one can apply Wop as in *scat*. Please reference to its
+% documentation.
 
-colormap gray;
+
+%% Options
+% filt_opt has the same fields as in *morlet_filter_bank_2d*.
+%
+% scat_opt has the same fields as in *wavelet_layer_2d*.
+%
+% See their documentation for more details.
 
 ##### SOURCE END #####
 --></body></html>
