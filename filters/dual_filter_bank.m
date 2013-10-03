@@ -1,3 +1,28 @@
+% DUAL_FILTER_BANK Calculate the dual filter bank
+%
+% Usage
+%    dual_filters = dual_filter_bank(filters)
+%
+% Input
+%    filters (struct): The original filter bank, output from FILTER_BANK or
+%        related functions.
+%
+% Output
+%    dual_filters (struct): The filter bank consisting of dual filters.
+%
+% Description
+%    In order to compute the inverse wavelet transform, the dual filters need
+%    to be computed from the original filter bank. If A(omega) is defined as 
+%    the Littlewood-Paley sum over the filters, as calculated in
+%    LITTLEWOOD_PALEY, the dual filter Fourier transformed are defined 
+%    according to
+%        dual_psi_j(omega) = conj(psi_j(omega))/A(omega)
+%        dual_phi(omega) = conj(phi(omega))/A(omega),
+%    where conj denotes complex conjugation.
+%
+% See also 
+%   FILTER_BANK, INVERSE_WAVELET_1D
+
 function dual_filters = dual_filter_bank(filters)
 	A = littlewood_paley(filters);
 	

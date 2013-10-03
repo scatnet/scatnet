@@ -1,3 +1,34 @@
+% INVERSE_WAVELET_1D Calculate the inverse wavelet transform
+%
+% Usage
+%    x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
+%        dual_filters, options)
+%
+% Input
+%    N0 (numeric): The desired size of the output signal x.
+%    x_phi (numeric): The lowpass filter output of WAVELET_1D.
+%    x_psi (cell): The wavelet filter output of WAVELET_1D.
+%    meta_phi (struct): The lowpass meta structure output of WAVELET_1D.
+%    meta_psi (struct): The wavelet meta structure output of WAVELET_1D.
+%    dual_filters (struct): The dual filters of the filter bank used to 
+%       calculate the wavelet transform in WAVELET_1D.
+%    options (struct, optional): Different parameters to the inverse wavelet
+%       transform (currently unused);
+%
+% Output
+%     x (numeric): The signal resulting from the inverse wavelet transform.
+%
+% Description
+%    Using the dual filter bank, the wavelet transform is inverted by 
+%    calculating
+%        x(t) = Real(x_phi*dual_phi(t) + sum_k x_psi{k}*dual_psi{k}(t)).
+%    Since x_phi and x_psi{k} might be subsampled, all signals are upsampled
+%    to the resolution given by N0 and so the resulting signal x will be of
+%    this resolution.
+%
+% See also 
+%   DUAL_FILTER_BANK, WAVELET_1D
+
 function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 	dual_filters, options)
 	
@@ -12,6 +43,7 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 	N_padded = dual_filters.meta.size_filter/2^meta_phi.resolution;
 	x_phi = pad_signal(x_phi, N_padded, dual_filters.meta.boundary);
 	
+	% TODO: allow more flexible interpolation (cubic spline, etc)
 	x_phi = interpft(x_phi, N0_padded)/2^(meta_phi.resolution/2);
 	
 	x = conv_sub_1d(fft(x_phi), dual_filters.phi.filter, 0);
@@ -24,6 +56,7 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 		N_padded = dual_filters.meta.size_filter/2^meta_psi.resolution(k);
 		x_psi{k} = pad_signal(x_psi{k}, N_padded, dual_filters.meta.boundary);
 
+		% TODO: allow more flexible interpolation (cubic spline, etc)
 		x_psi{k} = interpft(x_psi{k}, N0_padded)/2^(meta_psi.resolution(k)/2);
 		
 		x = x+conv_sub_1d(fft(x_psi{k}), dual_filters.psi.filter{k}, 0);
