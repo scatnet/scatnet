@@ -1,6 +1,9 @@
 % UNPAD_SIGNAL unpad a signal
 %
 function x = unpad_signal(x, res, target_sz, offset)
+	if nargin < 4
+		offset = 0;
+	end
 	
     offset_ds = floor(offset/2^res);
     target_sz_ds = 1 + floor((target_sz-1)/2^res) - offset_ds;
