@@ -64,10 +64,11 @@ elseif isstruct(filter) % see e.g. MORLET_FILTER_BANK_1D
         if filter.recenter % see TRUNCATE_FILTER
             yf_ds = circshift(yf_ds,filter.start-1);
         end
+		yf_ds = yf_ds / 2^(ds/2);
     end
 else
     error('Unsupported filter type');
 end
 
-y_ds = ifft(yf_ds) / 2^(ds/2);
+y_ds = ifft(yf_ds);
 end

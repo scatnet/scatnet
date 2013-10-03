@@ -12,8 +12,8 @@ options_rot.P = 0;
 filters_rot = morlet_filter_bank_1d(sz, options_rot);
 close all;
 subplot(121);
-lw=littlewood_paley_2d(filters);
-imagesc(fftshift(lw{1}));
+lw=littlewood_paley(filters);
+imagesc(fftshift(lw));
 subplot(122);
 plot_littlewood_1d(filters_rot);
 %% aply 2d wavelet transform
