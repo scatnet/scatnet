@@ -57,7 +57,8 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     % low pass
     h = filters.h.filter;
     for j = 1:options.J
-        hx.signal{j+1} = conv_sub_2d(hx.signal{j}, h, 1);
+        tmp = pad_mirror_2d_twosided(hx.signal{j}, filters.meta.P*[1,1]);
+        hx.signal{j+1} = conv_sub_2d(tmp, h, 1);
         hx.meta.j(j+1) = j;
     end
     x_phi.signal{1} = hx.signal{options.J+1};

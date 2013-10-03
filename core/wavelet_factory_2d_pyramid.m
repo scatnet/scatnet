@@ -1,11 +1,12 @@
-% wavelet_factory_2d_pyramid: Create wavelet cascade
+% WAVELET_FACTORY_2D_PYRAMID : Create wavelet cascade
+%
 % Usage
-%    [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
+%    [Wop, filters] = WAVELET_FACTORY_2D_PYRAMID(filt_opt, scat_opt)
 %
 % Input
 %    filt_opt: The filter options, same as for morlet_filter_bank_2d 
 %	 scat_opt: The scattering and wavelet options, same as
-%		wavelet_layer_1d/wavelet_1d.
+%		wavelet_layer_2d / wavelet_2d.
 %
 % Output
 %    Wop: A cell array of wavelet transforms needed for the scattering trans-
@@ -15,10 +16,10 @@
 function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 	
     if(nargin<1)
-        filt_opt=struct;
+        filt_opt = struct;
     end
     if(nargin<2)
-        scat_opt=struct;
+        scat_opt = struct;
     end
 
 	scat_opt = fill_struct(scat_opt, 'M', 2);
@@ -33,7 +34,6 @@ function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 		case 'haar'
             filt_opt = rmfield(filt_opt,'type');
 			filters = haar_filter_bank_2d_spatial(filt_opt);
-			
 	end
 	
 	% wavelet transforms :
