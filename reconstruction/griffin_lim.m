@@ -25,10 +25,16 @@
 %    kernel (the set of coefficients that are valid wavelet transforms) and
 %    the set of coefficients of the desired modulus. Since the latter is a 
 %    non-convex set, the algorithm will not converge. In some applications,
-%    however, the approximation that it provides is sufficient.
+%    however, the approximation that it provides is sufficient. For more 
+%    details, see [1].
+%
+% References
+%    [1] D. W. Grifﬁn and J. S. Lim, “Signal estimation from modiﬁed short- 
+%        time fourier transform,” IEEE Trans. Acoust., Speech, Signal
+%        Process., vol. 32, no. 2, pp. 236–243, 1984. 
 %
 % See also 
-%   WAVELET_1D, INVERSE_WAVELET_1D
+%    WAVELET_1D, INVERSE_WAVELET_1D
 
 function x = griffin_lim(x_init, x_phi, x_psi_mod, filters, options)
 	options = fill_struct(options, 'gl_iter', 32);
