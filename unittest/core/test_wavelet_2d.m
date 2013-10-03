@@ -26,7 +26,7 @@ classdef test_wavelet_2d < matlab.unittest.TestCase
         function testWithRandomSize(testcase)
             for i = 1:32
                 %%
-                sz = 1 + floor(128*rand(1,2));            
+                sz = 1 + floor(128*rand(1,2));
                 %% define
                 x = rand(sz);
                 filters = morlet_filter_bank_2d(sz);
@@ -34,7 +34,7 @@ classdef test_wavelet_2d < matlab.unittest.TestCase
                 [x_phi, x_psi] = ...
                     wavelet_2d(x, filters);
                 %% check number of high pass filter
-                 J = filters.meta.J;
+                J = filters.meta.J;
                 L = filters.meta.L;
                 Q = filters.meta.Q;
                 expected = J*L*Q;

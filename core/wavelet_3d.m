@@ -75,7 +75,11 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 		margins = filters.meta.margins / 2^lastres;
 		tmp = fft2(pad_mirror_2d(y_phi_angle, margins));
 		margins = filters.meta.margins / 2^(lastres+ds);
-		y_Phi.signal{1} = real(conv_sub_unpad_2d(tmp, filters.phi.filter, ds, margins));
+		%y_Phi.signal{1} = real(conv_sub_unpad_2d(tmp, filters.phi.filter, ds, margins));
+        y_Phi.signal{1} = conv_sub_2d(tmp,filters.phi.filter, ds);
+		y_Phi.signal{1} = unpad_signal(y_Phi.signal{1}, ds*[1 1], margins);
+        
+		
 		y_Phi.meta.J(1) = filters.phi.meta.J;
 		
 	else
@@ -94,7 +98,8 @@ function [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
 			ds = max(floor(J/Q)- lastres - oversampling, 0);
 			margins = filters.meta.margins / 2^(lastres+ds);
 			tmp = ...
-				real(conv_sub_unpad_2d(yf(:,:,theta), filters.phi.filter, ds, margins));
+				real(conv_sub_2d(yf(:,:,theta), filters.phi.filter, ds));
+            tmp = unpad_signal(tmp, ds*[1 1], margins);
 			if (theta == 1) % prealocate when we know the size
 				y_phi = zeros([size(tmp), nb_angle_in]);
 			end

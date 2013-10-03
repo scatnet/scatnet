@@ -10,7 +10,7 @@ function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
 	J = getoptions(options, 'J', 4);
 	Q = filters.meta.Q;
 	
-	w_options = sub_options(options, {'J', 'precision', 'j_min', 'q_mask', 'all_low_pass'});
+	
     
 	p2 = 1;
 	for p = 1:numel(U.signal)
