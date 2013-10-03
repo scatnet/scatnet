@@ -1,4 +1,4 @@
-% log_scat: Calculate the logarithm of a scattering transform.
+% LOG_SCAT: Calculate the logarithm of a scattering transform.
 % Usage
 %    S = log_scat(S)
 % Input
@@ -6,6 +6,7 @@
 % Output
 %    S: The scattering transform with the logarithm applied to each 
 %       coefficient.
+% See also LOG_RENORM_SCAT
 
 function S = log_scat(S, epsilon)
 	if nargin < 2
