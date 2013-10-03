@@ -28,15 +28,15 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	
 	[temp,psi_bw,phi_bw] = filter_freq(filters);
 	
-	%N_padded = filters.N/2^(floor(log2(filters.N/(2*N))));
-	N_padded = filters.N/2^options.x_resolution;
+	%N_padded = filters.meta.size_filter/2^(floor(log2(filters.meta.size_filter/(2*N))));
+	N_padded = filters.meta.size_filter/2^options.x_resolution;
 	
 	% resolution of x - how much have we subsampled by?
-	j0 = log2(filters.N/N_padded);
+	j0 = log2(filters.meta.size_filter/N_padded);
 	
 	x = reshape(x, [size(x,1), size(x,3)]);
 	
-	x = pad_signal(x, N_padded, filters.boundary);
+	x = pad_signal(x, N_padded, filters.meta.boundary);
 	
 	xf = fft(x,[],1);
     

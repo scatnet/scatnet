@@ -7,10 +7,10 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 	
 	temp = zeros(N0,1);
 	
-	N0_padded = dual_filters.N;
+	N0_padded = dual_filters.meta.size_filter;
 
-	N_padded = dual_filters.N/2^meta_phi.resolution;
-	x_phi = pad_signal(x_phi, N_padded, dual_filters.boundary);
+	N_padded = dual_filters.meta.size_filter/2^meta_phi.resolution;
+	x_phi = pad_signal(x_phi, N_padded, dual_filters.meta.boundary);
 	
 	x_phi = interpft(x_phi, N0_padded)/2^(meta_phi.resolution/2);
 	
@@ -21,8 +21,8 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 			continue;
 		end
 		
-		N_padded = dual_filters.N/2^meta_psi.resolution(k);
-		x_psi{k} = pad_signal(x_psi{k}, N_padded, dual_filters.boundary);
+		N_padded = dual_filters.meta.size_filter/2^meta_psi.resolution(k);
+		x_psi{k} = pad_signal(x_psi{k}, N_padded, dual_filters.meta.boundary);
 
 		x_psi{k} = interpft(x_psi{k}, N0_padded)/2^(meta_psi.resolution(k)/2);
 		
