@@ -1,6 +1,7 @@
-function S=inter_normalize(S,Sn,layerNb,epsilon)
-%This function creates a normalization of the first order coefficients of S
-%by the elements of the 'zero' order coefficients of Sn
+function V_end = inter_normalize_scat(V,Vn,layerNb,epsilon)
+% V can be either the scattering transform V or U. 
+%This function creates a normalization of the first order coefficients of V
+%by the elements of the 'zero' order coefficients of Vn
 
 m=layerNb;
 
@@ -10,35 +11,35 @@ end
 
 if m==1
     
-    for p2 = 1:length(S{2}.signal)
-        sub_multiplier = 2^(S{2}.meta.resolution(p2)/2);
+    for p2 = 1:length(V{2}.signal)
+        sub_multiplier = 2^(V{2}.meta.resolution(p2)/2);
         
-        %whatever happens, Sn{1}.signal{1} will always be at a lower or equal
-        %resolution than S{2}.signal{p2}
+        %whatever happens, Vn{1}.signal{1} will always be at a lower or equal
+        %resolution than V{2}.signal{p2}
         
-        ds = log2(size(Sn{1}.signal{1},1)/size(S{2}.signal{p2},1));
+        ds = log2(size(Vn{1}.signal{1},1)/size(V{2}.signal{p2},1));
         if ds > 0
-            parent = Sn{1}.signal{1}(1:2^ds:end,:,:)*2^(ds/2);
+            parent = Vn{1}.signal{1}(1:2^ds:end,:,:)*2^(ds/2);
         else
-            parent = interpft(Sn{1}.signal{1},size(Sn{1}.signal{1},1)*2^(-ds))*2^(-ds/2);
+            parent = interpft(Vn{1}.signal{1},size(Vn{1}.signal{1},1)*2^(-ds))*2^(-ds/2);
         end
         
-        S{2}.signal{p2} = S{2}.signal{p2}./(parent+epsilon*sub_multiplier);
+        V{2}.signal{p2} = V{2}.signal{p2}./(parent+epsilon*sub_multiplier);
     end
     
 elseif m==2
     
-    for p2 = 1:length(S{m+1}.signal)
-        j = S{m+1}.meta.j(:,p2);
-        p1 = find(all(bsxfun(@eq,S{m}.meta.j,j(1:m-1)),1));
-        sub_multiplier = 2^(S{m+1}.meta.resolution(p2)/2);
-        ds = log2(size(Sn{m}.signal{p1},1)/size(S{m+1}.signal{p2},1));
+    for p2 = 1:length(V{m+1}.signal)
+        j = V{m+1}.meta.j(:,p2);
+        p1 = find(all(bsxfun(@eq,V{m}.meta.j,j(1:m-1)),1));
+        sub_multiplier = 2^(V{m+1}.meta.resolution(p2)/2);
+        ds = log2(size(Vn{m}.signal{p1},1)/size(V{m+1}.signal{p2},1));
         if ds > 0
-            parent = Sn{m}.signal{p1}(1:2^ds:end,:,:)*2^(ds/2);
+            parent = Vn{m}.signal{p1}(1:2^ds:end,:,:)*2^(ds/2);
         else
-            parent = interpft(Sn{m}.signal{p1},size(Sn{m}.signal{p1},1)*2^(-ds))*2^(-ds/2);
+            parent = interpft(Vn{m}.signal{p1},size(Vn{m}.signal{p1},1)*2^(-ds))*2^(-ds/2);
         end
-        S{m+1}.signal{p2} = S{m+1}.signal{p2}./(parent+epsilon*sub_multiplier);
+        V{m+1}.signal{p2} = V{m+1}.signal{p2}./(parent+epsilon*sub_multiplier);
     end
     
 else
