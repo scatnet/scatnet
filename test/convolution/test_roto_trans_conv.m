@@ -15,11 +15,8 @@ filt_rot_opt.filter_format = 'fourier_multires';
 filt_rot_opt.J = 3;
 filt_rot_opt.P = 0;
 filt_rot_opt.Q = 1;
+filt_rot_opt.precision = precision;
 filters_rot = morlet_filter_bank_1d(sz, filt_rot_opt);
-if strcmp(precision,'single')
-	filters_rot = singlify_filter_bank(filters_rot);
-end
-
 
 %%
 Y = rand(64, 64, 8);
