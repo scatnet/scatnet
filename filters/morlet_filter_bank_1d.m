@@ -85,8 +85,9 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	
 	% Copy filter parameters into filter structure. This is needed by the
 	% scattering algorithm to calculate sampling, path space, etc.
+	filters.meta = struct();
 	for l = 1:length(parameter_fields)
-		filters = setfield(filters,parameter_fields{l}, ...
+		filters.meta = setfield(filters.meta,parameter_fields{l}, ...
 			getfield(options,parameter_fields{l}));
 	end
 	
@@ -102,7 +103,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	
 	N = 2^ceil(log2(N));
 	
-	filters.N = N;
+	filters.meta.size_filter = N;
 	
 	filters.psi.filter = cell(1,options.J+options.P);
 	filters.phi = [];
