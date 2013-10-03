@@ -20,7 +20,7 @@ phi = fft2(tmp);
 
 tempo.psi{1}=psi;
 tempo.phi{1}=phi;
-lp=littlewood_paley(tempo);
+lp=littlewood_paley_ISCV(tempo);
 
 end
 
