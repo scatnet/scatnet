@@ -46,8 +46,7 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 	N_padded = dual_filters.meta.size_filter/2^meta_phi.resolution;
 	x_phi = pad_signal(x_phi, N_padded, dual_filters.meta.boundary);
 	
-	% TODO: allow more flexible interpolation (cubic spline, etc)
-	x_phi = interpft(x_phi, N0_padded)/2^(meta_phi.resolution/2);
+	x_phi = upsample(x_phi, N0_padded)/2^(meta_phi.resolution/2);
 	
 	x = conv_sub_1d(fft(x_phi), dual_filters.phi.filter, 0);
 	
@@ -59,8 +58,7 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 		N_padded = dual_filters.meta.size_filter/2^meta_psi.resolution(k);
 		x_psi{k} = pad_signal(x_psi{k}, N_padded, dual_filters.meta.boundary);
 
-		% TODO: allow more flexible interpolation (cubic spline, etc)
-		x_psi{k} = interpft(x_psi{k}, N0_padded)/2^(meta_psi.resolution(k)/2);
+		x_psi{k} = upsample(x_psi{k}, N0_padded)/2^(meta_psi.resolution(k)/2);
 		
 		x = x+conv_sub_1d(fft(x_psi{k}), dual_filters.psi.filter{k}, 0);
 	end
