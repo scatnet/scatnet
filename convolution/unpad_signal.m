@@ -2,11 +2,11 @@
 %
 function x = unpad_signal(x, res, target_sz, offset)
 	if nargin < 4
-		offset = 0;
+		offset = zeros(size(target_sz));
 	end
 	
-    offset_ds = floor(offset/2^res);
-    target_sz_ds = 1 + floor((target_sz-1)/2^res) - offset_ds;
+    offset_ds = floor(offset./2.^res);
+    target_sz_ds = 1 + floor((target_sz-1)./2.^res) - offset_ds;
     
     switch length(target_sz)
         case 1
