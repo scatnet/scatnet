@@ -26,6 +26,12 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	
 	N = size(x,1);
 	
+	if size(x,2) > 1
+		error(['Input x must be one-dimensional! Multiple signals can be ' ...
+			'specified by letting x be of the form Nx1xK, where K is the ' ...
+			'number of signals.']);
+	end
+	
 	[temp,psi_bw,phi_bw] = filter_freq(filters);
 	
 	%N_padded = filters.meta.size_filter/2^(floor(log2(filters.meta.size_filter/(2*N))));
