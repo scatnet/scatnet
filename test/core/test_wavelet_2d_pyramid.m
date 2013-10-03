@@ -1,13 +1,14 @@
 clear;
-x = uiuc_sample;
-options.P = 2;
-options.J = 5;
-K = 10;
-filters = morlet_filter_bank_2d_pyramid(options);
+x = lena;
+opt_filters.P = 2;
 
+K = 10;
+filters = morlet_filter_bank_2d_pyramid(opt_filters);
+
+opt_wav.J = 5;
 tic;
 for k = 1:K
-	[x_phi, x_psi] = wavelet_2d_pyramid(x, filters, options);
+	[x_phi, x_psi] = wavelet_2d_pyramid(x, filters, opt_wav);
 end
 toc;
 ux = modulus_layer(x_psi);

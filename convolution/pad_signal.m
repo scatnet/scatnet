@@ -56,14 +56,6 @@ function x = pad_signal(x,N1,boundary,half_sample, center)
             conjugate = zeros(1,N0);
         end
         
-        %x = shiftdim(x,d-1);
-        %sz = size(x);
-        %x = reshape(x,[sz(1) prod(sz(2:end))]);
-        %x = x(ind,:);
-        %x = reshape(x,[length(ind) sz(2:end)]);
-        %x = shiftdim(x,dims-d+1);
-        
-        % MATLAB is stupid; easier to do manually
         if d == 1
             x = x(ind,:,:);
             if has_imag
@@ -82,7 +74,7 @@ function x = pad_signal(x,N1,boundary,half_sample, center)
             end
         end
     end
-    if center 
-       x = circshift(x, margins); 
+    if center
+        x = circshift(x, margins);
     end
 end
