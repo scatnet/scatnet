@@ -26,6 +26,9 @@
 %    to the resolution given by N0 and so the resulting signal x will be of
 %    this resolution.
 %
+%    Note that this actually the pseudo-inverse of the wavelet transform,
+%    since the wavelet transform is not surjective.
+%
 % See also 
 %   DUAL_FILTER_BANK, WAVELET_1D
 
