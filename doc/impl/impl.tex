@@ -236,15 +236,38 @@ where \mcode{S} is the scattering transform whose logarithm we want to compute, 
 
 \subsubsection{\mcode{average_scat}}
 
+For several classification problems, it is sometimes useful to average features in time as it reduces the complexity of the problem and smoothes the distribution of the features.
+This is achieved in ScatNet using the \mcode{average_scat} function. Its signature is 
+
+\begin{lstlisting}
+  S_av =  average_scat(S,T,step,window_fun);
+\end{lstlisting}
+where \mcode{S} is the scattering transform we want to average, \mcode{T} is the length of the window with which to average, \mcode{step} is the stepping of the successive 
+windows (which default value is $T/2$ ), and finally \mcode{window_fun} represents the windowing function to use for averaging(which default value is $@hanning_standalone$). 
+
+\subsubsection{\mcode{aggregate_scat}}
+
+ Some signals (mostly audio signals) have a somewhat obvious and particular structure(for e.g the attack sustain and release phases of a muscical note) which we might want 
+to provide as a cue to classifiers. In that case, it would totally make sense to concatenate features computed over a certain number of successive time frames. In ScatNet,
+the function \mcode{aggregate_scat} empowers you with such an ability. Its  signature is:
+
+\begin{lstlisting}
+  S_ag =  aggregate_scat(S,N);
+\end{lstlisting}
+where \mcode{S} is the scattering transform we want to aggregate and \mcode{N} is the length of the window on which we wish to aggregaate the features.
+
 \subsection{Formatting}
 
-In order to use the scattering coefficients for classification and other tasks, it is often useful to convert the representation into a purely numeric format, separating out the metadata. This is the role of the \mcode{format_scat} function, whose signature is
+In order to use the scattering coefficients for classification and other tasks, it is often useful to convert the representation into a purely numeric format, separating 
+out the metadata. This is the role of the \mcode{format_scat} function, whose signature is
 \begin{lstlisting}
 [S_table, meta] = format_scat(S, fmt);
 \end{lstlisting}
-where \mcode{S} is the scattering transform, \mcode{fmt} is the type of output we want, \mcode{S_table} is the formatted output, and \mcode{meta} contain the metadata from \mcode{S} associated with the signals in \mcode{S_table}.
+where \mcode{S} is the scattering transform, \mcode{fmt} is the type of output we want, \mcode{S_table} is the formatted output, and \mcode{meta} contain the metadata 
+from \mcode{S} associated with the signals in \mcode{S_table}.
 
-There are three different formats available for \mcode{fmt}. The first is \mcode{'raw'}, which leaves the representation intact, setting \mcode{S_table = S}. The second is \mcode{'order_table'}, which creates a two-dimensional table for each scattering order, and sets \mcode{S_table} to the cell array of these tables, with \mcode{meta} being a cell array of the associated \mcode{S\{m+1\}.meta}. Finally, \mcode{'table'} (the default), concatenates the tables of all orders and does the same for the meta fields. In the case where \mcode{meta} fields have different number of rows for different orders, the smaller fields are extended with \mcode{-1}. Note that this last format is only possible if scattering coefficients of different orders are of the same resolution, which is most often the case.
+There are three different formats available for \mcode{fmt}. The first is \mcode{'raw'}, which leaves the representation intact, setting \mcode{S_table = S}. The second is \mcode{'order_table'}, which creates
+ a two-dimensional table for each scattering order, and sets \mcode{S_table} to the cell array of these tables, with \mcode{meta} being a cell array of the associated \mcode{S\{m+1\}.meta}. Finally, \mcode{'table'} (the default), concatenates the tables of all orders and does the same for the meta fields. In the case where \mcode{meta} fields have different number of rows for different orders, the smaller fields are extended with \mcode{-1}. Note that this last format is only possible if scattering coefficients of different orders are of the same resolution, which is most often the case.
 
 \section{Display}
 
