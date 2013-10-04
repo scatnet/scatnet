@@ -82,7 +82,8 @@ function xt = inverse_scat(S, filters, options, node)
 	
 		for k = 1:length(children)
 			j_child = S{m+2}.meta.j(m+1,children(k));
-			x_psi_mod{j_child+1} = inv_scat(S, filters, options, [m+1 children(k)]);
+			x_psi_mod{j_child+1} = inverse_scat(S, filters, options, ...
+				[m+1 children(k)]);
 		end
 	
 		% TODO: we don't always need this, do we?
