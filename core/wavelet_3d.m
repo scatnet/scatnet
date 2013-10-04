@@ -68,7 +68,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         ds = max(floor(J/Q)- options.x_resolution - options.oversampling, 0);
         tmp = fft2(pad_signal(y_phi_angle, sz_paded, []));
         tmp = conv_sub_2d(tmp, filters.phi.filter, ds);
-        y_Phi = unpad_signal(tmp, ds*[1 1],  [size(y,1), size(y,2)]);
+        y_Phi = real(unpad_signal(tmp, ds*[1 1],  [size(y,1), size(y,2)]));
         %meta
         meta_Phi.J(1) = filters.phi.meta.J;
     else
