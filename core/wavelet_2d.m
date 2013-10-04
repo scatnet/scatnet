@@ -60,6 +60,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
     
     % Band-pass filtering, downsampling and unpadding
     x_psi={};
+    meta_psi = struct();
     for p = find(psi_mask)
         j = filters.psi.meta.j(p);
         ds = max(floor(j/Q)- lastres - oversampling, 0);
@@ -69,9 +70,9 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
         meta_psi.theta(1,p) = filters.psi.meta.theta(p);
         meta_psi.resolution(1,p) = lastres+ds;
     end
-    meta_psi.j = -1*ones(1, numel(filters.psi.filter));
-    meta_psi.theta = -1*ones(1, numel(filters.psi.filter));
-    meta_psi.resolution = -1*ones(1, numel(filters.psi.filter));
+    %meta_psi.j = -1*ones(1, numel(filters.psi.filter));
+    %meta_psi.theta = -1*ones(1, numel(filters.psi.filter));
+    %meta_psi.resolution = -1*ones(1, numel(filters.psi.filter));
     
     % Conversion to single precision if required
     if(strcmp(precision,'single'))

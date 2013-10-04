@@ -14,7 +14,7 @@ filters = morlet_filter_bank_2d(size(x), opt_filters);
 %%
 opt_wavelet = struct();
 tic;
-[x_phi, x_psi] = wavelet_2d(x, filters, opt_wavelet);
+[x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, opt_wavelet);
 toc;
 %%
 % compute energy
