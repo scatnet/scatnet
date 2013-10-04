@@ -42,7 +42,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
     
     % Padding and Fourier transform
     sz_paded = filters.phi.filter.N;
-    xf = fft2(pad_signal(x, sz_paded, [], 0));
+    xf = fft2(pad_signal(x, sz_paded, []));
     
     % Low-pass filtering, downsampling and unpadding
     lastres = options.x_resolution;
