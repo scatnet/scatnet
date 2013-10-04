@@ -40,17 +40,11 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 		% simple Fourier transform
 		filter_j = sum(reshape(filter,[sig_length length(filter)/sig_length]),2);
 		yf = bsxfun(@times, xf, filter_j);
-		yf_ds = reshape( ...
-			sum(reshape(yf, [size(yf,1)/2^ds 2^ds size(yf,2)]), 2), ...
-			[size(yf,1)/2^ds size(yf,2)]);
 	elseif isstruct(filter)
 		% optimized filter, output of OPTIMIZE_FILTER
 		if strcmp(filter.type,'fourier_multires')
 			% periodized multiresolution filter, output of PERIODIZE_FILTER
 			yf = bsxfun(@times, xf, filter.coefft{1+log2(filter.N/sig_length)});
-			yf_ds = reshape( ...
-				sum(reshape(yf, [size(yf,1)/2^ds 2^ds size(yf,2)]), 2), ...
-				[size(yf,1)/2^ds size(yf,2)]);
 		elseif strcmp(filter.type,'fourier_truncated')
 			% truncated filter, output of TRUNCATE_FILTER
 			coefft = filter.coefft;
@@ -75,26 +69,26 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 					filter.coefft);
 			end
 			
-			% calculate the downsampling factor with respect to yf
-			dsj = ds+j;
-			if dsj > 0 
-				% actually downsample, so periodize in Fourier
-				yf_ds = reshape( ...
-					sum(reshape(yf,[length(yf)/2^dsj 2^dsj size(yf,2)]),2), ...
-					[length(yf)/2^dsj size(yf,2)]);
-			elseif dsj < 0
-				% upsample, so zero-pad in Fourier
-				yf_ds = [yf; zeros((2^(-dsj)-1)*length(yf),size(yf,2))];
-			end
-			
 			if filter.recenter
 				% result has been shifted in frequency so that the zero fre-
 				% quency is actually at -filter.start+1
-				yf_ds = circshift(yf_ds,filter.start-1);
+				yf = circshift(yf,filter.start-1);
 			end
 		end
 	else
 		error('Unsupported filter type');
+	end
+	
+	% calculate the downsampling factor with respect to yf
+	dsj = ds+log2(size(yf,1)/sig_length);
+	if dsj > 0 
+		% actually downsample, so periodize in Fourier
+		yf_ds = reshape( ...
+			sum(reshape(yf,[size(yf,1)/2^dsj 2^dsj size(yf,2)]),2), ...
+			[size(yf,1)/2^dsj size(yf,2)]);
+	elseif dsj < 0
+		% upsample, so zero-pad in Fourier
+		yf_ds = [yf; zeros((2^(-dsj)-1)*length(yf),size(yf,2))];
 	end
 
 	y_ds = ifft(yf_ds)/2^(ds/2);
