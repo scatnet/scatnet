@@ -28,5 +28,5 @@ W={W{1,1:2}};
 [S,U ] = scat(x, W);
 %%
 U2 = U{2};
-options.null = 1;
+options = struct();
 [U_Phi, U_Psi] = wavelet_layer_3d(U2, filters, filters_rot, options);

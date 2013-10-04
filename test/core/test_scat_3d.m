@@ -4,9 +4,9 @@
 x = uiuc_sample;
 x = x(1:256,1:256);
 
-filt_opt.null = 1;
+filt_opt = struct();
 filt_opt.J = 8;
-filt_rot_opt.null = 1;
+filt_rot_opt = struct();
 scat_opt.oversampling = 0;
 
 [Wop, filters, filters_rot ] = ...
