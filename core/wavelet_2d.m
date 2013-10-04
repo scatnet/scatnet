@@ -41,13 +41,11 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
     psi_mask = options.psi_mask; 
     
     % Padding and Fourier transform
-    lastres = options.x_resolution;
-    margins = filters.meta.margins / 2^lastres;
-    
-	xf = fft2(pad_signal(x, filters.meta.size_filter/2^lastres, [], 0));
-    Q = filters.meta.Q;
+	xf = fft2(pad_signal(x, filters.phi.filter.N, [], 0));
 	
 	% Low-pass filtering, downsampling and unpadding
+    lastres = options.x_resolution;
+    Q = filters.meta.Q;
 	J = filters.phi.meta.J;
 	ds = max(floor(J/Q)- lastres - oversampling, 0);
 	margins = filters.meta.margins / 2^(lastres+ds);
