@@ -49,13 +49,15 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
     
     Q = filters.meta.Q;
     J = filters.meta.J;
+    Q_rot = filters_rot.meta.Q;
+    J_rot = filters_rot.meta.J;
     sz_paded = filters.phi.filter.N / 2^(options.x_resolution);
     
     
     % ------- LOW PASS -------
     % ------- PHI(U,V) * PHI(THETA) -------
     
-    ds_angle = max(filters_rot.meta.J/filters_rot.meta.Q - options.oversampling_rot, 0);
+    ds_angle = max(J_rot/Q_rot - options.oversampling_rot, 0);
     if (~calculate_psi && 2^ds_angle == size(y,3))
         % if there is one coefft left along orientations, compute the sum
         % along orientation first is faster
@@ -63,40 +65,28 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         % low pass angle
         y_phi_angle =  sum(y, 3) / 2^(ds_angle/2);
         % low pass spatial
-        ds = max(floor(J/Q)- lastres - options.oversampling, 0);
-        
-        
-        xf = fft2(pad_signal(y_phi_angle, sz_paded, []));
-        %margins = filters.meta.margins / 2^lastres;
-        %tmp = fft2(pad_mirror_2d(y_phi_angle, margins));
-        %margins = filters.meta.margins / 2^(lastres+ds);
-        
-        y_Phi = conv_sub_2d(tmp,filters.phi.filter, ds);
-        y_Phi = unpad_signal(y_Phi, ds*[1 1], margins);
-        
-        
+        ds = max(floor(J/Q)- options.x_resolution - options.oversampling, 0);
+        tmp = fft2(pad_signal(y_phi_angle, sz_paded, []));
+        tmp = conv_sub_2d(tmp, filters.phi.filter, ds);
+        y_Phi = unpad_signal(tmp, ds*[1 1],  [size(y,1), size(y,2)]);
+        %meta
         meta_Phi.J(1) = filters.phi.meta.J;
-        
     else
-        phi_angle = filters_rot.phi.filter;
         % spatial mirror padding and fft
-        margins = filters.meta.margins / 2^lastres;
+        yf = zeros([sz_paded, nb_angle_in]);
         for theta = 1:nb_angle_in
-            tmp = fft2(pad_mirror_2d(y(:,:,theta), margins));
-            if (theta==1) % prealocate when we know the size
-                yf = zeros([size(tmp), nb_angle_in]);
-            end
+            tmp = fft2(pad_signal(y(:,:,theta), sz_paded, []));
             yf(:,:,theta) = tmp;
         end
         
-        % low pass spatial (filter along first two dimension)
+        % low pass spatial
+        
         for theta = 1:nb_angle_in
-            ds = max(floor(J/Q)- lastres - options.oversampling, 0);
-            margins = filters.meta.margins / 2^(lastres+ds);
+            ds = max(floor(J/Q) - options.x_resolution - options.oversampling, 0);
             tmp = ...
                 real(conv_sub_2d(yf(:,:,theta), filters.phi.filter, ds));
-            tmp = unpad_signal(tmp, ds*[1 1], margins);
-            if (theta == 1) % prealocate when we know the size
+            tmp = unpad_signal(tmp, ds*[1 1], [size(y,1), size(y,2)]);
+            if (theta == 1) %preallocate when we know the size
                 y_phi = zeros([size(tmp), nb_angle_in]);
             end
             y_phi(:,:,theta) = tmp;
@@ -108,7 +98,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         
         % low pass angle
         phi_angle = filters_rot.phi.filter;
-        ds = floor(max(filters_rot.J/filters_rot.Q - options.oversampling_rot, 0));
+        ds = floor(max(floor(J_rot/Q_rot) - options.oversampling_rot, 0));
         if (2^ds == size(y_phi,3)) % if there is one coefft left, compute the sum
             % is faster than convolving with a constant filter
             y_Phi = sum(y_phi,3) / 2^(ds/2);
@@ -146,7 +136,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         for lambda2 = find(options.psi_mask)
             theta2 = filters.psi.meta.theta(lambda2);
             j2 = filters.psi.meta.j(lambda2);
-            ds = max(floor(j2/Q)- lastres - options.oversampling, 0);
+            ds = max(floor(j2/Q)- options.x_resolution - options.oversampling, 0);
             
             % convolution with psi_{j1, theta + theta2}
             for theta = 1:nb_angle_in
@@ -155,26 +145,27 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 lambda2p1 = find(filters.psi.meta.theta == theta_sum_modL & ...
                     filters.psi.meta.j == j2);
                 psi = filters.psi.filter{lambda2p1};
-                margins = filters.meta.margins / 2^(lastres+ds);
-                tmp = ...
-                    conv_sub_unpad_2d(yf(:,:,theta), psi, ds, margins);
+                
+                %tmp = ...
+                %    conv_sub_unpad_2d(yf(:,:,theta), psi, ds, margins);
+                tmp = conv_sub_2d(yf(:,:,theta), psi, ds);
+                tmp = unpad_signal(tmp, ds*[1,1], [size(y,1), size(y,2)]);
                 
                 if (theta == 1) % prealocate when we know the size
-                    y_psi = zeros([size(tmp), nb_angle_in]);
+                    y_psi = zeros([size(tmp), 2*L]);
                 end
                 
                 % use PROPERTY_1 to compute convolution with filters that
                 % have an angle > pi
                 if (theta_sum_mod2L <= L)
-                    y_psi(:,:, theta)  = tmp;
+                    y_psi(:,:,theta) = tmp;
+                    y_psi(:,:,theta+L) = conj(tmp);
                 else
-                    y_psi(:,:, theta) = conj(tmp);
+                    y_psi(:,:,theta) = conj(tmp);
+                    y_psi(:,:,theta+L) = tmp;
                 end
             end
             
-            if (y_half_angle) % thanks to PROPERTY_1
-                y_psi = cat(3, y_psi, conj(y_psi)) / sqrt(2); % for energy preservation
-            end
             
             % fourier angle
             y_psi_f = fft(y_psi,[],3);

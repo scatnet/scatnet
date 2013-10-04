@@ -11,7 +11,7 @@ filt_rot_opt.null = 1;
 % image will be sampled at exactly the same points
 scat_opt.oversampling = 10;
 
-Wop = wavelet_factory_3d(size(x), filt_opt, filt_rot_opt, scat_opt);
+Wop = wavelet_factory_3d_pyramid(size(x), filt_opt, filt_rot_opt, scat_opt);
 
 % compute scattering of x
 Sx = scat(x, Wop);
