@@ -1,12 +1,16 @@
-% morlet_filter_bank_1d: Creates a Morlet/Gabor filter bank.
+% MORLET_FILTER_BANK_1D Create a Morlet/Gabor filter bank
+%
 % Usage
-%    filters = morlet_filter_bank_1d(sz, options)
+%    filters = MORLET_FILTER_BANK_1D(sz, options)
+%
 % Input
-%    sz: The size of the input data.
-%    options (optional): Filter parameters.
+%    sz (int): The size of the input data.
+%    options (struct, optional): Filter parameters, see below.
+%
 % Output
-%    filters: The Morlet/Gabor filter bank corresponding to the data size sz
-%       and the filter parameters in options.
+%    filters (struct): The Morlet/Gabor filter bank corresponding to the data 
+%       size sz and the filter parameters in options.
+%
 % Description
 %    Depending on the value of options.filter_type, the functions either
 %    creates a Morlet filter bank (for filter_type 'morlet_1d') or a Gabor
@@ -15,22 +19,25 @@
 %    lopes uch that the mean of the resulting function is zero.
 %
 %    The following parameters can be specified in options:
-%       options.filter_type: See above (default 'morlet_1d').
-%       options.Q: The number of wavelets per octave (default 1).
-%       options.B: The reciprocal per-octave bandwidth of the wavelets 
+%       options.filter_type (char): See above (default 'morlet_1d').
+%       options.Q (int): The number of wavelets per octave (default 1).
+%       options.B (int): The reciprocal per-octave bandwidth of the wavelets 
 %          (default Q).
-%       options.J: The number of logarithmically spaced wavelets. For Q=1, 
-%          this corresponds to the total number of wavelets since there are no 
-%          linearly spaced ones. Together with Q, this controls the maximum 
-%          extent the mother wavelet is dilated to obtain the rest of the
-%          filter bank. Specifically, the largest filter has a bandwidth
+%       options.J (int): The number of logarithmically spaced wavelets. For  
+%          Q=1, this corresponds to the total number of wavelets since there 
+%          are no  linearly spaced ones. Together with Q, this controls the  
+%          maximum extent the mother wavelet is dilated to obtain the rest of 
+%          the filter bank. Specifically, the largest filter has a bandwidth
 %          2^(J/Q) times that of the mother wavelet (default 
 %          T_to_J(sz, options)).
-%       options.phi_bw_multiplier: The ratio between the bandwidth of the 
-%          lowpass filter phi and the lowest-frequency wavelet (default 2 if
-%          Q = 1, otherwise 1).
+%       options.phi_bw_multiplier (numeric): The ratio between the bandwidth 
+%          of the lowpass filter phi and the lowest-frequency wavelet (default
+%           2 if Q = 1, otherwise 1).
 %       options.boundary, options.precision, and options.filter_format: 
-%          See documentation for filter_bank function.
+%          See documentation for the FILTER_BANK function.
+%
+% See also
+%    SPLINE_FILTER_BANK_1D, FILTER_BANK
 
 function filters = morlet_filter_bank_1d(sig_length,options)
 	if nargin < 2

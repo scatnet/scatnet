@@ -1,17 +1,21 @@
-% filter_bank: Creates a filter bank
+% FILTER_BANK Creates a filter bank
+%
 % Usage
-%    filters = filter_bank(sz, options)
+%    filters = FILTER_BANK(sz, options)
+%
 % Input
-%    sz: The size of the input data.
-%    options (optional): Filter parameters.
+%    sz (int): The size of the input data.
+%    options (optional): Filter parameters, see below.
+%
 % Output
-%    filters: A cell array of filter bank corresponding to the data size sz
-%       and the filter parameters in options.
+%    filters (struct): A cell array of filter bank corresponding to the data 
+%       size sz and the filter parameters in options.
+%
 % Description
 %    The behavior of the function depends on the value of options.filter_type,
 %    which can have the following values:
-%       'morlet_1d', 'gabor_1d': Calls morlet_filter_bank_1d.
-%       'spline_1d': Calls spline_filter_bank_1d.
+%       'morlet_1d', 'gabor_1d': Calls MORLET_FILTER_BANK_1D.
+%       'spline_1d': Calls SPLINE_FILTER_BANK_1D.
 %    The filter parameters in options are then passed on to these functions.
 %    If multiple filter banks are desired, multiple parameters can be supplied
 %    by providing a vector of parameter values instead of a scalar (in the 
@@ -43,8 +47,14 @@
 %              'fourier_truncated': Stores the Fourier coefficients of each
 %                 filter on the support of the filter, reducing memory
 %                 consumption and increasing speed of calculations (default).
+%
+%    For parameters specific to the filter bank type, see the documentation
+%    for MORLET_FILTER_BANK_1D and SPLINE_FILTER_BANK_1D.
+%
+% See also
+%    WAVELET_FACTORY_1D, WAVELET_FACTORY_2D, WAVELET_1D, WAVELET_2D
 
-function filters = filter_bank(sig_length,options)
+function filters = filter_bank(sig_length, options)
 	parameter_fields = {'filter_type','Q','B','xi_psi','sigma_psi', ...
 		'phi_bw_multiplier','sigma_phi','J','P','spline_order', ...
 		'filter_format'};

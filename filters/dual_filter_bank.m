@@ -21,7 +21,7 @@
 %    where conj denotes complex conjugation.
 %
 % See also 
-%   FILTER_BANK, INVERSE_WAVELET_1D
+%    FILTER_BANK, INVERSE_WAVELET_1D
 
 function dual_filters = dual_filter_bank(filters)
 	A = littlewood_paley(filters);
