@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Demo of plot_meta</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-02"><meta name="DC.source" content="demo_plot_meta.m"><style type="text/css">
+      --><title>Demo of plot_meta</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-10-04"><meta name="DC.source" content="demo_plot_meta.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -70,7 +70,26 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 [S, U] = scat(x, Wop);
 
 plot_meta(S);
-</pre><img vspace="5" hspace="5" src="demo_plot_meta_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+</pre><pre class="codeoutput">Subscript indices must either be real positive integers or logicals.
+
+Error in conv_sub_2d (line 11)
+            x_conv_y = conv_sub_2d(xf, filter.coefft{res+1}, ds);
+
+Error in wavelet_2d (line 53)
+	x_phi.signal{1} = real(conv_sub_2d(xf, filters.phi.filter, ds));
+
+Error in wavelet_layer_2d (line 55)
+		[x_phi, x_psi] = wavelet_2d(x, filters, options);
+
+Error in wavelet_factory_2d&gt;@(x)(wavelet_layer_2d(x,filters,options_W)) (line 58)
+		Wop{m} = @(x)(wavelet_layer_2d(x, filters, options_W));
+
+Error in scat (line 51)
+			[S{m+1}, V] = Wop{m+1}(U{m+1});
+
+Error in demo_plot_meta (line 11)
+[S, U] = scat(x, Wop);
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Demo of *plot_meta*
 % We show some examples on the use of *plot_meta*. It displays graphically

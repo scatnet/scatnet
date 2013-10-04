@@ -40,7 +40,7 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     
     white_list_filt = {'filter_type', 'precision', 'Q', 'J', 'L',...
         'sigma_phi','sigma_psi','xi_psi','slant_psi'};
-    white_list_scat = { 'oversampling', 'precision_4byte','M'};
+    white_list_scat = { 'oversampling', 'precision','M'};
     
     check_options_white_list(filt_opt, white_list_filt);
     check_options_white_list(scat_opt, white_list_scat);
