@@ -19,11 +19,10 @@
 
 function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot, options)
     
-    % TODO : whitelist
+    % Options
     if (nargin<4)
         options = struct();
     end
-     % TODO : fill_struct the options
     white_list = {'x_resolution', 'psi_mask', 'oversampling', 'oversampling_rot'};
     check_options_white_list(options, white_list);
     options = fill_struct(options, 'oversampling', 1);
@@ -48,18 +47,8 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
     % conj(| x* \psi_{\theta_1} | * \psi_{\theta_2} )
     
     
-    if nargin<3
-        options = struct();
-    end
-    
     Q = filters.meta.Q;
     J = filters.meta.J;
-    
-    % option retrieving
-    % precomputation
-    lastres = log2(filters.meta.size_in(1)/size(y,1));
-    
-    
     sz_paded = filters.phi.filter.N / 2^(options.x_resolution);
     
     

@@ -45,28 +45,27 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
     xf = fft2(pad_signal(x, sz_paded, []));
     
     % Low-pass filtering, downsampling and unpadding
-    lastres = options.x_resolution;
     Q = filters.meta.Q;
     J = filters.phi.meta.J;
-    ds = max(floor(J/Q)- lastres - oversampling, 0);
+    ds = max(floor(J/Q)- options.x_resolution - oversampling, 0);
     x_phi = real(conv_sub_2d(xf, filters.phi.filter, ds));
     x_phi = unpad_signal(x_phi, ds*[1 1], size(x));
     
     meta_phi.j = -1;
     meta_phi.theta = -1;
-    meta_phi.resolution = lastres+ds;
+    meta_phi.resolution = options.x_resolution + ds;
     
     % Band-pass filtering, downsampling and unpadding
     x_psi={};
     meta_psi = struct();
     for p = find(psi_mask)
         j = filters.psi.meta.j(p);
-        ds = max(floor(j/Q)- lastres - oversampling, 0);
+        ds = max(floor(j/Q)- options.x_resolution - oversampling, 0);
         x_psi{p} = conv_sub_2d(xf, filters.psi.filter{p}, ds);
         x_psi{p} = unpad_signal(x_psi{p}, ds*[1 1], size(x));
         meta_psi.j(1,p) = filters.psi.meta.j(p);
         meta_psi.theta(1,p) = filters.psi.meta.theta(p);
-        meta_psi.resolution(1,p) = lastres+ds;
+        meta_psi.resolution(1,p) = options.x_resolution+ds;
     end
     
 end
