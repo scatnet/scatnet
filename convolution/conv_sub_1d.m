@@ -33,43 +33,69 @@
 % See also
 %   CONV_SUB_2D, WAVELET_1D
 
-function y_ds = conv_sub_1d(xf,filter,ds)
-	sig_length = length(xf);
+function y_ds = conv_sub_1d(xf, filter, ds)
+	sig_length = size(xf,1);
 
-	if isnumeric(filter) % DFT vector
+	if isnumeric(filter)
+		% simple Fourier transform
 		filter_j = sum(reshape(filter,[sig_length length(filter)/sig_length]),2);
-		yf_ds = sum(reshape(xf.*filter_j,[sig_length/2^ds 2^ds]),2) / 2^(ds/2);
-	elseif isstruct(filter) % see e.g. MORLET_FILTER_BANK_1D
+		yf = bsxfun(@times, xf, filter_j);
+		yf_ds = reshape( ...
+			sum(reshape(yf, [size(yf,1)/2^ds 2^ds size(yf,2)]), 2), ...
+			[size(yf,1)/2^ds size(yf,2)]);
+	elseif isstruct(filter)
+		% optimized filter, output of OPTIMIZE_FILTER
 		if strcmp(filter.type,'fourier_multires')
-			yf = xf.*filter.coefft{1+log2(filter.N/sig_length)};
-			yf_ds = sum(reshape(yf,[sig_length/2^ds 2^ds]),2) / 2^(ds/2);
+			% periodized multiresolution filter, output of PERIODIZE_FILTER
+			yf = bsxfun(@times, xf, filter.coefft{1+log2(filter.N/sig_length)});
+			yf_ds = reshape( ...
+				sum(reshape(yf, [size(yf,1)/2^ds 2^ds size(yf,2)]), 2), ...
+				[size(yf,1)/2^ds size(yf,2)]);
 		elseif strcmp(filter.type,'fourier_truncated')
-			nCoeffts = length(filter.coefft);
+			% truncated filter, output of TRUNCATE_FILTER
+			coefft = filter.coefft;
+			nCoeffts = length(coefft);
 			j = log2(nCoeffts/sig_length);
-			if j>0 % zero-padding of xf
-				xf = [xf(1:end/2); zeros(nCoeffts-sig_length,1); ...
-				xf(end/2+1:end)];
+			if j > 0
+				% filter is larger than signal, so zero-pad the latter
+				xf = [xf(1:end/2,:); zeros(nCoeffts-sig_length,size(xf,2)); ...
+					xf(end/2+1:end,:)];
 			end
-			if filter.start<=0 % see TRUNCATE_FILTER
-				yf_ds = xf([end+filter.start:end ...
-				1:nCoeffts+filter.start-1]) .* filter.coefft;
+			if filter.start<=0
+				% filter support starts in negative frequencies, extract
+				% negative frequencies of signal
+				yf = bsxfun(@times, ...
+					xf([end+filter.start:end 1:nCoeffts+filter.start-1],:), ...
+					filter.coefft);
 			else
-				yf_ds = xf(filter.start:nCoeffts+filter.start-1).*filter.coefft;
+				% filter support starts in positive frequencies, only extract
+				% positive frequencies of signal
+				yf = bsxfun(@times, ...
+					xf(filter.start:nCoeffts+filter.start-1,:), ...
+					filter.coefft);
 			end
-			dsj = ds+j; % log2 of downsampling factor with respect to yf
-			if dsj>0 % posterior downsampling
-				yf_ds = sum(reshape(yf_ds,[length(yf_ds)/2^dsj 2^dsj]),2);
-			elseif dsj<0 % interpolation with zeros
-				yf_ds = [yf_ds; zeros((2^(-dsj)-1)*length(yf_ds),1)];
+			
+			% calculate the downsampling factor with respect to yf
+			dsj = ds+j;
+			if dsj > 0 
+				% actually downsample, so periodize in Fourier
+				yf_ds = reshape( ...
+					sum(reshape(yf,[length(yf)/2^dsj 2^dsj size(yf,2)]),2), ...
+					[length(yf)/2^dsj size(yf,2)]);
+			elseif dsj < 0
+				% upsample, so zero-pad in Fourier
+				yf_ds = [yf; zeros((2^(-dsj)-1)*length(yf),size(yf,2))];
 			end
-			if filter.recenter % see TRUNCATE_FILTER
+			
+			if filter.recenter
+				% result has been shifted in frequency so that the zero fre-
+				% quency is actually at -filter.start+1
 				yf_ds = circshift(yf_ds,filter.start-1);
 			end
-			yf_ds = yf_ds / 2^(ds/2);
 		end
 	else
 		error('Unsupported filter type');
 	end
 
-	y_ds = ifft(yf_ds);
+	y_ds = ifft(yf_ds)/2^(ds/2);
 end
