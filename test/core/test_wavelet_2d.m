@@ -1,16 +1,20 @@
+%%
+clear;
+close all;
+%%
 % load an image
 x = uiuc_sample;
 x = x(1:251, 1:256);
 
 % compute filter bank
-options = struct();
-options.min_margin = [25, 41];
-filters = morlet_filter_bank_2d(size(x), options);
+opt_filters = struct();
+opt_filters.min_margin = [25, 800];
+filters = morlet_filter_bank_2d(size(x), opt_filters);
 
 %%
-
+opt_wavelet = struct();
 tic;
-[x_phi, x_psi] = wavelet_2d(x, filters, options);
+[x_phi, x_psi] = wavelet_2d(x, filters, opt_wavelet);
 toc;
 %%
 % compute energy
