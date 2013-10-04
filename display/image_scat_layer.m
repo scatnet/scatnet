@@ -30,7 +30,7 @@ function big_img = image_scat_layer(Scatt, renorm, dsp_legend)
 			renorm  = 1;
 		end
 		if ~exist('dsp_legend','var');
-			dsp_legend  = 1
+			dsp_legend  = 1;
 		end
 		big_img = image_scat_layer(ScattBis, renorm, dsp_legend);
 		return
