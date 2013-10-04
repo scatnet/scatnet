@@ -9,8 +9,10 @@
 %    options (structure): options of the wavelet transform
 %
 % Output
-%    x_phi (cell): Low pass part of the wavelet transform
+%    x_phi (numeric): Low pass part of the wavelet transform
 %    x_psi (cell): Wavelet coeffcients of the wavelet transform
+%    meta_phi (struct): meta associated to x_phi
+%    meta_psi (struct): meta assocaited to y_phi
 %
 % Description
 %    WAVELET_2D computes a wavelet transform, using the signal and the
@@ -21,7 +23,7 @@
 %    resolution) can be found in meta_phi and meta_psi.
 %
 % See also
-%   WAVELET_2D, CONV_SUB_2D, WAVELET_FACTORY_2D_PYRAMID
+%   WAVELET_2D_PYRAMID, CONV_SUB_2D, WAVELET_FACTORY_2D_PYRAMID
 
 function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options)
     % Options
