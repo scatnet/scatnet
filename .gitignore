@@ -9,3 +9,4 @@ doc/*/*.blg
 *.mat
 *.swp
 *.png
+*/html/*
