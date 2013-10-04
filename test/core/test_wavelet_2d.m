@@ -15,4 +15,5 @@ toc;
 
 % compute energy
 energy_x = sum(x(:).^2);
-energy_Wx = sum(x_phi.signal{1}(:).^2) + sum(cellfun(@(x)(sum(abs(x(:).^2))),x_psi.signal));
+energy_Wx = sum(x_phi(:).^2) + sum(cellfun(@(x)(sum(abs(x(:).^2))),x_psi));
+assert(abs(energy_x-energy_Wx)/energy_x<1e-2);
