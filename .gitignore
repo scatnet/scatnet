@@ -10,3 +10,4 @@ doc/*/*.blg
 *.swp
 *.png
 */html/*
+demo/display/html/demo_plot_littlewood_paley_1d.html
