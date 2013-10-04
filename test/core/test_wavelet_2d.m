@@ -1,9 +1,10 @@
 % load an image
 x = uiuc_sample;
-x = x(1:256, 1:256);
+x = x(1:251, 1:256);
 
 % compute filter bank
 options = struct();
+options.min_margin = [25, 41];
 filters = morlet_filter_bank_2d(size(x), options);
 
 %%
