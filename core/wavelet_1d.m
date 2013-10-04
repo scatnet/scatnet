@@ -47,7 +47,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		'number of signals.']);
 	end
 
-	[temp,psi_bw,phi_bw] = filter_freq(filters);
+	[temp,psi_bw,phi_bw] = filter_freq(filters.meta);
 
 	j0 = options.x_resolution;
 

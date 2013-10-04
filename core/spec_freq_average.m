@@ -4,7 +4,7 @@ function [out,meta] = spec_freq_average(in,filters,options)
 	filters1 = filters{1};
 	filters2 = filters{min(2,numel(filters))};
 	
-	[temp1,temp2,phi2_bw] = filter_freq(filters{2});
+	[temp1,temp2,phi2_bw] = filter_freq(filters{2}.meta);
 
 	supp_mult = 4;
 	

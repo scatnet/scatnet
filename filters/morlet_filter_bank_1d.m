@@ -108,7 +108,7 @@ function filters = morlet_filter_bank_1d(sig_length,options)
 	filters.psi.filter = cell(1,options.J+options.P);
 	filters.phi = [];
 	
-	[psi_center,psi_bw,phi_bw] = morlet_freq_1d(filters);
+	[psi_center,psi_bw,phi_bw] = morlet_freq_1d(filters.meta);
 	
 	psi_sigma = sigma0*pi/2./psi_bw;
 	phi_sigma = sigma0*pi/2./phi_bw;
