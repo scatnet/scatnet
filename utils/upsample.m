@@ -21,4 +21,6 @@ function y = upsample(x, N)
 	y = interp1([-length(x):2*length(x)-1].', ...
 		[flipud(x(:)); x(:); flipud(x(:))], ...
 		[0:N-1].'/N*length(x), 'spline');
+		
+	y = y/sqrt(N/length(x));
 end

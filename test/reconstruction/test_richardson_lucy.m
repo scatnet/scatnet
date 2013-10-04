@@ -12,7 +12,7 @@ x1 = richardson_lucy(pad_signal(x_phi,64), filters1d.phi.filter, rl_opt);
 
 assert(norm(x-unpad_signal(x1,0,32))<1e-2);
 
-x_phi = x_phi(1:4:end);
+x_phi = x_phi(1:4:end)*sqrt(4);
 
 x1 = richardson_lucy(max(upsample(pad_signal(x_phi,16),64),0), filters1d.phi.filter, rl_opt);
 	
