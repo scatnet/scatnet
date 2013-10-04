@@ -81,4 +81,5 @@ classdef test_wavelet_factory_2d < matlab.unittest.TestCase
                 
             end
     end
+    end
 end

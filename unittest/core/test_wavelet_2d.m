@@ -50,6 +50,7 @@ classdef test_wavelet_2d < matlab.unittest.TestCase
                 testcase.assertEqual(expected, actual);
                 
             end
+         end
         
         function testWithRandomSize(testcase)
             for i = 1:32
