@@ -103,7 +103,6 @@ The \mcode{scat_opt} options are specific to the scattering algorithm. It can co
 \begin{itemize}
 	\item \mcode{scat_opt.M} the maximum scattering order. By default equal to \mcode{2}.
 	\item \mcode{scat_opt.oversampling} the extent to which the final scattering output is oversampled. Specifically, the sampling rate is \mcode{2^scat_opt.oversampling} times the critical sampling rate. By default equal to \mcode{1}.
-	\item \mcode{precision_4byte}: if set to 1 (its default value), output of wavelet transforms will be stored in 4 bytes float instead of 8 bytes double to save memory.
 \end{itemize}
 The \mcode{filt_opt} options are specific to the filter bank used in wavelet transforms. The possible fields for \mcode{filt_opt} are detailed in section \ref{sec_filters_2d}.
 
