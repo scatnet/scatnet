@@ -21,9 +21,15 @@
 function [ Wop, filters, filters_rot ] = ...
 		wavelet_factory_3d(size_in, filt_opt, filt_rot_opt, scat_opt)
 	
-	filt_opt.null = 1;
-	filt_rot_opt.null = 1;
-	scat_opt.null = 1;
+    if (nargin < 4)
+        scat_opt = struct();
+    end
+    if (nargin < 3)
+        filt_rot_opt = struct();
+    end
+    if (nargin < 2)
+        filt_opt = struct();
+    end
 	
 	% filters along spatial variable
 	filters = morlet_filter_bank_2d(size_in, filt_opt);
@@ -39,13 +45,14 @@ function [ Wop, filters, filters_rot ] = ...
 	
 	% number of layer
 	scat_opt = fill_struct(scat_opt, 'M', 2);
+    wav_opt = rmfield(scat_opt, 'M');
 	
 	% first wavelet transform is an usual wavelet transform
-	Wop{1} = @(x)(wavelet_layer_2d(x, filters, scat_opt));
+	Wop{1} = @(x)(wavelet_layer_2d(x, filters, wav_opt));
 	
 	% other wavelet transform are roto-translation wavelet
 	for m = 2:scat_opt.M+1
-		Wop{m} = @(x)(wavelet_layer_3d(x, filters, filters_rot, scat_opt));
+		Wop{m} = @(x)(wavelet_layer_3d(x, filters, filters_rot, wav_opt));
 	end
 end
 

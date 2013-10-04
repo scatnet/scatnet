@@ -149,7 +149,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 %tmp = ...
                 %    conv_sub_unpad_2d(yf(:,:,theta), psi, ds, margins);
                 tmp = conv_sub_2d(yf(:,:,theta), psi, ds);
-                tmp = unpad_signal(tmp, ds*[1,1], [size(y,1), size(y_2)]);
+                tmp = unpad_signal(tmp, ds*[1,1], [size(y,1), size(y,2)]);
                 
                 if (theta == 1) % prealocate when we know the size
                     y_psi = zeros([size(tmp), 2*L]);

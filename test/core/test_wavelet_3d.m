@@ -1,5 +1,5 @@
 
-clear;
+clear; close all;
 x = lena;
 sz_in = size(x);
 filters = morlet_filter_bank_2d(sz_in);
@@ -23,7 +23,6 @@ plot_littlewood_1d(filters_rot);
 profile on;
 options.psi_mask = ones(1,numel(filters.psi.filter));
 options.psi_mask(1:8) = 0;
-options.antialiasing = 0;
 y = reshape(abs(cell2mat({x_psi{1:8}})),[sz_in, 8]);
 [y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options);
 profile off;
