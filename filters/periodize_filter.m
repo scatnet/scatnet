@@ -9,7 +9,7 @@ function filter = periodize_filter(filter_f,threshold)
 	
 	j0 = 0;
 	while 1
-		if all(abs(floor(N./2^j0)-N./2^j0)>1e-6)
+		if any(abs(floor(N./2^j0)-N./2^j0)>1e-6)
 			break;
 		end
 		

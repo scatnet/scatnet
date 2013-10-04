@@ -38,7 +38,8 @@ function filters = morlet_filter_bank_2d(size_in, options)
 		options = struct;
     end
 
-    white_list = {'Q', 'L', 'J', 'sigma_phi','sigma_psi','xi_psi','slant_psi'};
+    white_list = {'Q', 'L', 'J', 'sigma_phi', 'sigma_psi', ...
+        'xi_psi', 'slant_psi', 'min_margin'};
     check_options_white_list(options, white_list);
     
     % Options
@@ -54,33 +55,26 @@ function filters = morlet_filter_bank_2d(size_in, options)
     options = fill_struct(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);	
     options = fill_struct(options, 'slant_psi',  4/L);	
 	options = fill_struct(options, 'filter_format', 'fourier_multires');
-    
+    options = fill_struct(options, 'min_margin', options.sigma_phi * 2^(J/Q) );
     sigma_phi  = options.sigma_phi;
 	sigma_psi  = options.sigma_psi;
 	xi_psi     = options.xi_psi;
 	slant_psi  = options.slant_psi;
 	
-	res_max = floor(J/Q);
+	
     
     
-    % Default margin
-    margins_default = 2*sigma_phi*2^((J-1)/Q);
-	margins_default = min(2^res_max * ceil(margins_default/2^res_max), ...
-		size_in);
-	options = fill_struct(options, 'margins', margins_default);
-    margins = options.margins;
-    
-    
-	size_filter = size_in + margins;
-	size_filter = ceil(size_filter/2^res_max)*2^res_max;
+    % size
+    res_max = floor(J/Q);
+    size_filter = pad_size(size_in, options.min_margin, res_max);
 	
 	phi.filter.type = 'fourier_multires';
 	
 	% compute all resolution of the filters
 	res = 0;
 	
-	N = ceil(size_filter(1) / 2^res);
-	M = ceil(size_filter(2) / 2^res);
+	N = size_filter(1);
+	M = size_filter(2);
 	
 	% compute low pass filters phi
 	scale = 2^((J-1) / Q - res);
@@ -138,5 +132,4 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	filters.meta.slant_psi = slant_psi;
 	filters.meta.size_in = size_in;
 	filters.meta.size_filter = size_filter;
-	filters.meta.margins = margins;
 end

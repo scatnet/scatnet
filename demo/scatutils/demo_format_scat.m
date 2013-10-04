@@ -5,7 +5,7 @@
 % <matlab:doc('format_scat') format_scat>).
 %
 %% Description
-% In this demo, we show one format_scat can be used to gather all
+% In this demo, we show how format_scat can be used to gather all
 % scattering coefficients into one single array, and visualize this array
 % using imagesc.
 % NB : so as to improve contrast, the colormap only ranges from 0 to 2,
