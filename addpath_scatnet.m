@@ -11,6 +11,7 @@ addpath(genpath(fullfile(path_to_scatnet, 'papers')));
 addpath(fullfile(path_to_scatnet, 'scatutils'));
 addpath(genpath(fullfile(path_to_scatnet, 'unittest')));
 addpath(fullfile(path_to_scatnet, 'utils'));
+addpath(fullfile(path_to_scatnet, 'reconstruction'));
 
 clear path_to_scatnet;
 

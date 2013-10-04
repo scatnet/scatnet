@@ -11,6 +11,7 @@
 % It is possible to create some wavelet filters with wavelet_factory_2d for 
 % instance. The filters size have to be adapted to the size of the input
 % signal $x$. 
+clear; close all; 
 
 x = lena;
 
@@ -25,15 +26,16 @@ filters = morlet_filter_bank_2d(size(x));
 % coefficients.
 [A, V] = wavelet_layer_2d(U{1}, filters);
 
-figure,
-subplot(2,1,1)
+colormap gray
+subplot(121)
+imagesc(real(V.signal{1}))
+axis off
+title('Real part of the first wavelet transform coefficient');
+subplot(122)
 imagesc(imag(V.signal{1}))
 axis off
 title('Imaginary part of the first wavelet transform coefficient');
-subplot(2,1,2)
-imagesc(imag(V.signal{1}))
-axis off
-title('Real part of the first wavelet transform coefficient');
+
 
 %% Options
 % The options are the same as in *wavelet_2d*.

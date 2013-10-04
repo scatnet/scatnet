@@ -1,6 +1,6 @@
 function filter = optimize_filter(filter_f,lowpass,options)
 	options = fill_struct(options,'truncate_threshold',1e-3);
-	options = fill_struct(options,'fourier_truncated');
+	options = fill_struct(options,'filter_format','fourier_multires');
 
 	if strcmp(options.filter_format,'fourier')
 		filter = filter_f;

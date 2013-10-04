@@ -85,13 +85,13 @@ function filters = spline_filter_bank_1d(sig_length,options)
 		N = sig_length;
 	end
 	
-	filters.J = J;
+	filters.meta.J = J;
 	
-	filters.N = N;
+	filters.meta.size_filter = N;
 	
-	filters.spline_order = spline_order;
+	filters.meta.spline_order = spline_order;
 	
-	filters.boundary = options.boundary;
+	filters.meta.boundary = options.boundary;
 	
 	filters.psi.filter = cell(1,J);
 	filters.phi = [];
@@ -135,5 +135,5 @@ function filters = spline_filter_bank_1d(sig_length,options)
 	
 	filters.phi.meta.k(1,1) = options.J;
 
-	filters.filter_type = 'spline_1d';
+	filters.meta.filter_type = 'spline_1d';
 end

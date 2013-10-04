@@ -40,7 +40,7 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     
     white_list_filt = {'filter_type', 'precision', 'Q', 'J', 'L',...
         'sigma_phi','sigma_psi','xi_psi','slant_psi'};
-    white_list_scat = { 'oversampling', 'precision_4byte'};
+    white_list_scat = { 'oversampling', 'precision_4byte','M'};
     
     check_options_white_list(filt_opt, white_list_filt);
     check_options_white_list(scat_opt, white_list_scat);
@@ -52,6 +52,9 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
 	
 	% Create the wavelet transform to apply at the m-th layer
 	for m = 1:scat_opt.M+1
-		Wop{m} = @(x)(wavelet_layer_2d(x, filters, scat_opt));
+        
+        options_W = rmfield(scat_opt, 'M');
+        
+		Wop{m} = @(x)(wavelet_layer_2d(x, filters, options_W));
 	end
 end

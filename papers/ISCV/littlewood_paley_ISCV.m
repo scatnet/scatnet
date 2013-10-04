@@ -1,4 +1,4 @@
-function energy = littlewood_paley(filters,nophi)
+function energy = littlewood_paley_ISCV(filters,nophi)
 if nargin < 2
   nophi = 0;
 end

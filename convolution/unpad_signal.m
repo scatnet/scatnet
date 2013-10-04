@@ -1,20 +1,18 @@
-function x = unpad_signal(x,res,N0)
-	dims = ndims(x);
-	for d = 1:length(N0)
-		N2 = 1+floor((N0(d)-1)/2^res(d));
-		
-		%x = shiftdim(x,d-1);
-		%sz = size(x);
-		%x = reshape(x,[sz(1) prod(sz(2:end))]);
-		%x = x(1:N2,:);
-		%x = reshape(x,[N2 sz(2:end)]);
-		%x = shiftdim(x,dims-d+1);
-		
-		% MATLAB is stupid; easier to do manually
-		if d == 1
-			x = x(1:N2,:,:);
-		elseif d == 2
-			x = x(:,1:N2,:);
-		end
+% UNPAD_SIGNAL unpad a signal
+%
+function x = unpad_signal(x, res, target_sz, offset)
+	if nargin < 4
+		offset = zeros(size(target_sz));
 	end
+	
+    offset_ds = floor(offset./2.^res);
+    target_sz_ds = 1 + floor((target_sz-1)./2.^res) - offset_ds;
+    
+    switch length(target_sz)
+        case 1
+            x = x(offset_ds + (1:target_sz_ds),:,:);
+        case 2
+            x = x(offset_ds(1) + (1:target_sz_ds(1)), ...
+                offset_ds(2) + (1:target_sz_ds(2)), :);
+    end
 end

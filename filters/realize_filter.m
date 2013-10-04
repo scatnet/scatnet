@@ -33,7 +33,11 @@ function filter_f = realize_filter(filter, N)
 	end
 	
 	if ~isempty(N)
-		j0 = log2(size(filter_f)./N);
+		if length(N) == 1
+			j0 = log2(size(filter_f)./[N 1]);
+		else
+			j0 = log2(size(filter_f)./N);
+		end
 	else
 		j0 = [0 0];
 	end

@@ -8,7 +8,7 @@
 %    options (structure): Options of the bank of filters. Optional, with
 %    fields:
 %       Q (numeric): number of scale per octave
-%       P (numeric): 
+%       P (numeric): size of the filter
 %       L (numeric): number of orientations
 %       sigma_phi (numeric): standard deviation of the low pass phi_0
 %       sigma_psi (numeric): standard deviation of the envelope of the

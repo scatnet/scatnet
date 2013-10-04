@@ -28,7 +28,7 @@ function [x_phi, x_psi] = wavelet_2d(x, filters, options)
     if(nargin<3)
 		options = struct;
     end
-    white_list = {'x_resolution', 'precision', 'psi_mask','oversampling','M'};
+    white_list = {'x_resolution', 'precision', 'psi_mask','oversampling'};
     check_options_white_list(options, white_list);
     options = fill_struct(options, 'x_resolution',0);	
     options = fill_struct(options, 'precision','single');
