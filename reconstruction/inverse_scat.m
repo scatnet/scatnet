@@ -21,10 +21,18 @@
 %    xt (numeric): The reconstructed signal.
 %
 % Description
-%    The scattering transform is inverted recursively, with each node being
-%    reconstructed from its children using the Griffin & Lim algorithm and the
-%    last layer being estimated from their scattering coefficients using the
-%    Richardson-Lucy deconvolution algorithm.
+%    The scattering transform is inverted recursively, estimating 
+%    U{m+1}.signal{p} for each layer, starting with the last and propagating
+%    upwards until U{1}.signal{1} is obtained, which is an estimate of the 
+%    original signal.
+%
+%    For the last layer m = l, the Richardson-Lucy deconvolution algorithm is 
+%    applied to estimate U{l+1}.signal{p} from S{l+1}.signal{p}. Previous
+%    layers are reconstructed through the Griffin & Lim algorithm, with the
+%    estimate of U{m+1}.signal{p1} are obtained from the estimates of 
+%    U{m+2}.signal{p2}, where p2 correspond to the wavelet modulus coeffi-
+%    cients in layer m+1 of the coefficient p1 in layer m -- the former being
+%    the "children" of the latter.
 %
 % See also 
 %   GRIFFIN_LIM, INVERSE_WAVELET_1D, RICHARDSON_LUCY
