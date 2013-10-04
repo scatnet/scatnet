@@ -13,9 +13,9 @@
 %             [1 2 3 4]' -> [1 2 3 4 1 2 3 4]' for Npad = 8
 %        'zero': Zero boundary, for example
 %             [1 2 3 4]' -> [1 2 3 4 0 0 0 0]' for Npad = 8
-%        (Default 'symm')
+%        (default 'symm')
 %    center (boolean): If true, the signal x is centered in the output y, 
-%        otherwise it is located in the (upper) left corner (Default false).
+%        otherwise it is located in the (upper) left corner (default false).
 %
 % Output
 %    y (numeric): The padded signal of size Npad
