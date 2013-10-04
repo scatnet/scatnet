@@ -1,13 +1,14 @@
-% CONV_SUB_1D One-dimensional convolutive filtering and downsampling.
+% CONV_SUB_1D One-dimensional convolution and downsampling.
 %
 % Usage
 %    y_ds = CONV_SUB_1D(xf, filter, ds)
 %
 % Input
-%    xf (numeric): the signal of interest in the frequency domain
-%    filter (*numeric OR struct*): the analysis filter in the frequency
-%       domain.
-%    ds (integer): log2 of downsampling factor with respect to xf
+%    xf (numeric): The Fourier transform of the signal to be convolved.
+%    filter (*numeric OR struct*): The analysis filter in the frequency
+%       domain. Either Fourier transform of the filter or the output of
+%       OPTIMIZE_FILTER.
+%    ds (int): The downsampling factor as a power of 2 with respect to xf.
 %
 % Output
 %    y_ds (numeric): the filtered, downsampled signal, in the time domain.
@@ -16,19 +17,19 @@
 %    This function is at the foundation of the wavelet transform in 1D. It
 %    performs an element-wise product of a signal and a filter in the
 %    frequency domain, equivalent to a convolution in the time domain.
-%    filter may either be :
+%    The filter argument may either be:
 %       * a DFT real vector, or
-%       * a struct with parameters type, N, recenter, coefft and start.
-%    See TRUNCATE_FILTER on the role of filter.recenter and filter.start.
-%    filter.type is either 'fourier_multires' or 'fourier_truncated'
-%    (default), and may be chosen by the user through
-%    filt_opt.filter_format. See FILTER_BANK and the impl documentation
-%    on this topic.
-%    This function operates in at most four steps :
-%       # Prior subsampling
-%       # Multiplication in the frequency domain
-%       # Posterior subsampling or interpolation
-%       # Inverse Fourier transform
+%       * an optimized filter structure from OPTIMIZE_FILTER
+%    In the latter case, different methods are used to speed up the calcula-
+%    tion, such as storing the filter at different resolutions or only storing
+%    the Fourier transform coefficients that are non-zero. These are obtained
+%    when defining the filter bank using the filt_opt.filter_format parameter. 
+%    See FILTER_BANK for more information.
+%
+%    Multiple signals can be convolved in parallel by specifying them as dif-
+%    ferent columns of xf. If many signals need to be convolved at the same
+%    time, this is often much faster than performing calling CONV_SUB_1D on
+%    each signal separately.
 %
 % See also
 %   CONV_SUB_2D, WAVELET_1D
