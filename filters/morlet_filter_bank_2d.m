@@ -67,7 +67,6 @@ function filters = morlet_filter_bank_2d(size_in, options)
     % size
     res_max = floor(J/Q);
     size_filter = pad_size(size_in, options.min_margin, res_max);
-	
 	phi.filter.type = 'fourier_multires';
 	
 	% compute all resolution of the filters
@@ -116,7 +115,6 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	K = max(littlewood_final(:));
 	for p = 1:numel(psi.filter)
 		psi.filter{p} = psi.filter{p}/sqrt(K/2);
-		
 		psi.filter{p} = optimize_filter(psi.filter{p}, 0, options);
 	end
 	
