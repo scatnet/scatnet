@@ -25,12 +25,12 @@ figure;
 colormap gray;
 
 subplot(1,2,1)
-imagesc(real(x_psi.signal{1}))
+imagesc(real(x_psi{1}))
 axis square
 axis off
 title({'Real part of the first';'wavelet transform coefficient'});
 subplot(1,2,2)
-imagesc(imag(x_psi.signal{1}))
+imagesc(imag(x_psi{1}))
 axis square
 axis off
 title({'Imaginary part of the first';'wavelet transform coefficient'});
