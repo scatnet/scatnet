@@ -32,7 +32,7 @@
 %   CONV_SUB_2D
 
 
-function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
+function [x_phi, x_psi, meta_phi, meta_psi, options] = wavelet_2d_pyramid(x, filters, options)
     
     % check options white list
     if (~exist('options','var')), options = struct(); end
@@ -47,22 +47,20 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     options = fill_struct(options, 'all_low_pass', 0);
     
     % initialize structure
-    hx.signal{1} = x; 
-    hx.meta.j(1) = 0;
+    hx{1} = x; 
     
     % low pass
     h = filters.h.filter;
     for j = 1:options.J
-        signal = hx.signal{j};
+        signal = hx{j};
         Npad = size(signal) + filters.meta.size_filter - 1;
         signal_paded = pad_signal(signal, Npad, 'symm', 1);
         tmp = conv_sub_2d(signal_paded, h, 1);
         tmp = unpad_signal(tmp, 1, size(signal), filters.meta.offset);
-        hx.signal{j+1} = tmp;
-        hx.meta.j(j+1) = j;
+        hx{j+1} = tmp;
     end
-    x_phi.signal{1} = hx.signal{options.J+1};
-    x_phi.meta.j(1) = hx.meta.j(options.J+1);
+    x_phi{1} = hx{options.J+1};
+    meta_phi.j(1) = options.J;
     
     % intermediate low pass may be usefull (e.g. for roto-translation 
     % wavelets of type phi(u) psi(theta) )
@@ -74,9 +72,9 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
         % high passes
         p = 1;
         g = filters.g.filter;
-        gx.signal = {};
+        x_psi = {};
         for j = options.j_min:options.J-1
-            signal = hx.signal{j+1};
+            signal = hx{j+1};
             Npad = size(signal) + filters.meta.size_filter - 1;
             signal_paded = pad_signal(signal, Npad, 'symm', 1);
             for pf = 1:numel(g) %% todo : find
@@ -84,15 +82,15 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
                 if (options.q_mask(q+1))
                     tmp = conv_sub_2d(signal_paded, g{pf}, 0);
                     tmp = unpad_signal(tmp, 0, size(signal), filters.meta.offset);
-                    gx.signal{p} = tmp;
-                    gx.meta.j(p) = j;
-                    gx.meta.q(p) = q;
-                    gx.meta.theta(p) = filters.g.meta.theta(pf);
+                    x_psi{p} = tmp;
+                    meta_psi.j(p) = j;
+                    meta_psi.q(p) = q;
+                    meta_psi.theta(p) = filters.g.meta.theta(pf);
                     p = p+1;
                 end
             end
         end
-        x_psi = gx;
+        
     end
     
 end
