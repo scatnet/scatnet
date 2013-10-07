@@ -18,10 +18,12 @@
 %   to at least half of the size of the largest filter used, while ensuring
 %   that downsampling by powers of 2 up to 2^max_ds are possible through
 %   periodization of the Fourier transform.
+%   sz_added is also enforced to be at least 1
 %
 % See Also
 %   PAD_SIGNAL, UNPAD_SIGNAL
 
 function sz_padded = pad_size(sz, min_margin, max_ds)
     sz_padded = 2^max_ds * ceil( (sz + 2*min_margin)/2^max_ds );
+    sz_padded = max(1, sz_padded);
 end
