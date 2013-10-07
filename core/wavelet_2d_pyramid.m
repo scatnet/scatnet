@@ -47,22 +47,17 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     options = fill_struct(options, 'all_low_pass', 0);
     
     % initialize structure
-    if strcmp(options.precision, 'single')
-        hx.signal{1} = single(x);
-    else
-        hx.signal{1} = x;
-    end
+    hx.signal{1} = x; 
     hx.meta.j(1) = 0;
     
     % low pass
     h = filters.h.filter;
     for j = 1:options.J
         signal = hx.signal{j};
-        pad_signal(x, Npad, boundary, center)
-        Npad = size(signal) + filters.meta.
-        signal_paded = pad_signal(signal, size(signal)+filters.meta.P*[2,2], 'symm', 1);
+        Npad = size(signal) + filters.meta.size_filter - 1;
+        signal_paded = pad_signal(signal, Npad, 'symm', 1);
         tmp = conv_sub_2d(signal_paded, h, 1);
-        tmp = unpad_signal(tmp, 1, size(signal), [filters.meta.P,filters.meta.P]);
+        tmp = unpad_signal(tmp, 1, size(signal), filters.meta.offset);
         hx.signal{j+1} = tmp;
         hx.meta.j(j+1) = j;
     end
@@ -82,12 +77,13 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
         gx.signal = {};
         for j = options.j_min:options.J-1
             signal = hx.signal{j+1};
-            signal_paded = pad_signal(signal,size(signal)+ filters.meta.P*[2,2], [], 0, 1);
+            Npad = size(signal) + filters.meta.size_filter - 1;
+            signal_paded = pad_signal(signal, Npad, 'symm', 1);
             for pf = 1:numel(g) %% todo : find
                 q = filters.g.meta.q(pf);
                 if (options.q_mask(q+1))
                     tmp = conv_sub_2d(signal_paded, g{pf}, 0);
-                    tmp = unpad_signal(tmp, 0, size(signal), [filters.meta.P,filters.meta.P]);
+                    tmp = unpad_signal(tmp, 0, size(signal), filters.meta.offset);
                     gx.signal{p} = tmp;
                     gx.meta.j(p) = j;
                     gx.meta.q(p) = q;
