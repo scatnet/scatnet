@@ -22,7 +22,7 @@
 %
 % Output
 %    filters (struct):  filters, with the fields
-%        psi (struct): high-pass filter psi, with the following fields:
+%        psi (struct): band-pass filter psi, with the following fields:
 %            filter (cell): cell of structure containing the coefficients
 %            type (string): takes the value 'fourier_multires'
 %        phi (struct): low-pass filter phi
