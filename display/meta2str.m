@@ -23,7 +23,10 @@ function str = meta2str(meta,ind)
 			end
 			if (strcmp(fn,'theta'))
 				fn = 'th';
-			end
+            end
+            if (strcmp(fn,'resolution'))
+               fn = 'res'; 
+            end
 			if (strcmp(fn,'theta2'))
 				fn = 'th2';
 				nonumber = 1;

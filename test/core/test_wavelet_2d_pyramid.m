@@ -19,12 +19,12 @@ immac(img);
 
 %%
 clear;
-x = uiuc_sample;
-options.J = 5;
-options.oversampling = 0;
+x = lena;
+filt_opt.J = 5;
+scat_opt.oversampling = 0;
 options.L = 8;
 K = 10;
-[w,filters] = wavelet_factory_2d(size(x), options, options);
+[w,filters] = wavelet_factory_2d(size(x), filt_opt, scat_opt);
 
 U{1}.signal{1} = x;
 U{1}.meta.j = zeros(0,1);
