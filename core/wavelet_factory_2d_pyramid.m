@@ -30,10 +30,6 @@ function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 		case 'morlet'
             filt_opt = rmfield(filt_opt, 'type');
 			filters = morlet_filter_bank_2d_pyramid(filt_opt);
-			
-		case 'haar'
-            filt_opt = rmfield(filt_opt,'type');
-			filters = haar_filter_bank_2d_spatial(filt_opt);
 	end
 	
 	% wavelet transforms :
