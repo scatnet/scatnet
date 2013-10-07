@@ -10,19 +10,21 @@
 %       Q (numeric): number of scale per octave
 %       J (numeric): total number of scale.
 %       L (numeric): number of orientations
-%       sigma_phi (numeric): standard deviation of the low pass phi_0
+%       sigma_phi (numeric): standard deviation of the low-pass mother
+%          wavelet
 %       sigma_psi (numeric): standard deviation of the envelope of the
-%       high-pass psi_0
-%       xi_psi (numeric): the frequency peak of the high-pass psi_0
+%          high-pass psi_0
+%       xi_psi (numeric): the frequency peak of the band-pass mother
+%          wavelet
 %       slant_psi (numeric): excentricity of the elliptic enveloppe of the
-%       high-pass psi_0 (the smaller slant, the larger orientation
-%       resolution)
+%          band-pass psi_0 (the smaller slant, the larger orientation
+%          resolution)
 %       margins (numeric): 1-by-2 vector for the horizontal and vertical 
 %       margin for mirror pading of signal
 %
 % Output
 %    filters (struct):  filters, with the fields
-%        psi (struct): high-pass filter psi, with the following fields:
+%        psi (struct): band-pass filter psi, with the following fields:
 %            filter (cell): cell of structure containing the coefficients
 %            type (string): takes the value 'fourier_multires'
 %        phi (struct): low-pass filter phi
