@@ -64,18 +64,18 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	slant_psi  = options.slant_psi;
 	
     
-    % size
+    % Size
     res_max = floor(J/Q);
     size_filter = pad_size(size_in, options.min_margin, res_max);
 	phi.filter.type = 'fourier_multires';
 	
-	% compute all resolution of the filters
+	% Compute all resolution of the filters
 	res = 0;
 	
 	N = size_filter(1);
 	M = size_filter(2);
 	
-	% compute low pass filters phi
+	% Compute low-pass filters phi
 	scale = 2^((J-1) / Q - res);
 	filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
 	phi.filter = real(fft2(filter_spatial));
@@ -84,7 +84,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	phi.filter = optimize_filter(phi.filter, 1, options);
 	
 	littlewood_final = zeros(N, M);
-	% compute high pass filters psi
+	% Compute band-pass filters psi
 	angles = (0:L-1)  * pi / L;
 	p = 1;
 	for j = 0:J-1
@@ -109,9 +109,9 @@ function filters = morlet_filter_bank_2d(size_in, options)
 		end
 	end
 	
-	% second pass : renormalize psi by max of littlewood paley to have
+	% Second pass : renormalize psi by max of littlewood paley to have
 	% an almost unitary operator
-	% NOTE : phi must not be renormalized since we want its mean to be 1
+	% NB : phi must not be renormalized since we want its mean to be 1
 	K = max(littlewood_final(:));
 	for p = 1:numel(psi.filter)
 		psi.filter{p} = psi.filter{p}/sqrt(K/2);
