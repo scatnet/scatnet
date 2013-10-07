@@ -37,12 +37,13 @@ function [filters, options] = morlet_filter_bank_2d_pyramid(options)
 		options = struct;
     end
     
-    white_list = {'Q', 'L', 'P', 'sigma_phi','sigma_psi','xi_psi','slant_psi','precision'};
+    white_list = {'Q', 'L', 'size_filter', 'sigma_phi', 'sigma_psi', ...
+        'xi_psi', 'slant_psi', 'precision'};
     check_options_white_list(options, white_list);
     
     % Options
-    options = fill_struct(options, 'Q',1);	
-    options = fill_struct(options, 'L',8);
+    options = fill_struct(options, 'Q', 1);	
+    options = fill_struct(options, 'L', 8);
     Q = options.Q;
     L = options.L;
     options = fill_struct(options, 'size_filter',  [7, 7]);	
@@ -105,11 +106,11 @@ function [filters, options] = morlet_filter_bank_2d_pyramid(options)
 	
 	filters.meta.Q = Q;
 	filters.meta.L = L;
+    filters.meta.size_filter = size_filter;
 	filters.meta.sigma_phi = sigma_phi;
 	filters.meta.sigma_psi = sigma_psi;
 	filters.meta.xi_psi = xi_psi;
 	filters.meta.slant_psi = slant_psi;
-	filters.meta.size_filter = size_filter;
     filters.meta.offset = offset;
 	
 	

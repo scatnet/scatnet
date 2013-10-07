@@ -68,6 +68,8 @@ function [x_phi, x_psi, meta_phi, meta_psi, options] = wavelet_2d_pyramid(x, fil
         x_phi.all_low_pass = hx;
     end
     
+    meta_psi = struct();
+    x_psi = {};
     if (nargout>1) % otherwise do not high pass compute x_psi 
         % high passes
         p = 1;
