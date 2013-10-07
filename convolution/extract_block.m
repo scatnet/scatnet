@@ -13,7 +13,9 @@
 %
 % Description 
 %   Split a 2d matrix into blocks of the same dimension whose index
-%   corresponds to third dimension of the output matrix
+%   corresponds to third dimension of the output matrix. This is used
+%   to compute the inverse fourier transform of a downsampled signal
+%   by first periodizing the signal.
 %
 % Example
 %   If x contains
@@ -37,6 +39,9 @@
 %   ans(:,:,4) =
 %     11    15
 %     12    16
+%
+% See also
+%   CONV_SUB_2D
 
 
 function x_block = extract_block(x, nb_block)

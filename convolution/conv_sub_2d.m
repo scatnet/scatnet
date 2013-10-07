@@ -12,11 +12,6 @@ function x_conv_y = conv_sub_2d(xf, filter, ds, offset)
         elseif (strcmp(filter.type,'spatial_support'))
             x_conv_y = conv2(xf, filter.coefft, 'same');
             x_conv_y = 2^ds * x_conv_y(1+offset(1):2^ds:end, 1+offset(2):2^ds:end);
-            %       filt = filter.coefft;
-            %		P = floor(size(filt,1)/2);
-            %		x_paded = pad_mirror_2d_twosided(xf, [P, P]);
-            %		x_conv_psi = conv2(x_paded, filt, 'same');
-            %		x_conv_y = 2^ds * x_conv_psi(1+P:2^ds:end-P, 1+P:2^ds:end-P);
         else
             error('Unsupported filter type!');
         end
