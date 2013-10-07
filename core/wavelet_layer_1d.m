@@ -1,18 +1,38 @@
-% wavelet_layer_1d: 1D wavelet transform layer.
-% Usage
-%    [U_phi , U_psi] = wavelet_layer_1d(U, filters, options)
+% WAVELET_LAYER_1D Compute the one-dimensional wavelet transform from
+% the modulus wavelet coefficients of the previous layer.
+%
+% Usages
+%    [U_phi , U_psi] = wavelet_layer_1d(U, filters)
+%
+%    [U_phi , U_psi] = wavelet_layer_1d(U, filters, scat_opt)
+%
+%    [U_phi , U_psi] = wavelet_layer_1d(U, filters, scat_opt, wavelet)
+%
 % Input
-%    U: The input layer to be transformed.
-%    filters: The filters of the wavelet transform.
-%    options: Various options for the transform. options.oversampling controls
-%       the oversampling factor when subsampling.
+%    U (struct): The input layer to be transformed.
+%    filters (cell): The filters of the wavelet transform.
+%    scat_opt (struct): The options that are transferred to the wavelet
+%    function handle.
+%    wavelet (function handle): the wavelet transform function (default is
+%    @wavelet_1d).  
+%
 % Output
-%    U_phi The coefficients of in, lowpass-filtered (scattering coefficients).
+%    U_phi The coefficients of in, lowpass-filtered (scattering
+%       coefficients).
 %    U_psi: The wavelet transform coefficients.
+%
+% Description
+%    This function has a pivotal role between WAVELET_1D (which computes a
+%    single wavelet transform), and WAVELET_FACTORY_1D (which creates the
+%    whole cascade). Given inputs modulus wavelet coefficients
+%    corresponding to a layer, WAVELET_LAYER_1D computes the wavelet
+%    transform coefficients of the next layer using WAVELET_1D. 
+% See also
+%   WAVELET_1D, WAVELET_FACTORY_1D, WAVELET_LAYER_2D
 
-function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options, wavelet)
+function [U_phi, U_psi] = wavelet_layer_1d(U, filters, scat_opt, wavelet)
 	if nargin < 3
-		options = struct();
+		scat_opt = struct();
 	end
 	
 	if nargin < 4
@@ -40,10 +60,10 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options, wavelet)
 	for p1 = 1:length(U.signal)
 		psi_mask = calc_U&(U.meta.bandwidth(p1)>psi_xi);
 		
-		options.x_resolution = U.meta.resolution(p1);
-		options.psi_mask = psi_mask;
+		scat_opt.x_resolution = U.meta.resolution(p1);
+		scat_opt.psi_mask = psi_mask;
 		[x_phi, x_psi, meta_phi, meta_psi] = ...
-			wavelet(U.signal{p1}, filters, options);
+			wavelet(U.signal{p1}, filters, scat_opt);
 		
 		U_phi.signal{1,p1} = x_phi;
 		U_phi.meta = map_meta(U.meta,p1,U_phi.meta,p1);
