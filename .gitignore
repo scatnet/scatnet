@@ -10,3 +10,4 @@ doc/*/*.blg
 *.swp
 *.png
 */html/*
+*.html

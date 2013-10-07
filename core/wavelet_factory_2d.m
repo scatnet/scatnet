@@ -20,8 +20,7 @@
 %    used for the successive wavelet transforms. Here, only the morlet
 %    filter bank is used.
 %
-%    If M is not specified, its value is set automatically to 2.WHAT IS M
-%    ?????????????????? SHOULD It BE HERE ?
+%    If M, the number of layer, is not specified, its value is set automatically to 2.
 %
 % See also
 %    WAVELET_2D, MORLET_FILTER_BANK_2D 

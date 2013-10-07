@@ -1,4 +1,4 @@
-clear;
+clear; close all;
 x = lena;
 opt_filters.P = 2;
 
@@ -15,7 +15,7 @@ vx.signal = x_psi;
 vx.meta = meta_psi;
 ux = modulus_layer(vx);
 img = image_scat_layer(ux,0,0);
-immac(img);
+imagesc(img);
 
 %%
 clear;
