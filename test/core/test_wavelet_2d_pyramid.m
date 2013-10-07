@@ -8,10 +8,12 @@ filters = morlet_filter_bank_2d_pyramid(opt_filters);
 opt_wav.J = 5;
 tic;
 for k = 1:K
-	[x_phi, x_psi] = wavelet_2d_pyramid(x, filters, opt_wav);
+	[x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d_pyramid(x, filters, opt_wav);
 end
 toc;
-ux = modulus_layer(x_psi);
+vx.signal = x_psi;
+vx.meta = meta_psi;
+ux = modulus_layer(vx);
 img = image_scat_layer(ux);
 immac(img);
 

@@ -61,8 +61,6 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	xi_psi     = options.xi_psi;
 	slant_psi  = options.slant_psi;
 	
-	
-    
     
     % size
     res_max = floor(J/Q);

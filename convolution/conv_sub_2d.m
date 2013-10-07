@@ -11,7 +11,7 @@ function x_conv_y = conv_sub_2d(xf, filter, ds, offset)
             x_conv_y = conv_sub_2d(xf, filter.coefft{res+1}, ds);
         elseif (strcmp(filter.type,'spatial_support'))
             x_conv_y = conv2(xf, filter.coefft, 'same');
-            x_conv_y = 2^ds * x_conv_y(offset(1):2^ds:end, offset(2):2^ds:end);
+            x_conv_y = 2^ds * x_conv_y(1+offset(1):2^ds:end, 1+offset(2):2^ds:end);
             %       filt = filter.coefft;
             %		P = floor(size(filt,1)/2);
             %		x_paded = pad_mirror_2d_twosided(xf, [P, P]);

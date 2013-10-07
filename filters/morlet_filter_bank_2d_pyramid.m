@@ -8,8 +8,8 @@
 %    options (structure): Options of the bank of filters. Optional, with
 %    fields:
 %       Q (numeric): number of scale per octave
-%       P (numeric): size of the filter
 %       L (numeric): number of orientations
+%       size_filter (numeric): size of the filter
 %       sigma_phi (numeric): standard deviation of the low pass phi_0
 %       sigma_psi (numeric): standard deviation of the envelope of the
 %       high-pass psi_0
@@ -32,7 +32,7 @@
 % Description
 %    Compute the Morlet filter bank in the spatial domain. 
 
-function filters = morlet_filter_bank_2d_pyramid(options)
+function [filters, options] = morlet_filter_bank_2d_pyramid(options)
     if(nargin<1)
 		options = struct;
     end
@@ -45,32 +45,31 @@ function filters = morlet_filter_bank_2d_pyramid(options)
     options = fill_struct(options, 'L',8);
     Q = options.Q;
     L = options.L;
+    options = fill_struct(options, 'size_filter',  [7, 7]);	
 	options = fill_struct(options, 'sigma_phi',  0.8);	
     options = fill_struct(options, 'sigma_psi',  0.8);	
     options = fill_struct(options, 'xi_psi',  1/2*(2^(-1/Q)+1)*pi);	
     options = fill_struct(options, 'slant_psi',  4/L);	
-    options = fill_struct(options, 'P',  3);	
-    P = options.P;
-	
-    % then the filter is in 32 bits float.
     options = fill_struct(options, 'precision', 'single');	
-	precision = options.precision;
-	
     
-	
+    size_filter = options.size_filter;
 	sigma_phi = options.sigma_phi;
     sigma_psi = options.sigma_psi;
     xi_psi = options.xi_psi;
     slant_psi = options.slant_psi;
+    precision = options.precision;
     
     
+    N = size_filter(1);
+    M = size_filter(2);
+    offset = [floor(N/2), floor(M/2)];
     
 	% low pass filter h
-	
-	h.filter.coefft = gaussian_2d(2*P+1,...
-		2*P+1,...
+	h.filter.coefft = gaussian_2d(N,...
+		M,...
 		sigma_phi,...
-		precision);
+		precision,...
+        offset);
     h.filter.coefft = h.filter.coefft./sum(h.filter.coefft(:));
 	h.filter.type = 'spatial_support';
 	
@@ -84,13 +83,14 @@ function filters = morlet_filter_bank_2d_pyramid(options)
 			angle = angles(theta);
 			scale = 2^(q/Q);
 			
-			g.filter{p}.coefft = morlet_2d_pyramid(2*P+1,...
-				2*P+1, ...
+			g.filter{p}.coefft = morlet_2d_pyramid(N,...
+				M, ...
 				sigma_psi*scale,...
 				slant_psi,...
 				xi_psi/scale,...
 				angle,...
-				precision) ;
+				precision,...
+                offset) ;
 			g.filter{p}.type = 'spatial_support';
 			
 			g.meta.q(p) = q;
@@ -109,7 +109,8 @@ function filters = morlet_filter_bank_2d_pyramid(options)
 	filters.meta.sigma_psi = sigma_psi;
 	filters.meta.xi_psi = xi_psi;
 	filters.meta.slant_psi = slant_psi;
-	filters.meta.P = P;
+	filters.meta.size_filter = size_filter;
+    filters.meta.offset = offset;
 	
 	
 end
