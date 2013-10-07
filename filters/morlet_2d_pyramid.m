@@ -13,9 +13,10 @@
 %    xi (numeric):  the frequency peak
 %    theta (numeric): orientation in radians of the filter
 %    precision (string): 'single' or 'double'
-%    offset (numeric): 2-D vector reprensting the offset location.
-%    Optional
-% 
+%    offset (numeric): 2-by-1 Vvector index of the row and column of the
+%       center of the filter (if offset is [0,0] the filter is centered in
+%       [1,1])
+%
 % Output
 %    gab(numeric) : N-by-M matrix representing the gabor filter in spatial
 %    domain
@@ -36,13 +37,13 @@ function gab = morlet_2d_pyramid(N, M, sigma, slant, xi, theta, precision, offse
 	end
 
 	if ~exist('offset', 'var')
-		offset = [1 + floor(N/2), 1 + floor(M/2)];
+		offset = [floor(N/2), floor(M/2)];
 	end
 	
 	[x , y] = meshgrid(1:M, 1:N);
 
-	x = x - offset(2);
-	y = y - offset(1);
+	x = x - offset(2) - 1;
+	y = y - offset(1) - 1;
 	
 	Rth = rotation_matrix_2d(theta);
 	A = Rth\  [1/sigma^2, 0 ; 0 slant^2/sigma^2] * Rth ;

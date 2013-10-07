@@ -58,7 +58,9 @@ function [x_phi, x_psi, options] = wavelet_2d_pyramid(x, filters, options)
     h = filters.h.filter;
     for j = 1:options.J
         signal = hx.signal{j};
-        signal_paded = pad_signal(signal,size(signal)+ filters.meta.P*[2,2], [], 0, 1);
+        pad_signal(x, Npad, boundary, center)
+        Npad = size(signal) + filters.meta.
+        signal_paded = pad_signal(signal, size(signal)+filters.meta.P*[2,2], 'symm', 1);
         tmp = conv_sub_2d(signal_paded, h, 1);
         tmp = unpad_signal(tmp, 1, size(signal), [filters.meta.P,filters.meta.P]);
         hx.signal{j+1} = tmp;

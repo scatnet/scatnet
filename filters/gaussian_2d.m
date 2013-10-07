@@ -9,7 +9,8 @@
 %	 sigma (numeric): standard deviation of the Gaussian
 %	 precision (string): 'single' or 'double'
 %	 offset (numeric): 2-by-1 Vvector index of the row and column of the
-%    center of the filter
+%       center of the filter (if offset is [0,0] the filter is centered in
+%       [1,1])
 %
 % Output
 %    gab (numeric): N-by-M Gaussian function
@@ -24,13 +25,13 @@ function gau = gaussian_2d(N, M, sigma, precision, offset)
 	end
 
     if (~exist('offset', 'var'))
-		offset = [1 + floor(N/2), 1 + floor(M/2)];
+		offset = [floor(N/2), floor(M/2)];
 	end
 	
 	[x , y] = meshgrid(1:M, 1:N);
 
-	x = x - offset(2);
-	y = y - offset(1);
+	x = x - offset(2) - 1;
+	y = y - offset(1) - 1;
 	
 	gau = 1/(2*pi*sigma^2) * exp( -(x.^2+y.^2)./(2*sigma^2) );
 	
