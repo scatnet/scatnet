@@ -21,7 +21,7 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, options, wavelet)
 	
 	calc_U = (nargout>=2);
 
-	[psi_xi,psi_bw,phi_bw] = filter_freq(filters);
+	[psi_xi,psi_bw,phi_bw] = filter_freq(filters.meta);
 	
 	if ~isfield(U.meta, 'bandwidth'), U.meta.bandwidth = 2*pi; end
 	if ~isfield(U.meta, 'resolution'), U.meta.resolution = 0; end

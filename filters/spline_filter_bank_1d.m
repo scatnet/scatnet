@@ -1,28 +1,37 @@
-% morlet_filter_bank_1d: Creates a spline wavelet filter bank.
+% SPLINE_FILTER_BANK_1D Create a spline wavelet filter bank
+%
 % Usage
-%    filters = spline_filter_bank_1d(sz, options)
+%    filters = SPLINE_FILTER_BANK_1D(sz, options)
+%
 % Input
-%    sz: The size of the input data.
-%    options (optional): Filter parameters.
+%    sz (int): The size of the input data.
+%    options (struct, optional): Filter parameters, see below.
+%
 % Output
-%    filters: The spline wavelet filter bank corresponding to the data size sz
-%       and the filter parameters in options.
+%    filters (struct): The spline wavelet filter bank corresponding to the 
+%       data size sz and the filter parameters in options.
+%
 % Description
-%    Spline wavelet filters are defined for orders 1 (linera) and 3 (cubic) 
+%    Spline wavelet filters are defined for orders 1 (linear) and 3 (cubic) 
 %    according to formulas in [1], except that the filters are chosen to be
 %    symmetric around 0.
 %
 %    The following options can be specified:
-%       options.J: The number of filters to generate. This controls the maxi-
-%          mum size of the wavelets according to the formula 2^J (default 
+%       options.J (int): The number of filters to generate. This controls the 
+%          maximum size of the wavelets according to the formula 2^J (default 
 %          log2(sz))
-%       options.spline_order: Either 1 or 3. The former gives linear spline
-%          wavelets while the latter gives cubic spline wavelets (default 3).
+%       options.spline_order (int): Either 1 or 3. The former gives linear 
+%          spline wavelets while the latter gives cubic spline wavelets 
+%          (default 3).
 %       options.boundary, options.precision, and options.filter_format: 
-%          See documentation for filter_bank function.
+%          See documentation for the FILTER_BANK function.
+%
 % References
 %    [1] S. Mallat, "A wavelet tour of signal processing: the sparse way." 
 %       Academic Press, 2008, pp. 291-292
+%
+% See also
+%    MORLET_FILTER_BANK_1D, FILTER_BANK
 
 function filters = spline_filter_bank_1d(sig_length,options)
 	if nargin < 2

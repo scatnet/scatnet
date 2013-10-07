@@ -1,26 +1,26 @@
-% DISPLAY_FILTER_2D Display all the fine-resolution filters of the filter 
+% DISPLAY_FILTER_BANK_2D Display all the fine-resolution filters of the filter 
 % bank and returns the result to display
 %
 % Usage
-%	big_img = DISPLAYER_FILTER_BANK_2D(filters, n, renorm)
+%	big_img = DISPLAY_FILTER_BANK_2D(filters, renorm, n)
 %
 % Input
 %    filters (cell of struct): filter banke from a wavelet factory (for 
 %    instance).
-%    n (numeric): cropping size, only for 'fourier_multires' type of
-%    function
 %    r (bool): renormalize the filters for display or not.
+%    n (numeric): cropping size, only for 'fourier_multires' type of
+%    function. Not required for spatial support filters.
 %
 % Output
-%    filt_for_disp (numerical): displayed (real) image.
+%    big_img (numerical): displayed filter bank.
 %
 % Description
-%    Display the real or imaginary part of a filter bank and returns it.
+%    Display the real and imaginary part of a filter bank and returns it.
 % 
 % See also
 % DISPLAY_FILTER_2D
 
-function big_img = display_filter_bank_2d(filters, n, renorm)
+function big_img = display_filter_bank_2d(filters, renorm, n)
 if (~exist('n','var'))
   n = min(32, floor(min(filters.meta.size_in)/2 -1));
 end

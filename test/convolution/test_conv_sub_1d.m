@@ -14,6 +14,9 @@ for i=1:12
    y_old = old_conv_sub_1d(xf,filter,ds);
    y = conv_sub_1d(xf,filter,ds);
    assert(all(abs(y-y_old)<1.0e-12));
+
+   y = conv_sub_1d([xf xf],filter,ds);
+   assert(norm(y(:,1)-y(:,2))<1e-14);
 end
 
 options.filter_format = 'fourier_multires';
@@ -23,6 +26,9 @@ for i=1:12
    y_old = old_conv_sub_1d(xf,filter,ds);
    y = conv_sub_1d(xf,filter,ds);
    assert(all(abs(y-y_old)<1.0e-12));
+
+   y = conv_sub_1d([xf xf],filter,ds);
+   assert(norm(y(:,1)-y(:,2))<1e-14);
 end
 
 options.filter_format = 'fourier_truncated';
@@ -32,6 +38,9 @@ for i=1:12
    y_old = old_conv_sub_1d(xf,filter,ds);
    y = conv_sub_1d(xf,filter,ds);
    assert(all(abs(y-y_old)<1.0e-12));
+
+   y = conv_sub_1d([xf xf],filter,ds);
+   assert(norm(y(:,1)-y(:,2))<1e-14);
 end
 
 disp('Test passed.')
@@ -78,6 +87,10 @@ function y = old_conv_sub_1d(xf,filter,ds)
 		end
 		% multiply fourier coefficients to get convolution
 		yf = bsxfun(@times,xf(ind,:),filter.coefft);
+		% in fact, always recenter so that phase is correct
+ 		if filter.recenter
+ 			yf = circshift(yf,filter.start-1);
+ 		end
 		if ds > 0
 			% subsample...
 			yf = reshape( ...
@@ -87,10 +100,6 @@ function y = old_conv_sub_1d(xf,filter,ds)
 			% or interpolate?
 			yf = [yf; zeros((2^(-ds)-1)*size(yf,1),size(yf,2))];
 		end
-		% in fact, always recenter so that phase is correct
- 		if filter.recenter
- 			yf = circshift(yf,filter.start-1);
- 		end
 		% normalization
 		yf = yf/sqrt((N/2^j0)/size(yf,1));
 		y = ifft(yf,[],1);

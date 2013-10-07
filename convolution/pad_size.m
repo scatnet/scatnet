@@ -1,19 +1,27 @@
-% PAD_SIZE Compute the optimal size for pading
+% PAD_SIZE Compute the optimal size for padding
 %
 % Usage
-%   sz_paded = PAD_SIZE(sz, min_margin, res)
+%   sz_padded = PAD_SIZE(sz, min_margin, max_ds)
 %
 % Input
-%   sz (int) : the size of the original signal
-%   min_margin (int) : the minimum margin for pading 
-%   res (int) : the downsampled resolution
+%   sz (int): The size of the original signal.
+%   min_margin (int): The minimum margin for padding.
+%   max_ds (int): The maximum downsampling factor.
 %
 % Output
-%   sz_paded (int) : the optimal size for pading
+%   sz_padded (int): The minimum size of the padded signal.
 %
 % Description
-%   the smallest multiple of 2^res that is
-%   larger than sz by at least 2*min_margin
-function sz_paded = pad_size(sz, min_margin, res)
-    sz_paded = 2^res * ceil( (sz + 2*min_margin)/2^res );
+%   Calculates the smallest multiple of 2^max_ds larger than sz by at least 
+%   2*min_margin. This ensures that there is enough margin on both sides of
+%   the signal to avoid border effects, assuming that min_margin is equal
+%   to at least half of the size of the largest filter used, while ensuring
+%   that downsampling by powers of 2 up to 2^max_ds are possible through
+%   periodization of the Fourier transform.
+%
+% See Also
+%   PAD_SIGNAL, UNPAD_SIGNAL
+
+function sz_padded = pad_size(sz, min_margin, max_ds)
+    sz_padded = 2^max_ds * ceil( (sz + 2*min_margin)/2^max_ds );
 end
