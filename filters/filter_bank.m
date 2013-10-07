@@ -1,15 +1,17 @@
-% FILTER_BANK Creates a filter bank
+% FILTER_BANK Create a cell array of filter banks
 %
-% Usage
-%    filters = FILTER_BANK(sz, options)
+% Usages
+%    filters = filter_bank(N)
+%
+%    filters = filter_bank(N, options)
 %
 % Input
-%    sz (int): The size of the input data.
+%    N (int): The size of the input data.
 %    options (optional): Filter parameters, see below.
 %
 % Output
-%    filters (struct): A cell array of filter bank corresponding to the data 
-%       size sz and the filter parameters in options.
+%    filters (struct): A cell array of filter banks corresponding to the
+%      data size N and the filter parameters in options.
 %
 % Description
 %    The behavior of the function depends on the value of options.filter_type,
@@ -74,9 +76,7 @@ function filters = filter_bank(sig_length, options)
 	options = fill_struct(options, 'P', []);
 	options = fill_struct(options, 'spline_order', []);
 	options = fill_struct(options, 'precision', 'double');
-	% filter_format can be: 'fourier', 'fourier_multires', 'fourier_truncated'
 	options = fill_struct(options, 'filter_format', 'fourier_truncated');
-	
 	
 	if ~iscell(options.filter_type)
 		options.filter_type = {options.filter_type};
@@ -87,7 +87,7 @@ function filters = filter_bank(sig_length, options)
 	end
 		
 	bank_count = max(cellfun(@(x)(numel(getfield(options,x))), ...
-		parameter_fields));
+		parameter_fields)); % number of required filter banks
 		
 	for k = 1:bank_count
 		% Extract the k:th element from each parameter field
