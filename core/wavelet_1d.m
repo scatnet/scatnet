@@ -1,6 +1,8 @@
 % WAVELET_1D One-dimensional wavelet transform
 %
-% Usage
+% Usages
+%    [x_phi, x_psi, meta_phi, meta_psi] = WAVELET_1D(x, filters)
+%
 %    [x_phi, x_psi, meta_phi, meta_psi] = WAVELET_1D(x, filters, options)
 %
 % Input
