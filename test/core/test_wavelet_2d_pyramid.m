@@ -14,7 +14,7 @@ toc;
 vx.signal = x_psi;
 vx.meta = meta_psi;
 ux = modulus_layer(vx);
-img = image_scat_layer(ux);
+img = image_scat_layer(ux,0,0);
 immac(img);
 
 %%
@@ -34,6 +34,6 @@ for k = 1:K
 end
 toc;
 ux = modulus_layer(wx);
-img = image_scat_layer(ux);
+img = image_scat_layer(ux,0,0);
 immac(img,2);
 %%

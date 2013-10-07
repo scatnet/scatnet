@@ -59,7 +59,7 @@ function [x_phi, x_psi, meta_phi, meta_psi, options] = wavelet_2d_pyramid(x, fil
         tmp = unpad_signal(tmp, 1, size(signal), filters.meta.offset);
         hx{j+1} = tmp;
     end
-    x_phi{1} = hx{options.J+1};
+    x_phi = hx{options.J+1};
     meta_phi.j(1) = options.J;
     
     % intermediate low pass may be usefull (e.g. for roto-translation 
