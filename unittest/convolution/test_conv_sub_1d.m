@@ -13,20 +13,21 @@ classdef test_conv_sub_1d < matlab.unittest.TestCase
             xf = fft(x);
             ds = randi(jsig)-1;
             
-            white_list = {'type'};
+            white_list = {'filter_format'};
             type = {'d'};
             values = ...
                 {{'fourier','fourier_multires','fourier_truncated'}};
             
-            filt_opt = generate_random_options(white_list,type,values);
+            filt_opt = generate_random_options(white_list,type,values)
             filters = morlet_filter_bank_1d(sig_length,filt_opt);
             filter = filters.psi.filter{randi(jsig-ds)};
             
             for j=1:jsig
                 y_old = old_conv_sub_1d(xf,filter,ds); % see below
                 y = conv_sub_1d(xf,filter,ds);
-                is_different = round(10^6*norm(y_old-y));
-                testcase.assertEqual(is_different==false);
+                difference = norm(y_old-y)
+                is_different = round(10^13*difference);
+                assert(is_different==false);
             end
         end
     end
