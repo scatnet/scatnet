@@ -1,7 +1,7 @@
 x = lena;
-x = x(1:13,1:64);
+x = x(1:1,1:64);
 
-filt_opt.J = 7;
+filt_opt.J = 4;
 filt_opt.L = 8;
 scat_opt.oversampling = 0;
 [Wop, filters] = wavelet_factory_2d(size(x), filt_opt, scat_opt);
