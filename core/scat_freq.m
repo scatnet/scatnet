@@ -1,4 +1,9 @@
-function [S,U] = scat_freq(X, Wop)
+function [S, U] = scat_freq(X, Wop)
+	% Group all the coefficients into tables along lambda1 and t. For order 1,
+	% this gives a single table containing all first-order coefficients, while
+	% for order 2, each lambda2 corresponds to one table containing the 
+	% second-order coefficients for that lambda2 and the different lambda1s,
+	% and so on.
 	Y = concatenate_freq(X);
 	
 	S = {};
@@ -11,20 +16,31 @@ function [S,U] = scat_freq(X, Wop)
 		U{m+1} = {};
 		
 		for k = 1:length(Y{m+1}.signal)
-			% note: here each signal is a table
+			% Here each signal is a table of dimension PxNxK, where P is the
+			% number of frequencies lambda1, N is the number of time samples,
+			% and K is the number of signals.
 			signal = Y{m+1}.signal{k};
 			
+			% Get the table dimension, if K = 1, MATLAB will not include it in
+			% the size.
 			sz_orig = size(signal);
 			sz_orig = [sz_orig ones(1,3-length(sz_orig))];
 			
+			% Compute the corresponding columns in the meta fields.
 			ind = r:r+size(signal,1)-1;
 			
+			% Reshape so that each time sample and each signal index are
+			% processed separately by putting them in the third dimension,
+			% giving a table of size Px1xNK.
 			signal = reshape(signal,[sz_orig(1) 1 prod(sz_orig(2:3))]);
 			
 			if m > 0
+				% If we're not in the zeroth order, we can (and want to)
+				% compute the scattering transform along lambda1, which is now
+				% the first dimension of signal.
 				[S_fr,U_fr] = scat(signal, Wop);
 				
-				% needed for the case of U, are not init by scat
+				% Needed for the case of U. These are not initialized by scat.
 				if ~isfield(U_fr{1}.meta,'bandwidth')
 					U_fr{1}.meta.bandwidth = 2*pi;
 				end
@@ -32,6 +48,7 @@ function [S,U] = scat_freq(X, Wop)
 					U_fr{1}.meta.resolution = 0;
 				end
 			else
+				% If we're in the zeroth order, just copy the signal.
 				S_fr = {};
 				
 				S_fr{1}.signal = {signal};
@@ -48,17 +65,21 @@ function [S,U] = scat_freq(X, Wop)
 			end
 			
 			if isempty(S{m+1})
+				% If we have no signals so far, initialize S, the output.
 				for mp = 0:length(S_fr)-1
-					S{m+1}{mp+1}.signal = {};
-					U{m+1}{mp+1}.signal = {};
-					rp(mp+1) = 1;
-					rb(mp+1) = 1;
+					S{m+1}{mp+1}.signal = {};	% Scattering coefficients
+					U{m+1}{mp+1}.signal = {};	% Wavelet modulus coefficients
+					rp(mp+1) = 1;				% Index for S{m+1}{mp+1}
+					rb(mp+1) = 1;				% Index for U{m+1}{mp+1}
 				end
 			end
 			
 			for mp = 0:length(S_fr)-1
+				% For each order of the frequential scattering.
 				for kp = 1:length(S_fr{mp+1}.signal)
+					% For each of the frequential scattering coefficients.
 					for t = 0:1
+						% Do this for both S and U, same thing.
 						if t == 0
 							X_fr = S_fr;
 							X = S;
@@ -69,17 +90,25 @@ function [S,U] = scat_freq(X, Wop)
 							rc = rb;
 						end
 					
+						% Extract all the signals of this path. Again, note
+						% that nsignal is a table of the size P'x1xNK, where
+						% P' is the number of freqencies after downsamping.
 						nsignal = X_fr{mp+1}.signal{kp};
 					
+						% Retrieve P' = j1_count and downsampling factor.
 						j1_count = size(nsignal,1);
-					
 						ds = X_fr{mp+1}.meta.resolution(kp);
 					
+						% Which of the indices from the original range ind
+						% have been kept after subsampling.
 						inds = ind(1:2^ds:end);
 					
+						% Restore the P'xNxK dimension of the table.
 						nsignal = reshape(nsignal,[j1_count sz_orig(2:3)]);
 					
 						for j1 = 1:j1_count
+							% For each of the remaining frequencies lambda1,
+							% copy the signal and its associated meta fields.
 							X{m+1}{mp+1}.signal{rc(mp+1)} = ...
 								reshape(nsignal(j1,:,:), ...
 									[sz_orig(2) 1 sz_orig(3)]);
@@ -98,6 +127,7 @@ function [S,U] = scat_freq(X, Wop)
 							rc(mp+1) = rc(mp+1)+1;
 						end
 						
+						% Write the results into S or U, depending.
 						if t == 0
 							S_fr = X_fr;
 							S = X;
@@ -115,6 +145,9 @@ function [S,U] = scat_freq(X, Wop)
 		end
 	end
 	
+	% For each order of temporal scattering, we have a cell array containing 
+	% the different orders of frequential scattering, so we need to flatten
+	% the latter to obtain the regular scattering transform format.
 	for m = 0:length(S)-1
 		temp = flatten_scat(S{m+1});
 		temp = temp{1};
