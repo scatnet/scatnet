@@ -15,12 +15,14 @@
 %    V (cell): Wavelet coefficients of the next layer
 %
 % Description
-%    Given inputs modulus wavelet coefficients corresponding to a layer, 
-%    WAVELET_LAYER_2D computes the wavelet transform coefficients of the 
-%    next layer using WAVELET_2D.
+%    This function has a pivotal role between WAVELET_2D (which computes a
+%    single wavelet transform), and WAVELET_FACTORY_2D (which creates the
+%    whole cascade). Given inputs modulus wavelet coefficients
+%    corresponding to a layer, WAVELET_LAYER_2D computes the wavelet
+%    transform coefficients of the next layer using WAVELET_2D.
 %
 % See also 
-%   WAVELET_2D, WAVELET_LAYER_1D
+%   WAVELET_2D, WAVELET_FACTORY_2D, WAVELET_LAYER_1D
 
 function [A, V] = wavelet_layer_2d(U, filters, options)
 	
