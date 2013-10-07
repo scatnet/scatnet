@@ -1,9 +1,9 @@
 clear; close all;
 x = uiuc_sample;
+x = x(:,:);
 filt_opt.size_filter = [7, 7];
-filt_opt.L = 6;
-wav_opt.J = 4;
-options.precision = 'single';
+filt_opt.L = 8;
+wav_opt.J = 6;
 [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, wav_opt);
 tic;
 [Sx, Ux] = scat(x, Wop);
@@ -11,10 +11,9 @@ toc;
 
 
 %%
-
-filt_opt.null = 1;
-filt_opt.L = 6;
-filt_opt.J = 5;
+filt_opt = struct();
+filt_opt.L = 8;
+filt_opt.J = 6;
 scat_opt.oversampling = 0;
 [Wop2, filters2] = wavelet_factory_2d(size(x), filt_opt, scat_opt);
 tic;
