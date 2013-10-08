@@ -10,7 +10,9 @@
 
 \graphicspath{{figures/}}
 
-\title{ScatNet Documentation}
+\title{ScatNet : \\ a MATLAB Toolbox for Scattering Networks}
+
+\author{Laurent Sifre, Joakim And\'{e}n, Michel Kapoko, \\ \'{E}douard Oyallon, and Vincent Lostanlen}
 
 \begin{document}
 	
@@ -19,7 +21,7 @@
 \section{Introduction}
 
 \subsection{Overview}
-ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. Mostly owing to its properties of group invariance and stability to deformations, it has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
+ScatNet is a MATLAB scientific toolbox which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. Mostly owing to its properties of group invariance and stability to deformations, it has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
 Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of signal processing layers of increasing width. Each layer consist in the association of a linear filter bank \mcode{Wop} with a non-linear operator, namely the complex modulus.
 The \emph{scattering transform} of an input signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
 
@@ -33,7 +35,7 @@ Finally, Section \ref{sec:classification} thoroughly describes the classificatio
 
 \section{Scattering transform \label{sec:scattering-transform}}
 
-\subsection{Prototype}
+\subsection{Prototype \label{sub:scattering-transform-prototype}}
 Assuming that the cell array of linear operators \mcode{Wop} is already built, the computation of the scattering transform of some input signal \mcode{x} is a fast operation, supported by the function \mcode{scat}.
 Interestingly, the array \mcode{x} may either be of dimensions:
 
@@ -57,7 +59,7 @@ Each layer $S_m$ of scattering coefficients proceeds from an averaging of modulu
 [S, U] = scat(x, Wop);
 \end{lstlisting}
 
-\subsection{Implementation}
+\subsection{Implementation of the scattering transform}
 Each operator \mcode{Wop\{1+m\}} performs two actions, leading to separate outputs :
 \begin{enumerate}
 \item an energy \emph{averaging} according to the largest scale, by means of a low-pass filter $\phi$, and
@@ -78,7 +80,7 @@ The function \mcode{modulus_layer} computes the modulus of all signals in \mcode
 
 At the last layer, it is not necessary to perform any scattering, since the coefficients will not be further processed. Therefore, \mcode{Wop\{M\}} is merely an averaging operator, with a single output argument.
 
-\subsection{Format}
+\subsection{Format of a scattering layer}
 
 The layer format, in which every \mcode{S\{1+m\}} and \mcode{U\{1+m\}} are encoded, consists of two fields, namely \mcode{signal} and \mcode{meta}. The former is a cell array of real-valued signals, while the latter is a structure containing meta-information. In the sequel, \mcode{S\{1+m\}.meta} is an array, whose number of columns is equal to the number of signals within the layer.
 
@@ -90,21 +92,29 @@ Wop{1+m} = @mth_user_defined_operator;
 
 Most often, however, it is not necessary to do so ; indeed, ScatNet provides efficient linear operators by default, especially adapted to the processing of images and sounds. Therefore, the whole cell array \mcode{Wop} can be defined in one line through built-in "factories", which rely on the theory of wavelet analysis. These factories are reviewed in the next section.
 
-\section{Wavelet factories \label{sec:wavelet-factories}}
 
-For example, for wavelet-based image processing, it is sufficient to write
+\section{Wavelet factories \label{sec:wavelet-factories}}
+\subsection{Prototype}
+For a given input \mcode{x}, all built-int wavelet factories have the same prototype :
+
 \begin{lstlisting}
-Wop = @wavelet_factory_2d(size(x),filt_opt,scat_opt);
+[Wop,filters] = wavelet_factory(size(x),filt_opt,scat_opt);
 \end{lstlisting}
 
-The 
+The first output argument is a cell array of function handles, with fit the required format in the prototype of \mcode{scat} (see Section \ref{sub:scattering-transform-prototype}).
 
-\begin{enumerate}
-\item \mcode{@wavelet_layer_1d}
-\item \mcode{@wavelet_layer_2d}
-\item \mcode{@wavelet_layer_3d}
+ScatNet has six built-in wavelet factories, all of them available in the \mcode{core} directory.
+\begin{itemize}
+   \item \mcode{wavelet_1d}
+   \item \mcode{wavelet_2d} and \mcode{wavelet_2d_pyramid}
+   \item \mcode{wavelet_3d} and \mcode{wavelet_3d_pyramid}
 \end{enumerate}
 
+The first function, \mcode{wavelet_1d}, is adapted to the representation of one-dimensional signals, such as sounds or time series. Its specificities are reviewed in Section \ref{sub:one-dimensional-wavelet-factory}.
+
+For their part, \mcode{wavelet_2d} and \mcode{wavelet_2d_pyramid} give a translation-invariant representation of images. 
+
+\subsection{Scattering options}
 
 The \mcode{meta.resolution} field has one row, indicating the extent the signal has been subsampled with respect to the original length.
 
@@ -116,7 +126,7 @@ Let us consider the example output \mcode{S} from the \mcode{scat} function usin
 
 Linear operators can be constructed manually as indicated in the previous section by defining filters and function handles. However, factory functions presented in this section simplify this process.
 
-\subsection{\mcode{wavelet_factory_1d}}
+\subsection{One-dimensional wavelet factory \label{sub:one-dimensional-wavelet-factory}}
 
 The \mcode{wavelet_factory_1d} function takes a signal size along with a number of parameters and returns a cell array of linear operators corresponding to wavelet transforms. Its signature is given by
 \begin{lstlisting}
@@ -141,7 +151,7 @@ Wop = wavelet_factory_1d(65536, filt_opt, scat_opt);
 \end{lstlisting}
 The scattering transform of a signal \mcode{x} is then obtained by calling \mcode{scat(x, Wop)}.
 
-\subsection{\mcode{wavelet_factory_2d}}
+\subsection{Wavelet factory for images}
 The \mcode{wavelet_factory_2d} function takes a \mcode{size_in} vector of image size and optional parameters wrapped in an \mcode{filt_opt} and \mcode{scat_opt} structure of options parameters and outputs a cell array of linear operators corresponding to successive wavelet transforms. Its signature  is given by
 \begin{lstlisting}
 [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
