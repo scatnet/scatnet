@@ -18,7 +18,10 @@
 
 \section{Introduction}
 
-ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. Its core feature relies in the construction of a \emph{scattering network}, i.e. a cascade of complex filter banks alternated with a non-linear operator, namely the complex modulus.
+ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. It has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
+Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of processing layers of increasing width. Each layer consist in the association of a linear filter bank with a non-linear operator, namely the complex modulus.
+The \emph{scattering transform} of a signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
+
 \section{The Scattering Transform}
 
 The scattering transform is implemented in ScatNet using the \mcode{scat} function. This function can be used to calculate several types of scattering transforms by varying the linear operators supplied to it.
