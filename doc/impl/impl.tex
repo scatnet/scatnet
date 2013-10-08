@@ -1,4 +1,4 @@
-\documentclass[twocolumn]{article}
+\documentclass{article}
 \usepackage{amsmath,cite}
 \usepackage{graphicx}
 
@@ -31,7 +31,7 @@ Finally, Section \ref{sec:classification} thoroughly describes the classificatio
 
 \section{Scattering transforms \label{sec:scattering-transform}}
 
-\subsection{The \mcode{scat} Function}
+\subsection{Prototype}
 Assuming that the cell array of linear operators \mcode{Wop} is already built, the computation of the scattering transform of some input signal \mcode{x} is a fast operation, supported by the function \mcode{scat}.
 Interestingly, the array \mcode{x} may either be of dimensions:
 
@@ -47,30 +47,34 @@ In all cases, the network of scattering coefficients is obtained throught the si
 S = scat(x, Wop);
 \end{lstlisting}
 
-\mcode{S} is a cell array, whose size is the same as \mcode{Wop}.
+\mcode{S} is a cell array whose length \mcode{M} is the same as \mcode{Wop}. The integer \mcode{M} is equal to $\bar{m}+1$, where $\bar{m}$ is the maximal order of the scattering transform. Note that, in scientific papers, the order $m$ ranges from $0$ to $\bar{m}$ ; but since MATLAB is one-based, the corresponding layer index ranges from \mcode{1} to \mcode{M}, hence the need of an offset of \mcode{1} for the variable \mcode{m}.
 
+Each layer $S_m$ of scattering coefficients proceeds from an averaging of modulus coefficients $U_{m-1}$ computed at the previous layer. These modulus coefficients can be separately obtained with \mcode{scat}, as an optional second output argument :
 
-
-Often, the modulus coefficients \mcode{U} are not necessary and so can be left out.
-
-Each element of the \mcode{Wop} is a function handle, with signature
 \begin{lstlisting}
-[A, V] = Wop{m+1}(X);
+[S, U] = scat(x, Wop);
 \end{lstlisting}
-Note that operators are indexed starting at $m = 0$, so an offset of $1$ is necessary for compatibility with MATLAB. Here, \mcode{X}, \mcode{A} and \mcode{V} are all in the network layer format described in the next subsection. The linear operator \mcode{Wop\{m+1\}} transforms the signals in the \mcode{X} into two new layers: an invariant layer \mcode{A} (average) and a covariant layer \mcode{V} (variations). In the case of a wavelet transform, \mcode{A} corresponds to the averaging of the lowpass filter $\phi$ while \mcode{V} consists of the wavelet coefficients obtained by convolving with $\psi_j$.
 
-Initializing \mcode{U{1}} using the input signal, the following loop is then executed in \mcode{scat}
+\subsection{Implementation}
+Each operator \mcode{Wop\{1+m\}} performs two actions, leading to separate outputs :
+\begin{enumerate}
+\item an energy \emph{averaging} according to the largest scale, by means of a low-pass filter $\phi$, and
+\item an energy \emph{scattering} along all scales, by means of band-pass filters $\psi_j$.
+\end{enumerate}
+
+After initializing \mcode{U\{1\}} to \mcode{x}, \mcode{scat} executes the following loop :
+
 \begin{lstlisting}
-for m = 0:numel(Wop)-1
-	if (m < numel(Wop)-1)
-		[S{m+1}, V] = Wop{m+1}(U{m+1});
-		U{m+2} = modulus_layer(V);
-	else
-		S{m+1} = Wop{m+1}(U{m+1});
-	end
+for m = 0:M-1
+   [S{1+m}, V] = Wop{m+1}(U{1+m});
+   U{1+(m+1)} = modulus_layer(V);
 end
+S{M} = Wop{M}(U{M});
 \end{lstlisting}
-For each intermediate layer \mcode{U\{m+1\}}, we thus apply the linear operator \mcode{Wop\{m+1\}}, assigning the invariant output to the $m$th-order scattering layer \mcode{S\{m+1\}}, and computing the modulus of the covariant part to obtain the $(m+1)$th order intermediate coefficients \mcode{U{m+2}}. For the last layer, we do not need the intermediate coefficients, and so only compute the scattering coefficients.
+
+The function \mcode{modulus_layer} computes the modulus of all signals in \mcode{V} while preserving its layer structure.
+
+At the last layer, it is not necessary to perform any scattering, since the coefficients will not be further processed. Therefore, \mcode{Wop\{M\}} is merely an averaging operator, with a single output argument.
 
 \subsection{Network Layers \mcode{S\{m+1\}} and Linear Operators \mcode{Wop\{m+1\}}}
 
