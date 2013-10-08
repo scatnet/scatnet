@@ -1,3 +1,51 @@
+% CONCATENATE_FREQ Concatenates first frequencies into tables
+%
+% Usage
+%    Y = CONCATENATE_FREQ(X, fmt)
+%
+% Input
+%    X (struct or cell): The scattering layer to process, or a cell array of
+%       such scattering layers. Often S or U outputs of SCAT.
+%    fmt (char, optional): Either 'table' or 'cell'. Describes how grouped
+%       coefficients are assembled. See Description for more details (default
+%       'table').
+%
+% Output
+%    Y (struct or cell): The same scattering layers, with all coefficients 
+%       that only differ by first frequency lambda1 grouped together.
+%
+% Description
+%    In order to perform operations along frequency, or in the time-frequency
+%    plane, scattering coefficients need to be grouped together and concate-
+%    nated along the first frequency axis, lambda1. Specifically, all coef-
+%    ficients that have the same frequencies lambda2, lambda3, etc are grouped
+%    together. For the first order, this means that we only have one group,
+%    whereas in the second order, we have one group for each lambda2, and so
+%    on.
+%
+%    Each signal in the input is of the form Nx1xK, where N is the number of
+%    time samples and K is the number of signals that are processed simulta-
+%    neously. Consider one group as described above, containing P coeffi-
+%    cients, with all coefficients having the same number of time samples. 
+%    This is the case, for example, when the input X is a scattering transform
+%    output S. Here, the coefficients can be concatenated into a single table
+%    of dimension NxPxK. If the fmt parameter is set to 'table', this is in-
+%    deed what happens. The P coefficients in X are therefore replaced by
+%    one table in Y of the dimension described above. If fmt equals 'cell',
+%    a cell array is created instead of a table, containing each of the sig-
+%    nals in the group. In both cases, frequencies lambda1 are arranged in 
+%    order of decreasing frequency (increasing scale).
+%
+%    To preserve the meta fields of the original coefficients, they are copied
+%    into the output structure. They are ordered in order of increasing group
+%    index, so that if the first group contains P coefficients, the first
+%    P columns of a given meta field corresponds to the coefficients of the 
+%    first group, and so on. Within each group, the columns are ordered in 
+%    order of decreasing lambda1, just like within the groups themselves.
+%
+% See also 
+%    SCAT_FREQ
+
 function Y = concatenate_freq(X, fmt)
 	if nargin < 2
 		fmt = 'table';

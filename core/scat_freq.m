@@ -1,3 +1,33 @@
+% SCAT_FREQ Computes scattering transform along first frequency
+%
+% Usage
+%    [S, U] = scat_freq(X, Wop)
+%
+% Input
+%    X (cell): A cell array of scattering layers with, such as the output S
+%       of the SCAT function.
+%
+% Output
+%    S, U (cell): The scattering and wavelet modulus coefficients, respective-
+%       ly, of the input representation X, transformed along first frequency
+%       lambda1.
+%
+% Description
+%    For each order of the input representation X, the coefficients are group-
+%    ed according to higher-order frequencies lambda2, lambda3, with each
+%    group ordered along lambda1, obtained by calling CONCATENATE_FREQ. Then 
+%    the scattering transform defined by Wop by calling SCAT is applied along
+%    this lambda1 axis. The results are then retransformed, separating the
+%    different first frequencies lambda1 into different coefficients, as in 
+%    the original representation.
+%
+%    The meta fields of the frequential scattering transform are stored in the
+%    output with the prefix 'fr_', so 'order' becomes 'fr_order', 'j' becomes
+%    'fr_j', and so on.
+%
+% See also 
+%    SCAT, WAVELET_FACTORY_1D, CONCATENATE_FREQ
+
 function [S, U] = scat_freq(X, Wop)
 	% Group all the coefficients into tables along lambda1 and t. For order 1,
 	% this gives a single table containing all first-order coefficients, while
