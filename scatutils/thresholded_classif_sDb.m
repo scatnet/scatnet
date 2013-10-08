@@ -53,7 +53,7 @@ for k=1:length(thresholds)
     db=prepare_inst_db(src,feature_fun,prep_opt);
     
     all_recog_rates={};
-all_recog=zeros(size(thresh));
+    all_recog=zeros(size(thresh));
     
     if ~isfield(db.src,'rejects')
         db.src=filter_src(db.src);
@@ -72,7 +72,7 @@ all_recog=zeros(size(thresh));
     [train_set ,test_set]= create_filt_feats_parts(db.src, files_train,files_test,[],db.src.rejects);
     
     optt.kernel_type = 'gaussian';
- 
+    
     optt.C=2^16;
     optt.gamma=2^(-8);
     
@@ -83,13 +83,13 @@ all_recog=zeros(size(thresh));
     feature_lbls={};
     votes={};
     
-   
+    
     
     C=optt.C;
     gamma=optt.gamma;
     
     optt1 = optt;
-   
+    
     
     model = weighted_svm_train(db,train_set,optt1,db_weights);
     [labels votes feature_lbls] = svm_test(db,model,test_set);

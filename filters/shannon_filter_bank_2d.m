@@ -123,6 +123,7 @@ function filters = shannon_filter_bank_2d(size_in, options)
     filters.psi = psi;
     
     filters.meta.J = J;
+    filters.meta.Q = 1;
     filters.meta.L = 4;
     filters.meta.size_in = size_in;
     filters.meta.size_filter = size_filter;
