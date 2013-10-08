@@ -1,12 +1,16 @@
-% scat_energy: Calculate scattering energy.
+% SCAT_ENERGY Calculate scattering energy
+%
 % Usage
 %    energy = scat_energy(S, U)
+%
 % Input
-%    S: The scattering transform.
-%    U: The wavelet modulus coefficients (optional).
+%    S (cell): The scattering transform.
+%    U (cell): The wavelet modulus coefficients (optional).
+%
 % Output
-%    energy: The energy of the scattering transform (the sum of the squares
-%    of the coefficients).
+%    energy (numeric): The energy of the scattering transform (the sum of the 
+%       squares of the coefficients). If both S and U are given, the energy of
+%       both are computed and summed.
 
 function energy = scat_energy(S, U)
 	if nargin < 2

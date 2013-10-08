@@ -1,27 +1,28 @@
 % LOG_SCAT Calculate the logarithm of a scattering transform.
-% Usages
-%    S = log_scat(S)
 %
-%    S = log_scat(S,epsilon)
+% Usages
+%    S = LOG_SCAT(S)
+%
+%    S = LOG_SCAT(S, epsilon)
 %
 % Input
 %    S (cell): A scattering transform.
 %    epsilon (real): An small constant added to each component of S in
-%    order to avoid numerical issues : log(0) == -Inf. Default is 2^(-20).
+%    order to reduce contribution of noise (default 2^-20).
 %
 % Output
-%    S: The scattering transform with the logarithm applied to each 
+%    S (cell): The scattering transform with the logarithm applied to each 
 %       coefficient.
 %
 % Description
-%   This function takes the logarithm of every signal component in a
-%   scattering transform, while preserving the network structure. A small
-%   additive constant is used to keep finite results. Note that this
-%   function may also take a single layer of the whole network as an
-%   argument, as it calls itself recursively layerwise.
+%    This function takes the logarithm of every signal component in a
+%    scattering transform, while preserving the network structure. A small
+%    additive constant is used to keep finite results. Note that this
+%    function may also take a single layer of the whole network as an
+%    argument, as it calls itself recursively layerwise.
 %
 % See also
-%   LOG_RENORM_SCAT
+%    RENORM_SCAT
 
 function S = log_scat(S, epsilon)
     % Default value for epsilon
