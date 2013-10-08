@@ -38,7 +38,7 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     end
     
     white_list_filt = {'filter_type', 'precision', 'Q', 'J', 'L',...
-        'sigma_phi','sigma_psi','xi_psi','slant_psi'};
+        'sigma_phi','sigma_psi','xi_psi','slant_psi', 'min_margin'};
     white_list_scat = { 'oversampling', 'precision','M'};
     
     check_options_white_list(filt_opt, white_list_filt);
@@ -47,7 +47,15 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     scat_opt = fill_struct(scat_opt, 'M', 2);
 	
 	% Create filters
-	filters = morlet_filter_bank_2d(size_in, filt_opt);
+    filt_opt = fill_struct(filt_opt, 'filter_type', 'morlet');
+    switch filt_opt.filter_type
+        case 'morlet'
+            filt_opt = rmfield(filt_opt, 'filter_type');
+            filters = morlet_filter_bank_2d(size_in, filt_opt);
+        case 'shannon'
+            filt_opt = rmfield(filt_opt, 'filter_type');
+            filters = shannon_filter_bank_2d(size_in, filt_opt);
+    end
 	
 	% Create the wavelet transform to apply at the m-th layer
 	for m = 1:scat_opt.M+1
