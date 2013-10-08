@@ -6,9 +6,9 @@
 % Input
 %    size_in (numeric): The size of the signals to be transformed.
 %    filt_opt (structure): The filter options, same as for 
-%    MORLET_FILTER_BANK_2D
+%       MORLET_FILTER_BANK_2D or SHANNON_FILTER_BANK_2D
 %	 scat_opt (structure): The scattering and wavelet options, identical to
-%    WAVELET_LAYER_1D/WAVELET_1D.
+%       WAVELET_LAYER_1D/WAVELET_1D.
 %
 % Output
 %    Wop (cell of function handle): A cell array of wavelet transforms 
@@ -23,7 +23,7 @@
 %    If M, the number of layer, is not specified, its value is set automatically to 2.
 %
 % See also
-%    WAVELET_2D, MORLET_FILTER_BANK_2D 
+%    WAVELET_2D, MORLET_FILTER_BANK_2D, SHANNON_FILTER_BANK_2D
 
 function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
     % Options
@@ -55,6 +55,8 @@ function [Wop, filters] = wavelet_factory_2d(size_in, filt_opt, scat_opt)
         case 'shannon'
             filt_opt = rmfield(filt_opt, 'filter_type');
             filters = shannon_filter_bank_2d(size_in, filt_opt);
+        otherwise
+            error('unsupported filter type');
     end
 	
 	% Create the wavelet transform to apply at the m-th layer

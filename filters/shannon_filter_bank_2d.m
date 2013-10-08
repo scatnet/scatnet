@@ -1,5 +1,4 @@
-% SHANNON_FILTER_BANK_2D Compute a bank of Shannon wavelet filters in
-% the Fourier domain.
+% SHANNON_FILTER_BANK_2D Compute a bank of Shannon wavelet filters bank
 %
 % Usage
 %	filters = SHANNON_FILTER_BANK_2D(size_in, options)
@@ -22,7 +21,15 @@
 %        meta (struct): contains meta-information on (g,h)
 %
 % Description
-%    Compute the Morlet filter bank in the Fourier domain.
+%    Compute the Morlet filter bank in the Fourier domain. 
+%    Shannon filter bank has a flat littlewood paley sum equals to 1.
+%    Yet, they suffer poor localization. They should be used to test
+%    mathematical properties of norm preservation. For classificaiton
+%    experiment, MORLET_FILTER_BANK_2D have better localization properties
+%    and should thus be preferably used.
+%
+% See also
+%   MORLET_FILTER_BANK_2D
 
 function filters = shannon_filter_bank_2d(size_in, options)
     if(nargin<2)

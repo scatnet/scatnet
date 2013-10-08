@@ -33,16 +33,16 @@ function [xi_psi,bw_psi,bw_phi] = morlet_freq_1d(filt_opt)
 	sigma0 = 2/sqrt(3);
 	
 	% Calculate logarithmically spaced, band-pass filters.
-    xi_psi = filt_opt.xi_psi * 2^((0:-1:1-filt_opt.J)/filt_opt.Q);
-    sigma_psi = filt_opt.sigma_psi * 2^((0:filt_opt.J-1)/filt_opt.Q);
+    xi_psi = filt_opt.xi_psi * 2.^((0:-1:1-filt_opt.J)/filt_opt.Q);
+    sigma_psi = filt_opt.sigma_psi * 2.^((0:filt_opt.J-1)/filt_opt.Q);
 
 	% Calculate linearly spaced band-pass filters so that they evenly
 	% cover the remaining part of the spectrum
 	step = pi * 2^(-filt_opt.J/filt_opt.Q) * ...
         (1-1/4*sigma0/filt_opt.sigma_phi*2^(1/filt_opt.Q))/filt_opt.P;
-    xi_psi(filt_opt.J:filt_opt.P) = filt_opt.xi_psi * ...
+    xi_psi(filt_opt.J+1:filt_opt.J+filt_opt.P) = filt_opt.xi_psi * ...
         2^((-filt_opt.J+1)/filt_opt.Q) - step * (1:filt_opt.P);
-    sigma_psi(filt_opt.J:filt_opt.P) = ...
+    sigma_psi(filt_opt.J+1:filt_opt.J+1+filt_opt.P) = ...
         filt_opt.sigma_psi*2^((filt_opt.J-1)/filt_opt.Q);
     
     % Calculate band-pass filter
