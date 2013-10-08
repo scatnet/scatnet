@@ -10,7 +10,7 @@
 
 \graphicspath{{figures/}}
 
-\title{ScatNet Implementation Document}
+\title{ScatNet Documentation}
 
 \begin{document}
 	
@@ -23,13 +23,15 @@ ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysi
 Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of signal processing layers of increasing width. Each layer consist in the association of a linear filter bank \mcode{Wop} with a non-linear operator, namely the complex modulus.
 The \emph{scattering transform} of an input signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
 
+\subsection{Getting started}
+
 \subsection{Outline}
-In this document, the objects in ScatNet are first reviewed from the general to the specific : Sections \ref{sec:scattering-transform}, \ref{sec:layers} and \ref{sec:filters} respectively cover the architectures of the scattering operator, of each layer in the network, and of each filter in a layer.
+In this document, the objects in ScatNet are first reviewed from the general to the specific : Sections \ref{sec:scattering-transform}, \ref{sec:wavelet-factories} and \ref{sec:filters} respectively cover the architectures of the scattering operator, of each layer in the network, and of each filter in a layer.
 Afterwards, Section \ref{sec:utilities} presents some utilities that facilitate the manipulation and formatting of scattering transforms, for the purposes of visualization and discriminative learning.
 Section \ref{sec:display} is dedicated to the display tools of ScatNet, both for one-dimensional and two-dimensional input signals.
 Finally, Section \ref{sec:classification} thoroughly describes the classification pipeline of affine space and support vector classifiers for scattering representations.
 
-\section{Scattering transforms \label{sec:scattering-transform}}
+\section{Scattering transform \label{sec:scattering-transform}}
 
 \subsection{Prototype}
 Assuming that the cell array of linear operators \mcode{Wop} is already built, the computation of the scattering transform of some input signal \mcode{x} is a fast operation, supported by the function \mcode{scat}.
@@ -78,21 +80,39 @@ At the last layer, it is not necessary to perform any scattering, since the coef
 
 \subsection{Format}
 
-The layer format, in which every \mcode{S\{1+m\}} and \mcode{U\{1+m\}} are encoded, consists of two fields, namely \mcode{signal} and \mcode{meta}. The former is a cell array of real-valued signals, while the latter is a structure containing meta-information.
+The layer format, in which every \mcode{S\{1+m\}} and \mcode{U\{1+m\}} are encoded, consists of two fields, namely \mcode{signal} and \mcode{meta}. The former is a cell array of real-valued signals, while the latter is a structure containing meta-information. In the sequel, \mcode{S\{1+m\}.meta} is an array, whose number of columns is equal to the number of signals within the layer.
 
-Each of the fields in \mcode{S\{1+m\}.meta} is an array, whose number of columns is equal to the number of signals within the layer.
+Any user-defined function with one input and two outputs in the previous format may become an element of the cell array \mcode{Wop}, through an instruction of this kind :
 
-For example, the \mcode{meta.resolution} field has one row, indicating the extent the signal has been subsampled with respect to the original length. In the case of wavelet transforms used as linear operators, an important field is \mcode{meta.j}, which has a variable number of rows, describing the scales of the wavelets used to compute the coefficient. For a first-order coefficient $|x\star\psi_{j_1}|\star\phi(t)$, this will simply be one row containing $j_1$. For a second-order coefficient $||x\star\psi_{j_1}|\star\psi_{j_2}|\star\phi(t)$, the first row will contain $j_1$ while the second will contain $j_2$.
+\begin{lstlisting}
+Wop{1+m} = @mth_user_defined_operator;
+\end{lstlisting}
+
+Most often, however, it is not necessary to do so ; indeed, ScatNet provides efficient linear operators by default, especially adapted to the processing of images and sounds. Therefore, the whole cell array \mcode{Wop} can be defined in one line through built-in "factories", which rely on the theory of wavelet analysis. These factories are reviewed in the next section.
+
+\section{Wavelet factories \label{sec:wavelet-factories}}
+
+For example, for wavelet-based image processing, it is sufficient to write
+\begin{lstlisting}
+Wop = @wavelet_factory_2d(size(x),filt_opt,scat_opt);
+\end{lstlisting}
+
+The 
+
+\begin{enumerate}
+\item \mcode{@wavelet_layer_1d}
+\item \mcode{@wavelet_layer_2d}
+\item \mcode{@wavelet_layer_3d}
+\end{enumerate}
+
+
+The \mcode{meta.resolution} field has one row, indicating the extent the signal has been subsampled with respect to the original length.
+
+In the case of wavelet transforms used as linear operators, an important field is \mcode{meta.j}, which has a variable number of rows, describing the scales of the wavelets used to compute the coefficient. For a first-order coefficient $|x\star\psi_{j_1}|\star\phi(t)$, this will simply be one row containing $j_1$. For a second-order coefficient $||x\star\psi_{j_1}|\star\psi_{j_2}|\star\phi(t)$, the first row will contain $j_1$ while the second will contain $j_2$.
 
 Let us consider the example output \mcode{S} from the \mcode{scat} function using wavelet transforms as linear operators. In this case, \mcode{S\{m+1\}} will contain the $m$th-order scattering coefficients, with \mcode{S\{m+1\}.signal\{p\}} being the $p$th signal among these. Its scales $(j_1,j_2,\ldots,j_m)$ are specified in \mcode{S\{m+1\}.meta.j(:,p)}.
 
-As mentioned earlier, the \mcode{Wop\{m+1\}} function handles take as an input a network layer and outputs two layers, one invariant and one covariant. Any function with these inputs and outputs can be used as an element of \mcode{Wop}. Two basic functions can be used for this purpose: \mcode{wavelet_layer_1d} and \mcode{wavelet_layer_2d}, which define wavelet transforms on network layers. For example, supposing we have defined a filter bank \mcode{filters} (see next section), we can create an accompanying 1D wavelet transform by defining
-\begin{lstlisting}
-Wop{m+1} = @(U)(wavelet_layer_1d(U, filters));
-\end{lstlisting}
-This has to be done for each layer of the scattering transform.
 
-\section{Creating Operators \label{sec:layers}}
 
 Linear operators can be constructed manually as indicated in the previous section by defining filters and function handles. However, factory functions presented in this section simplify this process.
 
