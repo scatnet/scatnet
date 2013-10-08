@@ -1,15 +1,21 @@
-% svm_param_search: Parameter search for SVM classifier.
+% SVM_PARAM_SEARCH Parameter search for SVM classifier
+%
 % Usage
-%    [err,C,gamma] = svm_param_search(db, train_set, valid_set, options)
+%    [err, C, gamma] = SVM_PARAM_SEARCH(db, train_set, valid_set, options)
+%
 % Input
-%    db: The database containing the feature vector.
-%    train_set: The object indices of the training instances.
-%    valid_set: The object indices of the validation instances.
-%    options: The training options passed to svm_train.
+%    db (struct): The database containing the feature vector.
+%    train_set (int): The object indices of the training instances.
+%    valid_set (int): The object indices of the validation instances.
+%    options (struct): The training options passed to svm_train.
+%
 % Output
-%    err: The errors for the parameters (C,gamma).
-%    C: The slack factors tested.
-%    gamma: The gammas tested (for Gaussian kernel).
+%    err (numeric): The errors for the parameters (C, gamma).
+%    C (numeric): The slack factors tested.
+%    gamma (numeric): The gammas tested (for Gaussian kernel).
+%
+% See also
+%    SVM_TRAIN, SVM_TEST, SVM_ADAPTIVE_PARAM_SEARCH
 
 function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	if nargin < 3

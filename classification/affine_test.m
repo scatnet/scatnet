@@ -1,16 +1,21 @@
-% affine_test: Calculate labels for an affine space model.
+% AFFINE_TEST Calculate labels for an affine space model
+%
 % Usage
-%    [labels, err, feature_err] = affine_test(db, model, test_set)
+%    [labels, err, feature_err] = AFFINE_TEST(db, model, test_set)
+%
 % Input
-%    db: The database containing the feature vector.
-%    model: The affine space model obtained from affine_train.
-%    test_set: The object indices of the testing instances.
+%    db (struct): The database containing the feature vector.
+%    model (struct): The affine space model obtained from affine_train.
+%    test_set (int): The object indices of the testing instances.
+%
 % Output
-%    labels: The assigned labels.
-%    err: The average approximation error for each testing instance and
-%       class pair.
-%    feature_err: The approximation error for each feature vector and class
-%       pair.
+%    labels (int): The assigned labels.
+%    err (numeric): The average approximation error for each testing instance
+%       and class pair.
+%    feature_err (numeric): The approximation error for each feature vector 
+%       and class pair.
+% See also
+%    AFFINE_TRAIN, AFFINE_PARAM_SEARCH
 
 function [labels,err,feature_err] = affine_test(db,model,test_set)
 	test_mask = ismember(1:length(db.src.objects),test_set);

@@ -1,16 +1,21 @@
-% svm_adaptive_param_search: Adaptive parameter search for SVM classifier.
+% SVM_ADAPTIVE_PARAM_SEARCH Adaptive parameter search for SVM classifier
+%
 % Usage
-%    [err,C,gamma] = svm_adaptive_param_search(db, train_set, valid_set, ...
+%    [err, C, gamma] = SVM_ADAPTIVE_PARAM_SEARCH(db, train_set, valid_set, ...
 %       options)
+%
 % Input
-%    db: The database containing the feature vector.
-%    train_set: The object indices of the training instances.
-%    valid_set: The object indices of the validation instances.
-%    options: The training options passed to svm_train.
+%    db (struct): The database containing the feature vector.
+%    train_set (int): The object indices of the training instances.
+%    valid_set (int): The object indices of the validation instances.
+%    options (struct): The training options passed to svm_train.
+%
 % Output
-%    err: Cell array of errors for the parameters tested at each depth.
-%    C: Cell array of slack factors tested at each depth.
-%    gamma: Cell array of gammas tested (for Gaussian kernel) for each depth.
+%    err (cell): Cell array of errors for the parameters tested at each depth.
+%    C (cell): Cell array of slack factors tested at each depth.
+%    gamma (cell): Cell array of gammas tested (for Gaussian kernel) for each 
+%       depth.
+%
 % Description
 %    Instead of performing a single grid search over a range of parameters,
 %    as svm_param_search does, svm_adaptive_param_search refines the parameter
@@ -18,6 +23,9 @@
 %    iterations, the errors and parameter sets are stored in the cell arrays
 %    err, C, gamma. The final, finest, grid is therefore contained in 
 %    err{end}, C{end} and gamma{end}.
+%
+% See also
+%   SVM_PARAM_SEARCH, SVM_TRAIN, SVM_TEST
 
 function [err,C,gamma] = svm_adaptive_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'gamma',1e-4);

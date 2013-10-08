@@ -1,19 +1,24 @@
-% prepare_database: Calculates the features from objects in a source.
+% PREPARE_DATABASE Calculates the features from objects in a source
+%
 % Usage
-%    database = prepare_database(src, feature_fun, options)
+%    database = PREPARE_DATABASE(src, feature_fun, options)
+%
 % Input
-%    src: The source specifying the objects.
-%    feature_fun: The feature functions applied to each object.
-%    options: Options for calculating the features:
-%       options.feature_sampling: specifies how to sample the feature vectors 
-%           in time/space (default 1).
-%       options.file_normalize: The normalization of each file before being
-%          given to feature_fun. Can be empty, 1, 2, or Inf (default []).
-%       options.parallel: If 1, tries to use the Distributed Computing Tool-
-%          box to speed up calculation (default 1).
-%       Other options are listed in the help for the feature_wrapper function.
+%    src (struct): The source specifying the objects.
+%    feature_fun (cell): The feature functions applied to each object.
+%    options (struct): Options for calculating the features:
+%       options.feature_sampling (int): specifies how to sample the feature 
+%           vectors in time/space (default 1).
+%       options.file_normalize (int): The normalization of each file before 
+%          being given to feature_fun. Can be empty, 1, 2, or Inf (default []).
+%       options.parallel (boolean): If true, tries to use the Distributed 
+%          Computing Toolbox to speed up calculation (default true).
+%       Other options are listed in the help for the FEATURE_WRAPPER function.
 % Output
-%    database: The database of feature vectors.
+%    database (struct): The database of feature vectors.
+%
+% See also
+%    CREATE_SRC, FEATURE_WRAPPER
 
 function db = prepare_database(src,feature_fun,opt)
 	if nargin < 3

@@ -1,14 +1,20 @@
-% affine_param_search: Parameter search for affine classifier.
+% AFFINE_PARAM_SEARCH Parameter search for affine classifier
+%
 % Usage
-%    [err,dim] = affine_param_search(db, train_set, valid_set, options)
+%    [err, dim] = AFFINE_PARAM_SEARCH(db, train_set, valid_set, options)
+%
 % Input
-%    db: The database containing the feature vector.
-%    train_set: The object indices of the training instances.
-%    valid_set: The object indices of the validation instances.
-%    options: The training options passed to affine_train.
+%    db (struct): The database containing the feature vector.
+%    train_set (int): The object indices of the training instances.
+%    valid_set (int): The object indices of the validation instances.
+%    options (struct): The training options passed to affine_train.
+%
 % Output
 %    err: The errors for the dimensions in dim.
 %    dim: The dimensions tested.
+%
+% See also
+%    AFFINE_TRAIN, AFFINE_TEST
 
 function [err,dim] = affine_param_search(db,train_set,valid_set,opt)
 	if nargin < 3

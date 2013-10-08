@@ -1,16 +1,23 @@
-% gtzan_src: Creates a source for the GTZAN dataset.
+% GTZAN_SRC Creates a source for the GTZAN dataset
+%
 % Usage
-%    src = gtzan_src(directory, N)
+%    src = GTZAN_SRC(directory, N)
+%
 % Input
-%    directory: The directory containing the GTZAN dataset.
-%    N: The size to which the audio files are to be truncated (default 
+%    directory (char): The directory containing the GTZAN dataset.
+%    N (int): The size to which the audio files are to be truncated (default 
 %       5*2^17).
+%
 % Output
-%    src: The GTZAN source.
+%    src (struct): The GTZAN source.
+%
 % Description
 %    Creates a source index for the GTZAN dataset (available at 
 %    http://marsyasweb.appspot.com/download/data_sets/) that can be used for
 %    calculating a feature database and classifying musical genres.
+%
+% See also
+%    CREATE_SRC
 
 function src = gtzan_src(directory,N)
 	if nargin < 1

@@ -1,13 +1,19 @@
-% affine_train: Train an affine space classifier.
+% AFFINE_TRAIN Train an affine space classifier
+%
 % Usage
-%    model = affine_train(db, train_set, options)
+%    model = AFFINE_TRAIN(db, train_set, options)
+%
 % Input
-%    db: The database containing the feature vector.
-%    train_set: The object indices of the training instances.
-%    options: The training options. options.dim specifies the dimensionality
-%        of the affine spaces modeling each class.
+%    db (struct): The database containing the feature vector.
+%    train_set (int): The object indices of the training instances.
+%    options (struct): The training options. options.dim specifies the dimen-
+%        sionality of the affine spaces modeling each class.
+%
 % Output
 %    model: The affine space model.
+%
+% See also
+%    AFFINE_TEST, AFFINE_PARAM_SEARCH
 
 function model = affine_train(db,train_set,opt)
 	if nargin < 3
