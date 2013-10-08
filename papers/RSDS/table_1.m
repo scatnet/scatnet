@@ -30,7 +30,7 @@ path_to_precomputed = '/Users/laurentsifre/TooBigForDropbox/Results/RSDS/precomp
 src = kthtips_src(path_to_db);
 db_name = 'kth-tips';
 
-use_precomputed_scattering = 0; % change to 0 to skip computation of scattering
+use_precomputed_scattering = 1; % change to 0 to skip computation of scattering
 
 grid_train = [5, 20, 40]; % number of training for classification
 nb_split = 10; % number of split for classification
