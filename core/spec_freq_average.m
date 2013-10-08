@@ -1,3 +1,39 @@
+% SPEC_FREQ_AVERAGE Calulates the frequency-averaged spectrogram
+%
+% Usage
+%    spec = SPEC_FREQ_AVERAGE(x, filters, options)
+%
+% Input
+%    x (numeric): The signal to be transformed.
+%    filters (cell): The set of filters used to calculate the spectrogram
+%       and the frequency averaging.
+%    options (struct): Various options to the function:
+%       options.oversampling (int): The amount of oversampling with respect to
+%          the critical bandwidth, as a power of 2 (default 1).
+%
+% Output
+%    spec (numeric): The frequency-averaged spectrogram, arranged in as a 
+%       first-order scattering transform.
+%
+% Description
+%    First, the spectrogram of x is computed with respect to the second-order
+%    lowpass filter filters{2}.phi, if it is present, otherwise filters{1}.phi
+%    is used. Once a spectrogram is obtained, the filters in filters{1}.psi are
+%    averaged with the spectrogram to each yield a time-varying coefficient.
+%    The resulting signals are arranged in spec in the format of a first-order
+%    scattering transform. As a result, spec{1}.signal is empty, since no 
+%    zeroth-order coefficients are present. However, spec{2}.signal contains 
+%    the frequency-averaged spectrogram coefficients, arranged in order of 
+%    decreasing frequeny.
+%
+%    The accompanying meta structure is also analogous to the scattering 
+%    transform. Notably, spec{2}.meta.order is equal to 1 for each coefficient
+%    and spec{2}.meta.j gives the index of the filter used to compute the
+%    frequency averaging.
+%
+% See also 
+%   MORLET_FILTER_BANK_1D, WAVELET_FACTORY_1D
+
 function [out,meta] = spec_freq_average(in,filters,options)
 	options = fill_struct(options,'oversampling',1);
 	
