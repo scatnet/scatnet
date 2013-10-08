@@ -18,11 +18,13 @@
 
 \section{Introduction}
 
+\subsection{Overview}
 ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. It has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
-Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of processing layers of increasing width. Each layer consist in the association of a linear filter bank with a non-linear operator, namely the complex modulus.
+Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of signal processing layers of increasing width. Each layer consist in the association of a linear filter bank with a non-linear operator, namely the complex modulus.
 The \emph{scattering transform} of a signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
+In this document, the objects in ScatNet are first reviewed from the general to the specific : Sections \ref{sec:scattering-transform}, \ref{sec:layers} and \ref{sec:filters} respectively cover the architectures of the scattering operator, of each layer in the network, and of each filter in a layer. Afterwards, 
 
-\section{The Scattering Transform}
+\section{The Scattering Transform \label{sec:scattering-transform}}
 
 The scattering transform is implemented in ScatNet using the \mcode{scat} function. This function can be used to calculate several types of scattering transforms by varying the linear operators supplied to it.
 
@@ -69,7 +71,7 @@ Wop{m+1} = @(U)(wavelet_layer_1d(U, filters));
 \end{lstlisting}
 This has to be done for each layer of the scattering transform.
 
-\section{Creating Operators}
+\section{Creating Operators \label{sec:layers}}
 
 Linear operators can be constructed manually as indicated in the previous section by defining filters and function handles. However, factory functions presented in this section simplify this process.
 
@@ -110,7 +112,7 @@ The \mcode{scat_opt} options are specific to the scattering algorithm. It can co
 \end{itemize}
 The \mcode{filt_opt} options are specific to the filter bank used in wavelet transforms. The possible fields for \mcode{filt_opt} are detailed in section \ref{sec_filters_2d}.
 
-\section{Defining Filters}
+\section{Defining Filters \label{sec:filters}}
 
 As described in the previous section, filter parameters are specified in the \mcode{filt_opt} structure passed to \mcode{wavelet_factory_1d} or \mcode{wavelet_factory_2d}. Depending on the type of filter used, this structure can contain different parameters, but the following can always be specified:
 \begin{itemize}
@@ -213,7 +215,7 @@ This adaptive behavior can be overridden by manually setting $\sigma$, $\xi$, $s
 \end{itemize}	
 
 
-\section{Manipulating, Formatting Scattering Coefficients}
+\section{Manipulating, Formatting Scattering Coefficients \label{sec:utilities}}
 
 To facilitate the manipulation of the scattering coefficients, several functions are provided that perform different operations on the network layer format described above. In addition, we can convert the coefficients to an easier-to-manage array representation, concatenating scattering coefficients and separating out meta-data.
 
@@ -272,7 +274,7 @@ from \mcode{S} associated with the signals in \mcode{S_table}.
 There are three different formats available for \mcode{fmt}. The first is \mcode{'raw'}, which leaves the representation intact, setting \mcode{S_table = S}. The second is \mcode{'order_table'}, which creates
  a two-dimensional table for each scattering order, and sets \mcode{S_table} to the cell array of these tables, with \mcode{meta} being a cell array of the associated \mcode{S\{m+1\}.meta}. Finally, \mcode{'table'} (the default), concatenates the tables of all orders and does the same for the meta fields. In the case where \mcode{meta} fields have different number of rows for different orders, the smaller fields are extended with \mcode{-1}. Note that this last format is only possible if scattering coefficients of different orders are of the same resolution, which is most often the case.
 
-\section{Display}
+\section{Display \label{sec:display}}
 
 \subsection{1D}
 
@@ -329,11 +331,11 @@ The spatial coefficients of all filter of a filter bank can be displayed using
 display_filter_bank_2d(filters);
 \end{lstlisting}
 
-\section{Classification}
+\section{Classification \label{sec:classification}}
 
 ScatNet contains a classification pipeline for affine space and support vector classifiers. These let the user specify a feature transformation for computing features in batch form, then set up a training/testing mechanism for evaluating results.
 
-\subsection{Batch Computation}
+\subsection{Batch Computation \label{sec:batch-computation}}
 
 To compute scattering coefficients for a database of signals, we first define a source. A source is a set of files, each file containing a number of objects to be classified. Each object has a class and a location within the file.
 
