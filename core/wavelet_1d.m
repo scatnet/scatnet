@@ -37,7 +37,6 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	options = fill_struct(options, ...
 		'psi_mask', true(1, numel(filters.psi.filter)));
 	options = fill_struct(options, 'x_resolution',0);
-	options = fill_struct(options, 'phi_renormalize',0);
 	options = fill_struct(options, 'renormalize_epsilon',2^(-20));
 	options = fill_struct(options, 'use_abs', 0);
 
@@ -49,7 +48,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		'number of signals.']);
 	end
 
-	[temp,psi_bw,phi_bw] = filter_freq(filters.meta);
+	[temp,psi_bw,phi_bw] = filter_freq(filters);
 
 	j0 = options.x_resolution;
 
@@ -61,35 +60,29 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 
 	xf = fft(x,[],1);
 
-	if options.use_abs
-		xf_abs = fft(abs(x),[],1);
-	end
+	  %It has been proven sometimes useful to renormalize the first order
+    %coefficients of the scattering transform of an audio signal by its
+    % mean, x_phi=conv(x,phi), but this value is typically nul for audio
+    %so we rather renormalize by x_phi=conv(abs(x),phi). Putting
+    %options.use_abs to 1 should be done in preparation of that fact.
+    
+     if options.use_abs==1 
+        xf_abs=fft(abs(x),[],1);
+        x_phi = real(conv_sub_1d(xf_abs, filters.phi.filter, ds));
+     else 
+        x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
+     end
 
 	ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
 	ds = max(ds, 0);
 
-	x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
 	x_phi = unpad_signal(x_phi, ds, N);
 	meta_phi.j = -1;
 	meta_phi.bandwidth = phi_bw;
 	meta_phi.resolution = j0+ds;
 
 	x_phi = reshape(x_phi, [size(x_phi,1) 1 size(x_phi,2)]);
-
-	if options.phi_renormalize
-		if options.use_abs==0
-			x_renorm = real(conv_sub_1d(xf, filters.phi.filter, 0));
-			x = x./(x_renorm+options.renormalize_epsilon*2^(j0/2));
-			xf = fft(x,[],1);
-
-		else 
-			x_renorm = real(conv_sub_1d(xf_abs, filters.phi.filter, 0));
-			x = x./(x_renorm+options.renormalize_epsilon*2^(j0/2));
-			xf = fft(x,[],1);  
-		end
-
-	end
-
+    
 	x_psi = cell(1, numel(filters.psi.filter));
 	meta_psi.j = -1*ones(1, numel(filters.psi.filter));
 	meta_psi.bandwidth = -1*ones(1, numel(filters.psi.filter));
