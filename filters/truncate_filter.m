@@ -1,13 +1,13 @@
-function filter = truncate_filter(filter_f,threshold,lowpass)
+function filter = truncate_filter(filter_f, threshold, lowpass)
 	N = length(filter_f);
 	
 	filter.type = 'fourier_truncated';
 	filter.N = N;
 
-	%filter.recenter = lowpass;
+	% Could have filter.recenter = lowpass, but since we don't know if we're
+	% taking the modulus or not, we always need to recenter.
 	filter.recenter = 1;
 	
-	%filter_f = fftshift(filter_f);
 	[temp,ind_max] = max(filter_f);
 	filter_f = circshift(filter_f,N/2-ind_max);
 	ind1 = find(abs(filter_f)>(max(abs(filter_f))*threshold),1);

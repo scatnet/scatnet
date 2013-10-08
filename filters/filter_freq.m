@@ -20,7 +20,6 @@
 % See also
 %   MORLET_FREQ_1D, SPLINE_FREQ_1D, WAVELET_1D, WAVELET_LAYER_1D
 
-
 function [psi_xi, psi_bw, phi_bw] = filter_freq(filter_options)
 	if strcmp(filter_options.filter_type,'spline_1d')
 		[psi_xi,psi_bw,phi_bw] = dyadic_freq_1d(filter_options);

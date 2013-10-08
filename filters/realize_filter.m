@@ -10,7 +10,8 @@
 %       ed (default the maximum size allowed by the filter).
 %
 % Output
-%    filter_f: The Fourier transform of the filter for signal size N.
+%    filter_f (numeric): The Fourier transform of the filter for signal size 
+%       N.
 %
 % See also
 %    OPTIMIZE_FILTER, PERIODIZE_FILTER, TRUNCATE_FILTER
