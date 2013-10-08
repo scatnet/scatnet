@@ -1,3 +1,39 @@
+% TRUNCATE_FILTER Truncates the Fourier transform of a filter
+%
+% Usage
+%    filter = TRUNCATE_FILTER(filter_f, threshold, lowpass)
+%
+% Input
+%    filter_f (numeric): The Fourier representation of the filter.
+%
+% Output
+%    filter (struct): The truncated representation of the filter. See descrip-
+%       tion for more details.
+%
+% Description
+%    By extracting and storing only the Fourier transform coefficients whose 
+%    are above a certain threshold relative to the maximum value, storage
+%    requirements for the filters are lessened and computation is sped up
+%    since only non-zero coefficients are multiplied during convolution.
+%
+%    The support of the Fourier transform is defined so that all coefficients
+%    with a magnitude above threshold*fmax are kept, where fmax is the maxi-
+%    mum magnitude, and so that length(filter_f) divided by the size of the
+%    support is a power of 2.
+%
+%    The output filter contains the fields:
+%       filter.type (char): Fixed to 'fourier_truncated'.
+%       filter.N (int): The original size of the filter.
+%       filter.recenter (boolean): Indicates whether the Fourier transform
+%          should be recentered after convolution. This is always true.
+%       filter.start (int): The frequency index where the support of the
+%          Fourier transform starts.
+%       filter.coefft (numeric): The values of the Fourier coefficients on the
+%          support.
+%
+% See also 
+%    OPTIMIZE_FILTER, PERIODIZE_FILTER
+
 function filter = truncate_filter(filter_f, threshold, lowpass)
 	N = length(filter_f);
 	
