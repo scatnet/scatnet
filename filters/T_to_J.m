@@ -22,7 +22,7 @@
 %    scattering network, each layer having a different quality factor.
 %
 % See also
-%   DEFAULT_FILTER_OPTIONS, MORLET_FILTER_BANK_1D
+%    DEFAULT_FILTER_OPTIONS, MORLET_FILTER_BANK_1D
 
 function J = T_to_J(T, filt_opt)
 filt_opt = fill_struct(filt_opt,'Q',1);

@@ -1,10 +1,10 @@
 % DEFAULT_FILTER_OPTIONS Provides default options for filters
 %
 % Usage
-%    filt_opt = default_filter_options(filter_type, averaging_size)
+%    filt_opt = DEFAULT_FILTER_OPTIONS(filter_type, averaging_size)
 %
 % Input
-%    filter_type (string): Either 'image' (for images), 'audio' (for audio
+%    filter_type (char): Either 'image' (for images), 'audio' (for audio
 %       signals) or 'dyadic' (for other, less oscillatory, 1D signals).
 %    averaging_size (numeric): The desired averaging size of the lowpass
 %       filter phi, that is, the maximal scale of the wavelets.

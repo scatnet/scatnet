@@ -21,7 +21,7 @@
 %    Compute the Haar wavelet filter bank in the spatial domain.
 %
 % See also
-%   MORLET_FILTER_BANK_2D_PYRAMID
+%    MORLET_FILTER_BANK_2D_PYRAMID
 
 
 function filters = haar_filter_bank_2d_pyramid(options)

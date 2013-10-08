@@ -1,9 +1,9 @@
 % FILTER_BANK Create a cell array of filter banks
 %
 % Usages
-%    filters = filter_bank(N)
+%    filters = FILTER_BANK(N)
 %
-%    filters = filter_bank(N, options)
+%    filters = FILTER_BANK(N, options)
 %
 % Input
 %    N (int): The size of the input data.

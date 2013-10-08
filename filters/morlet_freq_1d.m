@@ -28,6 +28,9 @@
 %
 % Description
 %    Compute the Morlet filter bank in the Fourier domain.
+% 
+% See also
+%    FILTER_FREQ, SPLINE_FREQ
 
 function [xi_psi,bw_psi,bw_phi] = morlet_freq_1d(filt_opt)
 	sigma0 = 2/sqrt(3);

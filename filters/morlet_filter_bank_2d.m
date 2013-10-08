@@ -1,5 +1,5 @@
 % MORLET_FILTER_BANK_2D Compute a bank of Morlet wavelet filters in
-% the Fourier domain.
+%    the Fourier domain.
 %
 % Usage
 %	filters = MORLET_FILTER_BANK_2D(size_in, options)

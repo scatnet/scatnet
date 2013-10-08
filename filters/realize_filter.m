@@ -1,13 +1,19 @@
-% realize_filter: Provides a Fourier representation of a filter.
+% REALIZE_FILTER Provides a Fourier representation of a filter
+%
 % Usage
-%    filter_f = realize_filter(filter, N)
+%    filter_f = REALIZE_FILTER(filter, N)
+%
 % Input
-%    filter: The filter structure, usually from filters{m}.psi.filter{k} or 
-%       filters{m}.phi.filter.
-%    N (optional): The signal size for which the filters should be defined
-%       (default the maximum size allowed by the filter).
+%    filter (struct): The filter structure, usually from 
+%       filters{m}.psi.filter{k} or filters{m}.phi.filter.
+%    N (int, optional): The signal size for which the filters should be defin-
+%       ed (default the maximum size allowed by the filter).
+%
 % Output
 %    filter_f: The Fourier transform of the filter for signal size N.
+%
+% See also
+%    OPTIMIZE_FILTER, PERIODIZE_FILTER, TRUNCATE_FILTER
 
 function filter_f = realize_filter(filter, N)
 	if nargin < 2
