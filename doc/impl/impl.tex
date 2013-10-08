@@ -47,7 +47,7 @@ In all cases, the network of scattering coefficients is obtained throught the si
 S = scat(x, Wop);
 \end{lstlisting}
 
-\mcode{S} is a cell array whose length \mcode{M} is the same as \mcode{Wop}. The integer \mcode{M} is equal to $\bar{m}+1$, where $\bar{m}$ is the maximal order of the scattering transform. Note that, in scientific papers, the order $m$ ranges from $0$ to $\bar{m}$ ; but since MATLAB is one-based, the corresponding layer index ranges from \mcode{1} to \mcode{M}, hence the need of an offset of \mcode{1} for the variable \mcode{m}.
+\mcode{S} is a cell array whose length \mcode{M} is the same as \mcode{Wop}. The integer \mcode{M} is equal to $\overline{m}+1$, where $\overline{m}$ is the maximal order of the scattering transform. Note that, in scientific papers, the order $m$ ranges from $0$ to $\overline{m}$ ; but since MATLAB is one-based, the corresponding layer index ranges from \mcode{1} to \mcode{M}, hence the need of an offset of \mcode{1} for the variable \mcode{m}.
 
 Each layer $S_m$ of scattering coefficients proceeds from an averaging of modulus coefficients $U_{m-1}$ computed at the previous layer. These modulus coefficients can be separately obtained with \mcode{scat}, as an optional second output argument :
 
@@ -62,25 +62,27 @@ Each operator \mcode{Wop\{1+m\}} performs two actions, leading to separate outpu
 \item an energy \emph{scattering} along all scales, by means of band-pass filters $\psi_j$.
 \end{enumerate}
 
-After initializing \mcode{U\{1\}} to \mcode{x}, \mcode{scat} executes the following loop :
+After initializing \mcode{U\{1+0\}} to \mcode{x}, \mcode{scat} executes the following loop :
 
 \begin{lstlisting}
-for m = 0:M-1
-   [S{1+m}, V] = Wop{m+1}(U{1+m});
+for m = 0:(M-1)-1
+   [S{1+m}, V] = Wop{1+m}(U{1+m});
    U{1+(m+1)} = modulus_layer(V);
 end
-S{M} = Wop{M}(U{M});
+S{1+(M-1)} = Wop{1+(M-1)}(U{1+(M-1)});
 \end{lstlisting}
 
 The function \mcode{modulus_layer} computes the modulus of all signals in \mcode{V} while preserving its layer structure.
 
 At the last layer, it is not necessary to perform any scattering, since the coefficients will not be further processed. Therefore, \mcode{Wop\{M\}} is merely an averaging operator, with a single output argument.
 
-\subsection{Network Layers \mcode{S\{m+1\}} and Linear Operators \mcode{Wop\{m+1\}}}
+\subsection{Format}
 
-As mentioned earlier, each element of \mcode{S} and \mcode{U} are in the network layer format. These consist of two fields, \mcode{signal} and \mcode{meta}. The former is a cell array of signals and the latter is a structure containing information related to each signal.
+The layer format, in which every \mcode{S\{1+m\}} and \mcode{U\{1+m\}} are encoded, consists of two fields, namely \mcode{signal} and \mcode{meta}. The former is a cell array of real-valued signals, while the latter is a structure containing meta-information.
 
-Specifically, each of the fields in \mcode{meta} is an array with the same number of columns as the length of \mcode{signal}. For example, the \mcode{meta.resolution} field has one row, indicating the extent the signal has been subsampled with respect to the original length. In the case of wavelet transforms used as linear operators, an important field is \mcode{meta.j}, which has a variable number of rows, describing the scales of the wavelets used to compute the coefficient. For a first-order coefficient $|x\star\psi_{j_1}|\star\phi(t)$, this will simply be one row containing $j_1$. For a second-order coefficient $||x\star\psi_{j_1}|\star\psi_{j_2}|\star\phi(t)$, the first row will contain $j_1$ while the second will contain $j_2$.
+Each of the fields in \mcode{S\{1+m\}.meta} is an array, whose number of columns is equal to the number of signals within the layer.
+
+For example, the \mcode{meta.resolution} field has one row, indicating the extent the signal has been subsampled with respect to the original length. In the case of wavelet transforms used as linear operators, an important field is \mcode{meta.j}, which has a variable number of rows, describing the scales of the wavelets used to compute the coefficient. For a first-order coefficient $|x\star\psi_{j_1}|\star\phi(t)$, this will simply be one row containing $j_1$. For a second-order coefficient $||x\star\psi_{j_1}|\star\psi_{j_2}|\star\phi(t)$, the first row will contain $j_1$ while the second will contain $j_2$.
 
 Let us consider the example output \mcode{S} from the \mcode{scat} function using wavelet transforms as linear operators. In this case, \mcode{S\{m+1\}} will contain the $m$th-order scattering coefficients, with \mcode{S\{m+1\}.signal\{p\}} being the $p$th signal among these. Its scales $(j_1,j_2,\ldots,j_m)$ are specified in \mcode{S\{m+1\}.meta.j(:,p)}.
 
