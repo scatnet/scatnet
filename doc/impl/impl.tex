@@ -19,10 +19,13 @@
 \section{Introduction}
 
 \subsection{Overview}
-ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. It has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
+ScatNet is a scientific toolbox for MATLAB, which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. Mostly owing to its properties of group invariance and stability to deformations, it has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
 Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of signal processing layers of increasing width. Each layer consist in the association of a linear filter bank with a non-linear operator, namely the complex modulus.
-The \emph{scattering transform} of a signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
-In this document, the objects in ScatNet are first reviewed from the general to the specific : Sections \ref{sec:scattering-transform}, \ref{sec:layers} and \ref{sec:filters} respectively cover the architectures of the scattering operator, of each layer in the network, and of each filter in a layer. Afterwards, 
+The \emph{scattering transform} of an input signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
+In this document, the objects in ScatNet are first reviewed from the general to the specific : Sections \ref{sec:scattering-transform}, \ref{sec:layers} and \ref{sec:filters} respectively cover the architectures of the scattering operator, of each layer in the network, and of each filter in a layer.
+Afterwards, Section \ref{sec:utilities} presents some utilities that facilitate the manipulation and formatting of scattering transforms, for the purposes of visualization and discriminative learning.
+Section \ref{sec:display} is dedicated to the display tools of ScatNet, both for one-dimensional and two-dimensional input signals.
+Finally, Section \ref{sec:classification} thoroughly describes the classification pipeline of affine space and support vector classifiers for scattering representations.
 
 \section{The Scattering Transform \label{sec:scattering-transform}}
 
