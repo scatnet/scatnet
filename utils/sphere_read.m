@@ -1,3 +1,28 @@
+% SPHERE_READ Read a NIST SPHERE audio file
+%
+% Usages
+%    [y, fs] = SPHERE_READ(filename, N)
+%
+%    sz = SPHERE_READ(filename, 'size')
+%
+% Input
+%    filename (char): The name of the file to read.
+%    N (int, optional): The number of samples to read.
+%
+% Output
+%    y (numeric): The audio data in the file.
+%    fs (numeric): The sample rate of the data.
+%    sz (int): The number of samples in the file.
+%
+% Description
+%    Analogous in use to the WAVREAD function, SPHERE_READ processes NIST
+%    SPHERE files, such as those found in TIMIT. For more information, see
+%    WAVREAD.
+%
+% See also
+%    WAVREAD
+
+
 function [y, fs] = sphere_read(filename, N)
 	if nargin < 2
 		N = [];

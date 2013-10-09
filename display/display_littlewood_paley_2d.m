@@ -9,8 +9,9 @@
 % Description
 %    The function computes the Littlewood-Paley sum of the filter bank and 
 %    displays it. It also outputs the sum.
+%
 % See also
-%   LITTLEWOOD_PALEY, PLOT_LITTLEWOOD_PALEY_1D, FILTER_BANK
+%    LITTLEWOOD_PALEY, PLOT_LITTLEWOOD_PALEY_1D, FILTER_BANK
 
 function littlewood = display_littlewood_paley_2d(filters)
 	lp = littlewood_paley(filters);

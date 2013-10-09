@@ -7,8 +7,8 @@
 %    theta (numeric): the angle of the rotation
 %
 % Ouput
-%    rotmat : 2-by-2 rotation matrix corresponding to the axis convention
-%    of matlab for image coordinates
+%    rotmat (numeric): 2-by-2 rotation matrix corresponding to the axis con-
+%       vention of matlab for image coordinates
 
 function rotmat = rotation_matrix_2d(theta)	
 	rotmat=[cos(theta) sin(theta) ; - sin(theta) cos(theta) ];

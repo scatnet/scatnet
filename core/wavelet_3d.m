@@ -1,21 +1,43 @@
-% wavelet_3d : Compute the wavelet transform of a roto-translation orbit
+% WAVELET_3D Compute the roto-translation wavelet transform
 %
 % Usage
-%	[y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
-%		compute the roto-translation convolution of a three dimensional
-%		signal y, with roto-translation wavelets defined as the separable product
-%		low pass :
+%   [y_Phi, y_Psi, meta_Phi, meta_Psi] = WAVELET_3D(y, filters, filters_rot, options)
+%
+% Input
+%   y (numeric): a 3d matrix whose first two dimension corresponds to spatial
+%       postion and third dimension corresponds to orientation.
+%   filters (struct): a 2d filter bank (applied along spatial variable)
+%   filters_rot (struct): a 1d filter bank (applied along orientation)
+%   options (struct): containing the following optional fields 
+%       x_resolution (int): the log of spatial resolution
+%       psi_mask (bool array): a mask for determining which filter to apply
+%       oversampling (int): the log of spatial oversampling
+%       oversampling_rot (int): the log of orientation oversampling
+%
+% Output
+%   y_Phi (numeric): the roto-translation convolution y * Phi
+%   y_Psi (cell): containing all the roto-translation convolution y * Psi
+%   meta_phi (struct): meta associated to y_Phi
+%   meta_psi (struct): meta associated to y_Psi
+%
+% Description
+%	compute the roto-translation convolution of a three dimensional
+%	signal y, with roto-translation wavelets defined as the separable product
+%	low pass :
 %		PHI(U,V) * PHI(THETA)
-%		high pass :
+%	high pass :
 %		PHI(U,V) * PHI(THETA)
 %		PSI(U,V) * PHI(THETA)
 %		PSI(U,V) * PSI(THETA)
 %
-% Ref
+% Reference
 %	Rotation, Scaling and Deformation Invariant Scattering for Texture
 %	Discrimination, Laurent Sifre, Stephane Mallat
 %	Proc of CVPR 2013
 %	http://www.cmapx.polytechnique.fr/~sifre/research/cvpr_13_sifre_mallat_final.pdf
+%
+% See also
+%   WAVELET_LAYER_3D, WAVELET_FACTORY_3D
 
 function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot, options)
     

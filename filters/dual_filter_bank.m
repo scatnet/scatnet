@@ -1,7 +1,7 @@
 % DUAL_FILTER_BANK Calculate the dual filter bank
 %
 % Usage
-%    dual_filters = dual_filter_bank(filters)
+%    dual_filters = DUAL_FILTER_BANK(filters)
 %
 % Input
 %    filters (struct): The original filter bank, output from FILTER_BANK or

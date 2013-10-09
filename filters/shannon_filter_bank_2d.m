@@ -29,7 +29,7 @@
 %    and should thus be preferably used.
 %
 % See also
-%   MORLET_FILTER_BANK_2D
+%    MORLET_FILTER_BANK_2D
 
 function filters = shannon_filter_bank_2d(size_in, options)
     if(nargin<2)

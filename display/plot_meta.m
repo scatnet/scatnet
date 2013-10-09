@@ -6,9 +6,7 @@
 % Input
 %	S (cell): the output of scat 
 
-
 function plot_meta(S)
-	
 	% compute number of subplot
 	M = numel(S);
 	nb_row = 0;
@@ -18,9 +16,7 @@ function plot_meta(S)
 	end
 	nb_column = M;
 	
-	
 	for m = 1:M
 		plot_meta_layer(S{m}.meta, m, nb_row, nb_column);
 	end
-	
 end

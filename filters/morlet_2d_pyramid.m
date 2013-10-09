@@ -1,5 +1,5 @@
 % MORLET_2D_PYRAMID computes the 2-D elliptic Morlet filter given a set of 
-% parameters in spatial domain
+%    parameters in spatial domain
 %
 % Usage
 %    gab = MORLET_2D_PYRAMID(N, M, sigma, slant, xi, theta, precision, offset)
@@ -18,8 +18,8 @@
 %       [1,1])
 %
 % Output
-%    gab(numeric) : N-by-M matrix representing the gabor filter in spatial
-%    domain
+%    gab (numeric): N-by-M matrix representing the gabor filter in spatial
+%       domain.
 %
 % Description
 %    Compute a Morlet wavelet in spatial domain. 

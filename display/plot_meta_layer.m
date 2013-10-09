@@ -22,9 +22,9 @@ function plot_meta_layer(meta, m, nb_row, nb_column)
 		m = 1;
 		nb_row = numel(fn);
 		nb_column = 1;
-    end
+	end
 
-    % Display meta
+	% Display meta
 	for i=1:numel(fn)
 		subplot(nb_row,nb_column, m + nb_column*(i-1));
 		vec2plot=eval(['meta.',fn{i}]);

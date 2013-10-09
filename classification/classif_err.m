@@ -1,12 +1,19 @@
-% classif_err: Calculates the classification error.
+% CLASSIF_ERR Calculates the classification error.
+%
 % Usage
-%    err = classif_err(labels, test_set, src)
+%    err = CLASSIF_ERR(labels, test_set, src)
+%
 % Input
-%    labels: The predicted labels corresponding to the testing instances.
-%    test_set: The object indices of the testing instances.
-%    src: The source from which the objects were taken.
+%    labels (int): The predicted labels corresponding to the testing in-
+%       stances.
+%    test_set (int): The object indices of the testing instances.
+%    src (struct): The source from which the objects were taken.
+%
 % Output
-%    err: The classification error.
+%    err (numeric): The classification error.
+%
+% See also
+%    AFFINE_TEST, SVM_TEST
 
 function err = classif_err(labels,test_set,src)
 	truth = [src.objects(test_set).class];

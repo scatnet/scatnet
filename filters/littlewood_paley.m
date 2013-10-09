@@ -12,8 +12,9 @@
 %    The function computes the Littlewood-Paley sum of the filter bank at the
 %    signal size N, which needs to be of the form filters.meta.size_filter*2^(-j0), where 
 %    filters.N is the size for which the filters are defined.
+%
 % See also
-%   PLOT_LITTLEWOOD_PALEY_1D, DISPLAY_LITTLEWOOD_PALEY_2D, FILTER_BANK
+%    PLOT_LITTLEWOOD_PALEY_1D, DISPLAY_LITTLEWOOD_PALEY_2D, FILTER_BANK
 
 function energy = littlewood_paley(filters,N)
 	if nargin < 2

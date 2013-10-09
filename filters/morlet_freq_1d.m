@@ -1,35 +1,25 @@
-% MORLET_FREQ_1D Compute a bank of one-dimensional, Morlet wavelet
-%   filters in the Fourier domain.
+% MORLET_FREQ_1D Compute center frequencies and bandwidths for the 1D Morlet
 %
 % Usage
-%	filters = morlet_freq_1d(filt_opt)
+%	[psi_xi, psi_bw, phi_bw] = MORLET_FREQ_1D(filt_opt)
 %
 % Input
-%    filt_opt (struct): Options of the bank of filters. The fields
-%     used by MORLET_FREQ_1D are the following :
-%       J (int): The number of logarithmically spaced wavelets. For  
-%          Q=1, this corresponds to the total number of wavelets since there 
-%          are no  linearly spaced ones. Together with Q, this controls the  
-%          maximum extent the mother wavelet is dilated to obtain the rest of 
-%          the filter bank. Specifically, the largest filter has a bandwidth
-%          2^(J/Q) times that of the mother wavelet (default 
-%          T_to_J(sz, options)).
-%       Q (int): The number of wavelets per octave (default 1).
-%       xi_psi: vector of center frequencies of logarithmically spaced,
-%          band-pass filters
-%       sigma_psi: vector of standard deviations of band-pass filters
-%       sigma_phi: vector of standard deviations of low-pass filters
-%
+%    filt_opt (struct): The parameters defining the filter bank. See 
+%       MORLET_FILTER_BANK_1D for details.
 %
 % Output
-%    xi_psi: vector of center frequencies of band-pass filters
-%    bw_psi: vector of bandwidths of band-pass filters
-%    bw_phi: bandwidth of low-pass filter
+%    psi_xi (numeric): The center frequencies of the wavelet filters.
+%    psi_bw (numeric): The bandwidths of the wavelet filters.
+%    phi_bw (numeric): The bandwidth of the lowpass filter.
 %
 % Description
-%    Compute the Morlet filter bank in the Fourier domain.
+%    Compute the center frequencies and bandwidth for the wavelets and lowpass
+%    filter of the one-dimensional Morlet/Gabor filter bank.
+% 
+% See also
+%    FILTER_FREQ, DYADIC_FREQ_1D
 
-function [xi_psi,bw_psi,bw_phi] = morlet_freq_1d(filt_opt)
+function [xi_psi, bw_psi, bw_phi] = morlet_freq_1d(filt_opt)
 	sigma0 = 2/sqrt(3);
 	
 	% Calculate logarithmically spaced, band-pass filters.
