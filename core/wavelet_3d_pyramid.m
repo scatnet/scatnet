@@ -1,3 +1,4 @@
+% WAVELET_3D_PYRAMID compute 
 function [y_Phi, y_Psi] = wavelet_3d_pyramid(y,...
 		filters, filters_rot, options)
 	%%

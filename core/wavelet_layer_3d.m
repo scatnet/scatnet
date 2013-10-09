@@ -1,3 +1,4 @@
+% WAVELET_LAYER_3D 
 function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 	
 	

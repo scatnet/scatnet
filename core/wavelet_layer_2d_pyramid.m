@@ -1,3 +1,4 @@
+% WAVELET_LAYER_2D_PYRAMID
 function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
     
     calculate_psi = (nargout>=2); % do not compute any convolution
