@@ -1,18 +1,27 @@
-clear
+clear; close all;
 x = uiuc_sample;
 %%
-options.J = 5;
-options.Q = 1;
-options.precision = 'single';
+scat_opt = struct();
+filt_opt = struct();
+filt_rot_opt = struct();
+filt_opt.Q = 1;
+scat_opt.J = 3;
+filt_opt.precision = 'single';
 tic;
-[Wop,f1,f2] = wavelet_factory_3d_pyramid(options, options, options);
+[Wop,f1,f2] = wavelet_factory_3d_pyramid(filt_opt, filt_rot_opt, scat_opt);
 toc;
 tic;
 [Sx, Ux] = scat(x, Wop);
 toc;
 %%
+scat_opt = struct();
+filt_opt = struct();
+filt_rot_opt = struct();
+filt_opt.Q = 1;
+filt_opt.J = 3;
 tic;
-Wop2 = wavelet_factory_3d(size(x), options, options, options);
+
+Wop2 = wavelet_factory_3d(size(x), filt_opt, filt_rot_opt, scat_opt);
 toc;
 tic;
 [Sx2, Ux2] = scat(x, Wop2);

@@ -20,7 +20,8 @@
 %          band-pass psi_0 (the smaller slant, the larger orientation
 %          resolution)
 %       margins (numeric): 1-by-2 vector for the horizontal and vertical 
-%       margin for mirror pading of signal
+%           margin for mirror pading of signal
+%       precision (string): 'double' or 'single'
 %
 % Output
 %    filters (struct):  filters, with the fields
@@ -41,7 +42,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
     end
 
     white_list = {'Q', 'L', 'J', 'sigma_phi', 'sigma_psi', ...
-        'xi_psi', 'slant_psi', 'min_margin'};
+        'xi_psi', 'slant_psi', 'min_margin', 'precision'};
     check_options_white_list(options, white_list);
     
     % Options
@@ -58,11 +59,21 @@ function filters = morlet_filter_bank_2d(size_in, options)
     options = fill_struct(options, 'slant_psi',  4/L);	
 	options = fill_struct(options, 'filter_format', 'fourier_multires');
     options = fill_struct(options, 'min_margin', options.sigma_phi * 2^(J/Q) );
+    options = fill_struct(options, 'precision', 'single');
     sigma_phi  = options.sigma_phi;
 	sigma_psi  = options.sigma_psi;
 	xi_psi     = options.xi_psi;
 	slant_psi  = options.slant_psi;
 	
+    
+    switch options.precision
+        case 'single'
+            prec = @(x)(single(x));
+        case 'double'
+            prec = @(x)(x);
+        otherwise
+            error('precision must be either double or single');
+    end
     
     % Size
     res_max = floor(J/Q);
@@ -78,7 +89,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	% Compute low-pass filters phi
 	scale = 2^((J-1) / Q - res);
 	filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
-	phi.filter = real(fft2(filter_spatial));
+	phi.filter = prec(real(fft2(filter_spatial)));
 	phi.meta.J = J;
 	
 	phi.filter = optimize_filter(phi.filter, 1, options);
@@ -98,7 +109,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 				xi_psi/scale,...
 				angle);
 				
-			psi.filter{p} = real(fft2(filter_spatial));
+			psi.filter{p} = prec(real(fft2(filter_spatial)));
 			
 			littlewood_final = littlewood_final + ...
 				abs(realize_filter(psi.filter{p})).^2;

@@ -116,7 +116,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
     ds = max(filters_rot.meta.J/filters_rot.meta.Q - options.oversampling_rot, 0);
     if (2^ds == 2*L)
         % in this case it is faster to compute the sum along the angle
-        y_Phi{1} = sum(y_phi.signal{1},3) / 2^(ds/2);
+        y_Phi = sum(y_phi.signal{1},3) / 2^(ds/2);
     else
         if (strcmp(angular_range, 'zero_pi'))
             % divide by sqrt(2) for energy preservation
@@ -124,7 +124,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
         end
         y_phi_f = fft(y_phi.signal{1}, [], 3);
         phi_angle = filters_rot.phi.filter;
-        y_Phi{1} = real(...
+        y_Phi = real(...
             sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
     end
     meta_Phi.j2 = options.J;
