@@ -4,7 +4,7 @@
 %   [U_Phi, U_Psi] = WAVELET_LAYER_3D(U, filters, filters_rot, options)
 %
 % Input
-%   U (
+%   U_Phi : 
 %
 % Output
 %

@@ -1,7 +1,7 @@
-% WU_phiU_psiELET_LU_phiYER_2D Compute the wavelet transform of a scattering layer
+% WAVELET_LAYER_2D Compute the wavelet transform of a scattering layer
 %
 % Usage
-%    [U_phi, U_psi] = WU_phiU_psiELET_LU_phiYER_2D(U, filters, options)
+%    [U_phi, U_psi] = WAVELET_LAYER_2D(U, filters, options)
 %
 % Input
 %    U (struct): input scattering layer
@@ -9,18 +9,18 @@
 %    options (structure): same as wavelet_2d
 %
 % Output
-%    U_phi (struct): U_phiveraged wavelet coefficients
-%    U_psi (struct): Wavelet coefficients of the next layer
+%    A (struct): Averaged wavelet coefficients
+%    V (struct): Wavelet coefficients of the next layer
 %
 % Description
-%    This function has a pivotal role between WU_phiU_psiELET_2D (which computes a
-%    single wavelet transform), and WU_phiU_psiELET_FU_phiCTORY_2D (which creates the
+%    This function has a pivotal role between WAVELET_2D (which computes a
+%    single wavelet transform), and WAVELET_FACTORY_2D (which creates the
 %    whole cascade). Given inputs modulus wavelet coefficients
-%    corresponding to a layer, WU_phiU_psiELET_LU_phiYER_2D computes the wavelet
-%    transform coefficients of the next layer using WU_phiU_psiELET_2D.
+%    corresponding to a layer, WAVELET_LAYER_2D computes the wavelet
+%    transform coefficients of the next layer using WAVELET_2D.
 %
 % See also
-%   WU_phiU_psiELET_2D, WU_phiU_psiELET_FU_phiCTORY_2D, WU_phiU_psiELET_LU_phiYER_1D
+%   WAVELET_2D, WAVELET_FACTORY_2D, WAVELET_LAYER_1D
 
 function [U_phi, U_psi] = wavelet_layer_2d(U, filters, options)
     
