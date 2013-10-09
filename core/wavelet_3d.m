@@ -93,6 +93,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         y_Phi = real(unpad_signal(tmp, ds*[1 1],  [size(y,1), size(y,2)]));
         %meta
         meta_Phi.J(1) = filters.phi.meta.J;
+        meta_Phi.resolution(1,p) = options.x_resolution+ds;
     else
         % spatial mirror padding and fft
         yf = zeros([sz_paded, nb_angle_in]);
@@ -131,6 +132,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
         end
         meta_Phi.J(1) = filters.phi.meta.J;
+        meta_Phi.resolution(1) = options.x_resolution+ds;
     end
     
     y_Psi = {};
@@ -151,6 +153,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
             meta_Psi.theta2(p) = 0;
             meta_Psi.j2(p) = filters.phi.meta.J;
             meta_Psi.k2(p) = k2;
+            meta_Psi.resolution(1,p) = meta_Phi.resolution(1);
             p = p + 1;
         end
         
@@ -200,6 +203,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
             meta_Psi.j2(p) = j2;
             meta_Psi.theta2(p) = theta2;
             meta_Psi.k2(p) = -1;
+            meta_Psi.resolution(1,p) = options.x_resolution+ds;
             p = p+1;
             
             % high pass angle to obtain
@@ -211,6 +215,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 meta_Psi.theta2(p) = theta2;
                 meta_Psi.j2(p) = j2;
                 meta_Psi.k2(p) = k2;
+                meta_Psi.resolution(1,p) = options.x_resolution+ds;
                 p = p + 1;
             end
         end
