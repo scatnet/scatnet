@@ -1,5 +1,4 @@
-% WAVELET_LAYER_2D Compute the wavelet transform from the modulus wavelet
-% coefficients of the previous layer of a scattering network
+% WAVELET_LAYER_2D Compute the wavelet transform of a scattering layer
 %
 % Usage
 %    [A, V] = WAVELET_LAYER_2D(U, filters, options)

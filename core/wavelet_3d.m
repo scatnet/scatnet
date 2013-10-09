@@ -1,7 +1,7 @@
 % WAVELET_3D Compute the roto-translation wavelet transform
 %
 % Usage
-%	[y_Phi, y_Psi, meta_Phi, meta_Psi] = WAVELET_3D(y, filters, filters_rot, options)
+%   [y_Phi, y_Psi, meta_Phi, meta_Psi] = WAVELET_3D(y, filters, filters_rot, options)
 %
 % Input
 %   y (numeric): a 3d matrix whose first two dimension corresponds to spatial
@@ -37,7 +37,7 @@
 %	http://www.cmapx.polytechnique.fr/~sifre/research/cvpr_13_sifre_mallat_final.pdf
 %
 % See also
-%   WAVELET_3D_LAYER, WAVELET_FACTORY_3D
+%   WAVELET_LAYER_3D, WAVELET_FACTORY_3D
 
 function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot, options)
     

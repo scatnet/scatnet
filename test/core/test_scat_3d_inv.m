@@ -1,17 +1,17 @@
 % this script demonstrates the rotation invariance 
 % of the roto-translation scattering
-
+clear; close all;
 x = uiuc_sample;
 x = x(128:128+255, 128:128+255);
 
-filt_opt.null = 1;
-filt_rot_opt.null = 1;
+filt_opt = struct();
+filt_rot_opt = struct();
 % oversampling must be set to infty
 % so that scattering of original and rotated
 % image will be sampled at exactly the same points
 scat_opt.oversampling = 10;
 
-Wop = wavelet_factory_3d_pyramid(size(x), filt_opt, filt_rot_opt, scat_opt);
+Wop = wavelet_factory_3d(size(x), filt_opt, filt_rot_opt, scat_opt);
 
 % compute scattering of x
 Sx = scat(x, Wop);
