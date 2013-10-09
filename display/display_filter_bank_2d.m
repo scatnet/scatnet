@@ -21,10 +21,12 @@
 %    DISPLAY_FILTER_2D
 
 function big_img = display_filter_bank_2d(filters, renorm, n)
-	if (~exist('n','var'))
+
+if(isfield(filters,'phi'))
+    if (~exist('n','var'))
 		n = min(32, floor(min(filters.meta.size_in)/2 -1));
-	end
-	if (~exist('renorm','var'))
+    end
+    if (~exist('renorm','var'))
 		renorm = 1;
 	end
 
@@ -64,4 +66,51 @@ function big_img = display_filter_bank_2d(filters, renorm, n)
 	end
 
 	imagesc(big_img);
+elseif(isfield(filters,'g'))
+	
+    if (~exist('renorm','var'))
+		renorm = 1;
+    end
+    
+    N=filters.meta.size_filter(1);
+	margin = 4;
+	nFilter=length(filters.g.filter)+length(filters.h.filter);
+	N_margin = N + margin;
+	L = filters.meta.L;
+	big_img = ones(N_margin*nFilter, 2*N_margin);
+
+
+	% low pass : first on the left
+	filt_for_disp = display_filter_2d(filters.h.filter,'r');
+	M = max(abs(filt_for_disp(:)));
+	if (renorm == 0)
+		M = 1;
+	end
+	big_img((1:N), (1:N)) = real(filt_for_disp)/M;
+	big_img((1:N) ,(1:N)+N_margin) = imag(filt_for_disp)/M;
+
+	% band pass : following filters
+	for p = 1:numel(filters.g.filter)
+		filter = filters.g.filter{p};
+		filt_for_disp = display_filter_2d(filter,'r');
+		M = max(abs(filt_for_disp(:)));
+		if (renorm == 0)
+			M = 1;
+		end
+
+		%j = filters.g.meta.j(p);
+		theta = filters.g.meta.theta(p);
+
+		big_img(1+(1:N)+ p* N_margin, (1:N) + (1-1)*N_margin) = ...
+		real(filt_for_disp)/M;
+		big_img(1+(1:N)+ p *N_margin, (1:N) + (2-1)*N_margin) = ...
+		imag(filt_for_disp)/M;
+	end
+
+	imagesc(big_img);
+    
+    
+    
+else
+    error('The display of this filter bank has not been implemented');
 end
