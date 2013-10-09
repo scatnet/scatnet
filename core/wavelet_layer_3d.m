@@ -4,21 +4,29 @@
 %   [U_Phi, U_Psi] = WAVELET_LAYER_3D(U, filters, filters_rot, options)
 %
 % Input
-%   U_Phi : 
+%   U (struct): input scattering layer
+%   filters (struct): 2d filter bank to apply along spatial variable
+%   filters_rot (struct): 1d filter bank to apply along orientation
+%   options (struct): same as wavelet_3d
 %
 % Output
+%   U_Phi (struct): low pass convolutions of all signal of layer U
+%   U_Psi (struct): high pass convolutions of all signal of layer U
 %
 % Description
+%   This function will compute all the roto-translation wavelet transform
+%   of signals contained in the input layer U. If the previous layer
+%   is contains only 2d signal, it starts by extracting rotation orbits.
+%   It then forward each orbit to WAVELET_3D that will process them
+%   independantly.
 %
 % See also
-%
+%   WAVELET_3D, WAVELET_FACTORY_3D
 
 function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 	
-	
 	calculate_psi = (nargout>=2); % do not compute any convolution
 	% with psi if the user does get U_psi
-	
 	
 	% if previous layers contains 2d signal, we must first
 	% extract the rotation orbits

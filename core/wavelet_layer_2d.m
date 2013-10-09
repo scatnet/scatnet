@@ -6,7 +6,7 @@
 % Input
 %    U (struct): input scattering layer
 %    filters (struct): filter bank 
-%    options (structure): same as wavelet_2d
+%    options (struct): same as wavelet_2d
 %
 % Output
 %    A (struct): Averaged wavelet coefficients
