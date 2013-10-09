@@ -1,14 +1,27 @@
-% WAVELET_LAYER_2D_PYRAMID
+% WAVELET_LAYER_2D_PYRAMID Compute the wavelet transform of layer
+%
 % Usage
+%   [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options) 
 %
 % Input
+%   U (struct): a scattering layer
+%   filters (struct): a 2d filter bank
+%   options (struct): same as for WAVELET_2D
 %
 % Output
+%   U_Phi (struct): low pass convolutions of all signal of U
+%   U_Psi (struct): high pass convolutions of all signal of U
 %
 % Description
+%   This function computes the 2d wavelet transform of each signal of the
+%   input layer U. Convolutions with low pass filter are stored in U_phi
+%   while convolutions with high pass filters are stored in U_psi.
+%   It is similar to WAVELET_LAYER_2D but uses a WAVELET_2D_PYRAMID, a
+%   pyramid implementation of the 2d wavelet transform which is faster and
+%   better deals with boundary effect.
 %
 % See also
-%
+%   SCAT, WAVELET_FACTORY_2D_PYRAMID, WAVELET_2D_PYRAMID
 
 function [U_phi, U_psi] = wavelet_layer_2d_pyramid(U, filters, options)
     
