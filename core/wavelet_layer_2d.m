@@ -1,7 +1,7 @@
-% WAVELET_LAYER_2D Compute the wavelet transform of a scattering layer
+% WU_phiU_psiELET_LU_phiYER_2D Compute the wavelet transform of a scattering layer
 %
 % Usage
-%    [A, V] = WAVELET_LAYER_2D(U, filters, options)
+%    [U_phi, U_psi] = WU_phiU_psiELET_LU_phiYER_2D(U, filters, options)
 %
 % Input
 %    U (struct): input scattering layer
@@ -9,20 +9,20 @@
 %    options (structure): same as wavelet_2d
 %
 % Output
-%    A (struct): Averaged wavelet coefficients
-%    V (struct): Wavelet coefficients of the next layer
+%    U_phi (struct): U_phiveraged wavelet coefficients
+%    U_psi (struct): Wavelet coefficients of the next layer
 %
 % Description
-%    This function has a pivotal role between WAVELET_2D (which computes a
-%    single wavelet transform), and WAVELET_FACTORY_2D (which creates the
+%    This function has a pivotal role between WU_phiU_psiELET_2D (which computes a
+%    single wavelet transform), and WU_phiU_psiELET_FU_phiCTORY_2D (which creates the
 %    whole cascade). Given inputs modulus wavelet coefficients
-%    corresponding to a layer, WAVELET_LAYER_2D computes the wavelet
-%    transform coefficients of the next layer using WAVELET_2D.
+%    corresponding to a layer, WU_phiU_psiELET_LU_phiYER_2D computes the wavelet
+%    transform coefficients of the next layer using WU_phiU_psiELET_2D.
 %
 % See also
-%   WAVELET_2D, WAVELET_FACTORY_2D, WAVELET_LAYER_1D
+%   WU_phiU_psiELET_2D, WU_phiU_psiELET_FU_phiCTORY_2D, WU_phiU_psiELET_LU_phiYER_1D
 
-function [A, V] = wavelet_layer_2d(U, filters, options)
+function [U_phi, U_psi] = wavelet_layer_2d(U, filters, options)
     
     calculate_psi = (nargout>=2); % do not compute any convolution
     % with psi if the user does get U_psi
@@ -55,19 +55,19 @@ function [A, V] = wavelet_layer_2d(U, filters, options)
         [x_phi, x_psi, meta_phi, meta_psi] = wavelet_2d(x, filters, options);
         
         % copy signal and meta for phi
-        A.signal{p} = x_phi;
-        A.meta.j(:,p) = [U.meta.j(:,p); filters.phi.meta.J];
-        A.meta.theta(:,p) = U.meta.theta(:,p);
-        A.meta.resolution(1,p) = meta_phi.resolution;
+        U_phi.signal{p} = x_phi;
+        U_phi.meta.j(:,p) = [U.meta.j(:,p); filters.phi.meta.J];
+        U_phi.meta.theta(:,p) = U.meta.theta(:,p);
+        U_phi.meta.resolution(1,p) = meta_phi.resolution;
         
         % copy signal and meta for psi
         for p_psi = find(options.psi_mask)
-            V.signal{p2} = x_psi{p_psi};
-            V.meta.j(:,p2) = [U.meta.j(:,p);...
+            U_psi.signal{p2} = x_psi{p_psi};
+            U_psi.meta.j(:,p2) = [U.meta.j(:,p);...
                 filters.psi.meta.j(p_psi)];
-            V.meta.theta(:,p2) = [U.meta.theta(:,p);...
+            U_psi.meta.theta(:,p2) = [U.meta.theta(:,p);...
                 filters.psi.meta.theta(p_psi)];
-            V.meta.resolution(1,p2) = meta_psi.resolution(p_psi);
+            U_psi.meta.resolution(1,p2) = meta_psi.resolution(p_psi);
             p2 = p2 +1;
         end
         
