@@ -15,6 +15,10 @@
 %    filters (struct): a 2d filter bank
 %
 % Description
+%   This function builds the operators to be apply during scattering
+%   computation, in this case 2d wavelet transform. The implementation of
+%   the 2d wavelet transform used here is faster than those provided by
+%   WAVELET_FACTORY_2D.
 %
 % See also
 %   SCAT, WAVELET_2D_PYRAMID, WAVELET_LAYER_2D_PYRAMID
@@ -22,6 +26,7 @@
 
 function [Wop, filters] = wavelet_factory_2d_pyramid(filt_opt, scat_opt)
 	
+    % initiliaze non-provided options with empty struct
     if(nargin<1)
         filt_opt = struct;
     end
