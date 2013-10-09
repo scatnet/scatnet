@@ -1,7 +1,7 @@
-% WAVELET_3D Compute the wavelet transform of a roto-translation orbit
+% WAVELET_3D Compute the roto-translation wavelet transform
 %
 % Usage
-%	[y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot, options)
+%	[y_Phi, y_Psi, meta_Phi, meta_Psi] = WAVELET_3D(y, filters, filters_rot, options)
 %
 % Input
 %   y (numeric): a 3d matrix whose first two dimension corresponds to spatial
@@ -17,7 +17,8 @@
 % Output
 %   y_Phi (numeric): the roto-translation convolution y * Phi
 %   y_Psi (cell): containing all the roto-translation convolution y * Psi
-%   meta_phi (struct): 
+%   meta_phi (struct): meta associated to y_Phi
+%   meta_psi (struct): meta associated to y_Psi
 %
 % Description
 %	compute the roto-translation convolution of a three dimensional
@@ -34,6 +35,9 @@
 %	Discrimination, Laurent Sifre, Stephane Mallat
 %	Proc of CVPR 2013
 %	http://www.cmapx.polytechnique.fr/~sifre/research/cvpr_13_sifre_mallat_final.pdf
+%
+% See also
+%   WAVELET_3D_LAYER, WAVELET_FACTORY_3D
 
 function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot, options)
     
