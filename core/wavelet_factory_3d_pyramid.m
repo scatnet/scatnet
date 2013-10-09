@@ -1,4 +1,15 @@
 % WAVELET_FACTORY_3D_PYRAMID
+% Usage
+%
+% Input
+%
+% Output
+%
+% Description
+%
+% See also
+%
+
 function [Wop, filters, filters_rot] = wavelet_factory_3d_pyramid(filt_opt, filt_rot_opt, scat_opt)	
 	filt_opt.null = 1;
 	scat_opt.null = 1;

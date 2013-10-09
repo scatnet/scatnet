@@ -1,4 +1,16 @@
-% WAVELET_LAYER_3D 
+% WAVELET_LAYER_3D Compute the roto-translation wavelet transform of a scattering layer
+%
+% Usage
+%
+% Input
+%
+% Output
+%
+% Description
+%
+% See also
+%
+
 function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 	
 	
