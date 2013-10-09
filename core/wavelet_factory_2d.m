@@ -16,10 +16,10 @@
 %    filters (cell): A cell array of the filters used in defining the wavelets.
 %
 % Description
+%    NOTE : A faster implementation is avaible as WAVELET_FACTORY_2D_LAYER.
 %    This function create a cell array of linear operators that will be
 %    used for the successive wavelet transforms. Here, only the morlet
 %    filter bank is used.
-%
 %    If M, the number of layer, is not specified, its value is set automatically to 2.
 %
 % See also
