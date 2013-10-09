@@ -7,7 +7,7 @@
 %
 % Input
 %    N (int): The size of the input data.
-%    options (optional): Filter parameters, see below.
+%    options (struct): Filter parameters, see below.
 %
 % Output
 %    filters (struct): A cell array of filter banks corresponding to the
