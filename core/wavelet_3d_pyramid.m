@@ -1,15 +1,46 @@
-% WAVELET_3D_PYRAMID compute
+% WAVELET_3D_PYRAMID Compute the roto-translation wavelet transfrom
 %
 % Usage
+%   [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y, filters, filters_rot, options)
 %
 % Input
+%   y (numeric): a 3d matrix whose first two dimension corresponds to spatial
+%       postion and third dimension corresponds to orientation.
+%   filters (struct): a 2d pyramid filter bank (applied along spatial variable)
+%   filters_rot (struct): a 1d filter bank (applied along orientation)
+%   options (struct): containing the following optional fields 
+%       x_resolution (int): the log of spatial resolution
+%       psi_mask (bool array): a mask for determining which filter to apply
+%       oversampling (int): the log of spatial oversampling
+%       oversampling_rot (int): the log of orientation oversampling
 %
 % Output
+%   y_Phi (numeric): the roto-translation convolution y * Phi
+%   y_Psi (cell): containing all the roto-translation convolution y * Psi
+%   meta_phi (struct): meta associated to y_Phi
+%   meta_psi (struct): meta associated to y_Psi
 %
 % Description
+%   This is a pyramid implementation of the roto-translation wavelet
+%   transform. Another (slower, FFT-based) implementation is available as
+%   WAVELET_3D.
+%	This function computes the roto-translation convolution of a three dimensional
+%	signal y, with roto-translation wavelets defined as the separable product
+%	low pass :
+%		PHI(U,V) * PHI(THETA)
+%	high pass :
+%		PHI(U,V) * PHI(THETA)
+%		PSI(U,V) * PHI(THETA)
+%		PSI(U,V) * PSI(THETA)
+%
+% Reference
+%	Rotation, Scaling and Deformation Invariant Scattering for Texture
+%	Discrimination, Laurent Sifre, Stephane Mallat
+%	Proc of CVPR 2013
+%	http://www.cmapx.polytechnique.fr/~sifre/research/cvpr_13_sifre_mallat_final.pdf
 %
 % See also
-%
+%   WAVELET_LAYER_3D, WAVELET_FACTORY_3D
 
 function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
         filters, filters_rot, options)
