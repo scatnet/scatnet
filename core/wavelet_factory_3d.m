@@ -1,16 +1,15 @@
-% wavelet_factory_3d :  build the wavelet operators used to compute 
-%		the roto-translation scattering
+% WAVELET_FACTORY_3D Build roto-translation wavelet operators
 %
-% Usage : [ Wop, filters, filters_rot ] = ...
-%		wavelet_factory_3d(size_in, filt_opt, filt_rot_opt, scat_opt)
+% Usage
+%   [Wop, filters, filters_rot] = WAVELET_FACTORY_3D(size_in, filt_opt, filt_rot_opt, scat_opt)
 %
 % Input
-%    size_in: The size of the signals to be transformed
-%    filt_opt: The filter options, same as for morlet_filter_bank_2d 
-%    filt_rot_opt: The filter options for the 
-%		filters along angular parameter, same as for morlet_filter_bank_1d 
-%	 scat_opt: The scattering and wavelet options, same as
-%		wavelet_layer_1d/wavelet_1d.
+%    size_in (2x1 int): the size of the signals to be transformed
+%    filt_opt (struct): the filter options, same as for MORLET_FILTER_BANK_2D 
+%    filt_rot_opt (struct): the filter options for the 
+%		filters along angular parameter, same as for MORLET_FILTER_BANK_1D 
+%	 scat_opt (struct): the scattering and wavelet options, same as
+%		WAVELET_LAYER_3D 
 %
 % Output
 %    Wop: A cell array of wavelet transforms needed for the scattering trans-

@@ -25,8 +25,9 @@
 
 function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 	
-	calculate_psi = (nargout>=2); % do not compute any convolution
-	% with psi if the user does get U_psi
+    % do not compute any convolution
+    % with psi if the user does get U_psi
+	calculate_psi = (nargout>=2); 
 	
 	% if previous layers contains 2d signal, we must first
 	% extract the rotation orbits
@@ -45,7 +46,7 @@ function [U_Phi, U_Psi] = wavelet_layer_3d(U, filters, filters_rot, options)
 		U = Uorb;
 	end
 	
-	
+	% for all signal of U, apply roto-translation wavelet transform
 	p2 = 1;
 	for p = 1:numel(U.signal)
 		y = U.signal{p};
