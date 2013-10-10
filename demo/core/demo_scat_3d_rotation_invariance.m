@@ -24,12 +24,17 @@ Sx_rot = scat(x_rot, Wop);
 Sx_rot_back = scatfun(@(x)(rot90(x,3)), Sx_rot);
 sx_rot_back = format_scat(Sx_rot_back);
 
-%% display the third layer of scattering and back-rotated scattering of rotated image
+%% display original scattering and rotated-back scattering of rotated image
+%% order 1
 subplot(121);
-image_scat_layer(Sx{3},0,0);
+image_scat_layer(Sx{2}, 0, 0);
 subplot(122);
-image_scat_layer(Sx_rot_back{3},0,0);
-
+image_scat_layer(Sx_rot_back{2}, 0, 0);
+%% order 2
+subplot(121);
+image_scat_layer(Sx{3}, 0, 0);
+subplot(122);
+image_scat_layer(Sx_rot_back{3}, 0, 0);
 %% compute norm ratio
 norm_diff = sqrt(sum((sx(:)-sx_rot_back(:)).^2));
 norm_s = sqrt(sum((sx(:)).^2));
