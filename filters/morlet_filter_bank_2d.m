@@ -68,9 +68,9 @@ function filters = morlet_filter_bank_2d(size_in, options)
     
     switch options.precision
         case 'single'
-            prec = @(x)(single(x));
+            cast = @single;
         case 'double'
-            prec = @(x)(x);
+            cast = @double;
         otherwise
             error('precision must be either double or single');
     end
@@ -89,7 +89,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 	% Compute low-pass filters phi
 	scale = 2^((J-1) / Q - res);
 	filter_spatial =  gabor_2d(N, M, sigma_phi*scale, 1, 0, 0);
-	phi.filter = prec(real(fft2(filter_spatial)));
+	phi.filter = cast(real(fft2(filter_spatial)));
 	phi.meta.J = J;
 	
 	phi.filter = optimize_filter(phi.filter, 1, options);
@@ -109,7 +109,7 @@ function filters = morlet_filter_bank_2d(size_in, options)
 				xi_psi/scale,...
 				angle);
 				
-			psi.filter{p} = prec(real(fft2(filter_spatial)));
+			psi.filter{p} = cast(real(fft2(filter_spatial)));
 			
 			littlewood_final = littlewood_final + ...
 				abs(realize_filter(psi.filter{p})).^2;
