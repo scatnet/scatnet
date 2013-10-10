@@ -2,10 +2,9 @@
 % scattering transform of an image
 
 x = lena;
-x = x(1:256, 1:256);
 
 filt_opt = struct();
-filt_opt.J = 3;
+filt_opt.J = 5;
 filt_rot_opt = struct();
 scat_opt.oversampling = 0;
 

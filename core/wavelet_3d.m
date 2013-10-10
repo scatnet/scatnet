@@ -52,6 +52,13 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
     options = fill_struct(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
     options = fill_struct(options, 'x_resolution', 0);
     
+    % required cast for preallocation
+    if (isa(filters.phi.filter.coefft, 'single'))
+       cast = @single;
+    else 
+       cast = @double; 
+    end
+    
     calculate_psi = (nargout>=2); % do not compute any convolution
     % with high pass
     
@@ -96,7 +103,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         meta_Phi.resolution(1) = options.x_resolution+ds;
     else
         % spatial mirror padding and fft
-        yf = zeros([sz_paded, nb_angle_in]);
+        yf = cast(zeros([sz_paded, nb_angle_in]));
         for theta = 1:nb_angle_in
             tmp = fft2(pad_signal(y(:,:,theta), sz_paded, []));
             yf(:,:,theta) = tmp;
@@ -110,7 +117,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 real(conv_sub_2d(yf(:,:,theta), filters.phi.filter, ds));
             tmp = unpad_signal(tmp, ds*[1 1], [size(y,1), size(y,2)]);
             if (theta == 1) %preallocate when we know the size
-                y_phi = zeros([size(tmp), nb_angle_in]);
+                y_phi = cast(zeros([size(tmp), nb_angle_in]));
             end
             y_phi(:,:,theta) = tmp;
         end
@@ -177,7 +184,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 tmp = unpad_signal(tmp, ds*[1,1], [size(y,1), size(y,2)]);
                 
                 if (theta == 1) % prealocate when we know the size
-                    y_psi = zeros([size(tmp), 2*L]);
+                    y_psi = cast(zeros([size(tmp), 2*L]));
                 end
                 
                 % use PROPERTY_1 to compute convolution with filters that
