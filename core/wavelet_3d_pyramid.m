@@ -73,9 +73,9 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
     end
     
     if (isa(filters.h.filter.coefft, 'single'))
-        prec = @(x)(single(x));
+       cast = @single;
     else 
-       prec = @(x)(x); 
+       cast = @double; 
     end
     
     %%%%%%%%%%%%%%%%%%
@@ -97,7 +97,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
         for theta = 1:T % filter each slice
             if (theta == 1) % allocate when size is known
                 tmp_slice = pad_conv_sub_unpad(hy.signal{j}(:,:,theta), h);
-                tmp = prec(zeros([size(tmp_slice), T]));
+                tmp = cast(zeros([size(tmp_slice), T]));
                 tmp(:,:,theta) = tmp_slice;
             else
                 clear tmp_slice;
@@ -190,7 +190,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
                             theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
                             tmp_slice = pad_conv_unpad(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL + L*q});
                             if (theta == 1) % allocate
-                                tmp = prec(zeros([size(tmp_slice), 2*L]));
+                                tmp = cast(zeros([size(tmp_slice), 2*L]));
                             end
                             if (theta_sum_mod2L <= L)
                                 tmp(:,:,theta) = tmp_slice;
