@@ -37,7 +37,6 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	options = fill_struct(options, ...
 		'psi_mask', true(1, numel(filters.psi.filter)));
 	options = fill_struct(options, 'x_resolution',0);
-	options = fill_struct(options, 'renormalize_epsilon',2^(-20));
 	options = fill_struct(options, 'use_abs', 0);
 
 	N = size(x,1);
