@@ -231,6 +231,20 @@ In addition to the parameters listed above, the spline filter bank has the follo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
+\subsection{1D Selesnick Filters}
+Selesnick wavelet filters are compactly supported complex wavelets, whose real and imaginary parts have 4 vanishing moments and are nearly Hilbert transform pairs.
+
+In addition to the parameters listed above, the Selesnick filter bank has the following options:
+\begin{itemize}
+	\item \mcode{filt_opt.J}: The number of wavelet scales.
+\end{itemize}
+The maximal bandwidth is specified here by $2^J$.
+
+The code for the Selesnick wavelet filters is an independent package that has been included in ScatNet. The standalone package, including more documentation, can be found at:
+
+\texttt{http://eeweb.poly.edu/iselesni/WaveletSoftware/dt1D.html}.
+
+
 \subsection{2D Morlet Filters}
 \label{sec_filters_2d}
 The Gabor wavelets consist of Gaussian envelopes modulated by complex exponentials to cover the en- tire frequency spectrum. Morlet wavelets are derived from these by subtracting the envelope multiplied by a constant such that the integral of the filter equals zero. 
