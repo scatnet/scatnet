@@ -33,7 +33,7 @@
 %    memory and speed up calculations.
 %
 % See also
-%    SVM_TEST, CLASSiF_ERR, CLASSIF_RECOG
+%    SVM_TEST, CLASSIF_ERR, CLASSIF_RECOG
 
 function model = svm_train(db,train_set,opt)
 	if nargin < 3
@@ -167,7 +167,7 @@ function db_weights=calc_train_weights(db,train_set)
 
 		nb_feats(k)=numel(ind_feats{k});
 
-		db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))];
+		db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))]
 	end
 end
 
