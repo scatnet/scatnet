@@ -12,7 +12,7 @@
 %       form.
 %    filters: A cell array of the filters used in defining the wavelets.
 
-function [Wop, filters] = renorm_layers_wavelet_factory_1d(N, filter_options, scat_options)
+function [Wop, filters] = renorm_wavelet_layer_factory_1d(N, filter_options, scat_options)
 	filters = filter_bank(N, filter_options);
 	
 	for m = 0:scat_options.M
