@@ -9,7 +9,7 @@
 
 \usepackage{url}
 
-\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+\usepackage[framed,numbered,autolinebreaks,useliterate]{../common/mcode}
 
 \graphicspath{{figures/}}
 
@@ -588,6 +588,78 @@ Since parameters can vary over a large domain, and a fine-grained parameter sear
 If a linear kernel is used, we can extract the discriminant vector $w$ and bias $\rho$ from the model using the function \mcode{svm_extract_w}. The function takes as input the database \mcode{database} and the SVM model \mcode{model}. It outputs the $w$s corresponding to each pair of classes in the model, arranged in the order $1$vs$2$,$1$vs$3$,\ldots$1$vs$N$,$2$vs$3$,\ldots,$2$vs$N$,\ldots,$(N-1)$vs$N$, where $N$ is the number of classes. The function is called as in:
 \begin{lstlisting}
 [w,rho] = svm_extract_w(database, model);
+\end{lstlisting}
+
+\section{Separable time and frequency scattering}
+\label{sec:separable-tf}
+
+For temporal signals, the regular scattering transform as implemented in \mcode{scat} using operators \mcode{Wop} from \mcode{wavelet_factory_1d} calculates a representation that is locally invariant to time-shifts and stable to time-warping deformation. However, for many tasks, this is not sufficient. Often a additional invariance to frequency transposition and stability to frequency warping is needed. For example, this is the case for speaker-independent phone segment identification, where a single phone can be pronounced at different pitches, and the formant peaks can be deformed in frequency.
+
+A simple way of creating such an invariant representation out of the scattering transform is to average along the log-frequency axis $\lambda_1$. Since a frequency transposition corresponds to a translation along log-frequency, this will create the desired invariance and stability properties. However, it also loses a great amount of information on frequential structure.
+
+To remedy this problem, we apply frequential scattering transform along the log-frequency axis of the original temporal scattering transform. Since the frequency axis is not entirely sampled on a logarithmic scale, but is linear at low frequencies, this is not strictly the same as scattering along log-frequency, but the difference is only visible on the linear regime of the filter bank, which is often below audible frequencies in many applications.
+
+Having computed a temporal scattering transform of a signal \mcode{x} using
+\begin{lstlisting}
+filt_opt.Q = [8 1];
+filt_opt.J = T_to_J(1024, filt_opt);
+
+scat_opt.M = 2;
+
+Wop = wavelet_factory_1d(size(x), filt_opt, scat_opt);
+
+S = scat(x, Wop);
+\end{lstlisting}
+we now wish to calculate a scattering transform along the \mcode{j(1,:)} index of S, for all orders, which yields the desired invariance property.
+
+To do so, we must first construct a one-dimensional wavelet operator defined on the \mcode{j(1,:)} axis. This is done as in the temporal case, but the signal length now corresponds to the maximum number of \mcode{j(1,:)} samples, which can be found by calling \mcode{length(S{2}.signal)}, which returns the number of first-order coefficients. We thus have
+\begin{lstlisting}
+Nfreq = length(S{2}.signal);
+
+freq_filt_opt.J = ceil(log2(Nfreq));
+freq_scat_opt.M = 1;
+
+Wop_freq = wavelet_factory_1d(Nfreq, freq_filt_opt, freq_scat_opt);
+\end{lstlisting}
+The options structures \mcode{freq_filt_opt} and \mcode{freq_scat_opt} have the same parameters and function as their temporal counterparts \mcode{filt_opt} and \mcode{scat_opt}.
+
+Note that \mcode{freq_filt_opt.J} now controls the degree of transposition invariance. Since \mcode{freq_filt_opt.Q = 1} by default, we have that the width of the averaging filter $\phi$ is given by $2^J$. Setting \mcode{freq_filt_opt.J} to \mcode{ceil(log2(Nfreq))} thus guarantees total transposition invariance. The degree of invariance necessary depends on the task at hand. If only one octave of invariance is needed, we can specify
+\begin{lstlisting}
+freq_filt_opt.J = filt_opt.Q;
+\end{lstlisting}
+where \mcode{filt_opt.Q} is the number of wavelets per octave in the orignal, temporal, filter bank.
+
+Finally, we calculate the frequential scattering transform by calling the \mcode{scat_freq} function.
+\begin{lstlisting}
+[S_freq, U_freq] = scat_freq(S, Wop_freq);
+\end{lstlisting}
+Just like \mcode{S}, \mcode{S_freq} is a cell array of scattering layers, each layer corresponding to the original temporal scattering order. However, each temporal scattering layer now contains the coefficients of the frequential scattering transform applied to that layer. That is, \mcode{S_freq{2}} contains all the frequential scattering coefficients of \mcode{S{2}}, while \mcode{S_freq{3}} is the transform of \mcode{S{3}}.
+
+The identity of the coefficients is given by the meta fields. For example \mcode{meta.fr_order} gives the order of the frequential scattering transform, while \mcode{meta.fr_j} gives the frequential scale, corresponding to the ``quefrency'' of the frequential filter. For example,
+\begin{lstlisting}
+coeff = S{2}.signal(S{2}.meta.fr_order==0);
+\end{lstlisting}
+extracts the zeroth-order frequential scattering coefficients of the first-order temproal coefficients. From the definition of the transform, these are simply the original temporal scattering coefficients averaged along log-frequency. The temporal scale of these coefficients is still stored in \mcode{meta.j}, so we can write
+\begin{lstlisting}
+j = S{2}.meta.j(:,S{2}.meta.fr_order==0);
+\end{lstlisting}
+to obtain the scales \mcode{j} corresponding to \mcode{coeff}. Note that since the scattering transform subsamples to the critical  bandwidth, the coefficients have been subsampled along frequency, which is reflected in \mcode{j}.
+
+We can also extract the first-order frequential coefficients and the corresponding temporal scales \mcode{j} for a particular frequency scale \mcode{fr_j}, using the following code
+\begin{lstlisting}
+coeff = S{2}.signal(S{2}.meta.fr_order==1 & ...
+   S{2}.meta.fr_j==0);
+j = S{2}.meta.j(:,S{2}.meta.fr_order==1 & ...
+   S{2}.meta.fr_j==0);
+\end{lstlisting}
+And finally, we can extract the same frequential coefficients, but for the second temporal order scattering coefficients. In this case, we also need to specify \mcode{meta.j(2,:)}. The code is then
+\begin{lstlisting}
+coeff = S{3}.signal(S{3}.meta.fr_order==1 & ...
+   S{3}.meta.fr_j==0 & ...
+   S{3}.j(2,:)==9);
+j = S{3}.meta.j(:,S{3}.meta.fr_order==1 & ...
+   S{3}.meta.fr_j==0 & ...
+   S{3}.j(2,:)==9);
 \end{lstlisting}
 
 \end{document}

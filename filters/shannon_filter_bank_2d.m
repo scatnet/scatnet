@@ -21,7 +21,7 @@
 %        meta (struct): contains meta-information on (g,h)
 %
 % Description
-%    Compute the Morlet filter bank in the Fourier domain. 
+%    Compute the Shannon filters bank in the Fourier domain. 
 %    Shannon filter bank has a flat littlewood paley sum equals to 1.
 %    Yet, they suffer poor localization. They should be used to test
 %    mathematical properties of norm preservation. For classificaiton
