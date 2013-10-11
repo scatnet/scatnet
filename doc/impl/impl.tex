@@ -425,7 +425,8 @@ ScatNet contains a classification pipeline for affine space and support vector c
 \subsection{Batch Computation \label{sec:batch-computation}}
 
 To compute scattering coefficients for a database of signals, we first define a source. A source is a set of files, each file containing a number of objects to be classified. Each object has a class and a location within the file.
-
+This means that, on a classification point of view, a file is just a physical container of the objects which will be classified. Once the file has been read
+from its storage location, all the scatnet software knows about is the object.
 The source can be created using \mcode{create_src(directory, extract_objects_fun)} (or one of its wrappers, such as \mcode{gtzan_src}, \mcode{phone_src}, \mcode{uiuc_src}, etc). Given a directory, this function recursively traverses it, looking for `.jpg', `.wav', or `.au' files. For each such file, it calls \mcode{extract_objects_fun} to determine its constituent objects and their classes. To add a new database, it suffices to write the corresponding \mcode{extract_objects_fun} function.
 
 The \mcode{extract_objects_fun} function has the following signature
@@ -436,6 +437,50 @@ Given a file, it returns a structure array \mcode{objects} of the objects it con
 
 Most often, a file will only contain one object, so \mcode{objects} is a  structure of size one, but this can vary from database to database (for example in speech recognition a file corresponds to a recording of a phrase, which can contain different phones to be classified).
 
+Similarly, in musical instrument recognition, you might want for application purpose, to recognise the instrument over a
+frame of 2 seconds of duration, when the actual audio file in the database is about 1 min long.  For the creation
+of a source in such a context, one could write the following code:
+
+\begin{lstlisting}
+
+function train_src =instrument_sounds_src(directory,T)
+
+if nargin < 2
+    T= 2^16;% at a sampling frequency of 32 KHz, this represents a duration of 2s. 
+end
+
+src = create_src(directory,@(file)(objects_fun(file,directory,T)));
+end
+
+function [objects,classes] = objects_fun(file,directory,T)
+
+tmpsnd=data_read(file);
+sig_sz=size(tmpsnd,1);
+nb_objs = floor(sig_sz/T);
+
+shortf_ind=file;
+path_folders = regexp(directory,filesep,'split');
+
+ objects=struct();
+ classes={};
+ path_str = fileparts(file);
+ path_parts = regexp(path_str,filesep,'split');
+    
+  cname=path_parts{end};
+   
+    if mod(slgth,T)~=0
+        error('T must divide slgth and T must be a power of 2');
+    end
+     
+ for n=1:nb_objs
+    objects(n).u1=1+(n-1)*T;
+    objects(n).u2=n*T;
+    classes{n}=cname;
+ end
+
+end
+
+\end{lstlisting}
 The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in a 2D (or 1D) signal. These bounds are inclusive. For the case where a file only contains one object, the bounds will simply be the bounds of the signal. If desired, additional fields can be specified that will be passed on and saved in the source structure.
 
 Given a directory and this function, \mcode{create_src} returns a source structure \mcode{src}, which has the following fields
@@ -560,6 +605,9 @@ The support vector machine classifier is defined by the functions \mcode{svm_tra
 	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
 	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
 	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
+        \item \mcode{train_opt.w}: w is $\in \{0,1\}$. If 1 then some 
+
+
 \end{itemize}
 
 The following code calculates the error for an SVM classifier with a linear kernel and $C = 8$:
