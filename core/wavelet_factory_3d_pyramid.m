@@ -1,4 +1,4 @@
-% WAVELET_FACTORY_3D_PYRAMID
+% WAVELET_FACTORY_3D_PYRAMID Create operators for roto-translation scattering
 % Usage
 %
 % Input
