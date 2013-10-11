@@ -1,13 +1,33 @@
-% WAVELET_FACTORY_3D_PYRAMID Create operators for roto-translation scattering
+% WAVELET_FACTORY_3D_PYRAMID Build roto-translation wavelet operators
+%
 % Usage
+%   [Wop, filters, filters_rot] = WAVELET_FACTORY_3D_PYRAMID(size_in, filt_opt, filt_rot_opt, scat_opt)
 %
 % Input
+%    filt_opt (struct): the filter options, same as for MORLET_FILTER_BANK_2D_PYRAMID 
+%    filt_rot_opt (struct): the filter options for the 
+%		filters along angular parameter, same as for MORLET_FILTER_BANK_1D 
+%	 scat_opt (struct): the scattering and wavelet options, same as
+%		WAVELET_LAYER_3D_PYRAMID 
 %
 % Output
+%    Wop: A cell array of wavelet transforms needed for the scattering trans-
+%       form.
+%    filters: A cell array of the filters used in defining the wavelets.
 %
 % Description
+%   This function builds the wavelet operators used to compute the 
+%   roto-translation scattering. The first operator is a 2d wavelet
+%   transform obtained with WAVELET_LAYER_2D_PYRAMID. The second operator and third
+%   operators are roto-translation wavelet transform obtained with
+%   WAVELET_LAYER_3D_PYRAMID.
+%   Compared to WAVELET_FACTORY_3D this function is faster because it uses
+%   a pyramid algorithm and spatial convolution whereas WAVELET_FACTORY_3D
+%   uses FFT-based convolution
 %
 % See also
+%   SCAT, WAVELET_2D_PYRAMID, WAVELET_LAYER_2D_PYRAMID, WAVELET_3D_PYRAMID,
+%   WAVELET_3D_LAYER_PYRAMID
 %
 
 function [Wop, filters, filters_rot] = wavelet_factory_3d_pyramid(filt_opt, filt_rot_opt, scat_opt)	
