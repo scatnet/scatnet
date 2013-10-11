@@ -1,3 +1,39 @@
+% DISPLAY_SLICE Display a scattering transform slice
+%
+% Usage
+%    [sc1, sc2] = DISPLAY_SLICE(S, t, scale, options)
+%
+% Input
+%    S (cell): A scattering transform.
+%    t (int): The time index for which coefficients are to be displayed.
+%    scale (int, optional): The j-prefix of the coefficients to be displayed
+%       (default []).
+%    options (struct, optional): Different options for the display. Currently 
+%       unused.
+%
+% Output
+%    sc1 (numeric): The coefficients satisfying j = [scale j_m].
+%    sc2 (numeric): The coefficients satisfying j = [scale j_m j_(m+1)].
+%
+% Description
+%    The function displays scattering coefficients of order m and m+1, where
+%    m = length(scale)-1, whose prefix is given by scale. For the coefficients
+%    of order m, there only exists one degree of freedom, the last scale j_m,
+%    so these are displayed in a vertical image to the left. The coefficients
+%    of order m+1 exhibit two degrees of freedom, j_m and j_(m+1), and so is
+%    plotted as a two-dimensional image to the right, with j_m running along
+%    the same axis as the mth-order coefficients (vertically) and j_m
+%    running along the horizontal axis. Note that scales run from top to bot-
+%    om and right to left so that frequencies run from bottom to top and
+%    left to right.
+%
+%    The most typical usage leaves scale equal to the empty prefix, giving a
+%    display of first-order coefficients to the left and second-order coef-
+%    ficients to the right.
+%
+% See also 
+%    SCATTERGRAM
+
 function [sc1, sc2] = display_slice(S,t,scale,options)
 	if nargin < 2
 		t = [];

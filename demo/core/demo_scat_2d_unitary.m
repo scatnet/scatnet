@@ -24,6 +24,8 @@ scat_opt.oversampling = 0;
 
 %% perfectly flat littlewood paley sum
 imagesc(littlewood_paley(filters));
+%% 
+display_filter_bank_2d(filters);
 
 %% compute scattering
 [Sx, Ux] = scat(x, Wop);

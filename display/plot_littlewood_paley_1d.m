@@ -13,8 +13,9 @@
 %    If this sum is between (1-epsilon) and 1 for small epsilon, the
 %    associated wavelet transform is proved to be contractive and almost
 %    unitary.
+%
 % See also
-%   LITTLEWOOD_PALEY, DISPLAY_LITTLEWOOD_PALEY_2D, FILTER_BANK
+%    LITTLEWOOD_PALEY, DISPLAY_LITTLEWOOD_PALEY_2D, FILTER_BANK
 
 function littlewood = plot_littlewood_paley_1d(filters)
 	rgb_red = [0.8,0,0];

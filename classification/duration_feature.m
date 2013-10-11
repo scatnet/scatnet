@@ -1,11 +1,17 @@
-% duration_feature: Calculate the log-duration of a segment.
+% DURATION_FEATURE Calculate the log-duration of an object
+%
 % Usage
-%    duration = duration_feature(x, object)
+%    duration = DURATION_FEATURE(x, object)
+%
 % Input
-%    x: The file data (not used).
-%    object: The objects contained in the data.
+%    x (numeric): The file data (not used).
+%    object (struct): The objects contained in the data.
+%
 % Output
-%    duration: The log-duration of the objects.
+%    duration (numeric): The log-duration of the objects.
+%
+% See also
+%    PREPARE_DATABASE
 
 function t = duration_feature(x, object)
 	t = permute(log([object.u2]-[object.u1]+1),[1 3 2]);

@@ -1,21 +1,43 @@
-% wavelet_3d : Compute the wavelet transform of a roto-translation orbit
+% WAVELET_3D Compute the roto-translation wavelet transform
 %
 % Usage
-%	[y_Phi, y_Psi] = wavelet_3d(y, filters, filters_rot, options)
-%		compute the roto-translation convolution of a three dimensional
-%		signal y, with roto-translation wavelets defined as the separable product
-%		low pass :
+%   [y_Phi, y_Psi, meta_Phi, meta_Psi] = WAVELET_3D(y, filters, filters_rot, options)
+%
+% Input
+%   y (numeric): a 3d matrix whose first two dimension corresponds to spatial
+%       postion and third dimension corresponds to orientation.
+%   filters (struct): a 2d filter bank (applied along spatial variable)
+%   filters_rot (struct): a 1d filter bank (applied along orientation)
+%   options (struct): containing the following optional fields 
+%       x_resolution (int): the log of spatial resolution
+%       psi_mask (bool array): a mask for determining which filter to apply
+%       oversampling (int): the log of spatial oversampling
+%       oversampling_rot (int): the log of orientation oversampling
+%
+% Output
+%   y_Phi (numeric): the roto-translation convolution y * Phi
+%   y_Psi (cell): containing all the roto-translation convolution y * Psi
+%   meta_phi (struct): meta associated to y_Phi
+%   meta_psi (struct): meta associated to y_Psi
+%
+% Description
+%	compute the roto-translation convolution of a three dimensional
+%	signal y, with roto-translation wavelets defined as the separable product
+%	low pass :
 %		PHI(U,V) * PHI(THETA)
-%		high pass :
+%	high pass :
 %		PHI(U,V) * PHI(THETA)
 %		PSI(U,V) * PHI(THETA)
 %		PSI(U,V) * PSI(THETA)
 %
-% Ref
+% Reference
 %	Rotation, Scaling and Deformation Invariant Scattering for Texture
 %	Discrimination, Laurent Sifre, Stephane Mallat
 %	Proc of CVPR 2013
 %	http://www.cmapx.polytechnique.fr/~sifre/research/cvpr_13_sifre_mallat_final.pdf
+%
+% See also
+%   WAVELET_LAYER_3D, WAVELET_FACTORY_3D
 
 function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot, options)
     
@@ -29,6 +51,13 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
     options = fill_struct(options, 'oversampling_rot', -1);
     options = fill_struct(options, 'psi_mask', ones(1,numel(filters.psi.filter)));
     options = fill_struct(options, 'x_resolution', 0);
+    
+    % required cast for preallocation
+    if (isa(filters.phi.filter.coefft, 'single'))
+       cast = @single;
+    else 
+       cast = @double; 
+    end
     
     calculate_psi = (nargout>=2); % do not compute any convolution
     % with high pass
@@ -71,9 +100,10 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         y_Phi = real(unpad_signal(tmp, ds*[1 1],  [size(y,1), size(y,2)]));
         %meta
         meta_Phi.J(1) = filters.phi.meta.J;
+        meta_Phi.resolution(1) = options.x_resolution+ds;
     else
         % spatial mirror padding and fft
-        yf = zeros([sz_paded, nb_angle_in]);
+        yf = cast(zeros([sz_paded, nb_angle_in]));
         for theta = 1:nb_angle_in
             tmp = fft2(pad_signal(y(:,:,theta), sz_paded, []));
             yf(:,:,theta) = tmp;
@@ -87,7 +117,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 real(conv_sub_2d(yf(:,:,theta), filters.phi.filter, ds));
             tmp = unpad_signal(tmp, ds*[1 1], [size(y,1), size(y,2)]);
             if (theta == 1) %preallocate when we know the size
-                y_phi = zeros([size(tmp), nb_angle_in]);
+                y_phi = cast(zeros([size(tmp), nb_angle_in]));
             end
             y_phi(:,:,theta) = tmp;
         end
@@ -98,17 +128,18 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
         
         % low pass angle
         phi_angle = filters_rot.phi.filter;
-        ds = floor(max(floor(J_rot/Q_rot) - options.oversampling_rot, 0));
-        if (2^ds == size(y_phi,3)) % if there is one coefft left, compute the sum
+        ds_rot = floor(max(floor(J_rot/Q_rot) - options.oversampling_rot, 0));
+        if (2^ds_rot == size(y_phi,3)) % if there is one coefft left, compute the sum
             % is faster than convolving with a constant filter
-            y_Phi = sum(y_phi,3) / 2^(ds/2);
+            y_Phi = sum(y_phi,3) / 2^(ds_rot/2);
         else
             % fourier angle
             y_phi_f = fft(y_phi, [], 3);
             y_Phi = real(...
-                sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds));
+                sub_conv_1d_along_third_dim_simple(y_phi_f, phi_angle, ds_rot));
         end
         meta_Phi.J(1) = filters.phi.meta.J;
+        meta_Phi.resolution(1) = options.x_resolution+ds;
     end
     
     y_Psi = {};
@@ -129,6 +160,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
             meta_Psi.theta2(p) = 0;
             meta_Psi.j2(p) = filters.phi.meta.J;
             meta_Psi.k2(p) = k2;
+            meta_Psi.resolution(1,p) = meta_Phi.resolution(1);
             p = p + 1;
         end
         
@@ -152,7 +184,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 tmp = unpad_signal(tmp, ds*[1,1], [size(y,1), size(y,2)]);
                 
                 if (theta == 1) % prealocate when we know the size
-                    y_psi = zeros([size(tmp), 2*L]);
+                    y_psi = cast(zeros([size(tmp), 2*L]));
                 end
                 
                 % use PROPERTY_1 to compute convolution with filters that
@@ -178,6 +210,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
             meta_Psi.j2(p) = j2;
             meta_Psi.theta2(p) = theta2;
             meta_Psi.k2(p) = -1;
+            meta_Psi.resolution(p) = options.x_resolution+ds;
             p = p+1;
             
             % high pass angle to obtain
@@ -189,6 +222,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                 meta_Psi.theta2(p) = theta2;
                 meta_Psi.j2(p) = j2;
                 meta_Psi.k2(p) = k2;
+                meta_Psi.resolution(p) = options.x_resolution+ds;
                 p = p + 1;
             end
         end

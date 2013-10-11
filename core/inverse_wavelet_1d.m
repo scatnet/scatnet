@@ -1,7 +1,7 @@
 % INVERSE_WAVELET_1D Calculate the inverse wavelet transform
 %
 % Usage
-%    x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
+%    x = INVERSE_WAVELET_1D(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 %        dual_filters, options)
 %
 % Input

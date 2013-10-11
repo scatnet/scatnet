@@ -13,7 +13,7 @@
 %       [1,1])
 %
 % Output
-%    gab (numeric): N-by-M Gaussian function
+%    gau (numeric): N-by-M Gaussian function
 %
 % Description
 %    Computes a Gaussian centered in offset and of standard deviation

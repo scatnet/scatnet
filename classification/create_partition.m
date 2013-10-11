@@ -1,17 +1,23 @@
-% create_partition: Creates a train/test partition.
+% CREATE_PARTITION Creates a train/test partition
+%
 % Usage
-%    [train_set, test_set] = create_partition(src, ratio, shuffle)
+%    [train_set, test_set] = CREATE_PARTITION(src, ratio, shuffle)
+%
 % Input
-%    src: The source structure describing the objects.
-%    ratio: The proportion of all instances selected for training (default 
-%       0.8).
-%    shuffle: If 1, objects are shuffled before assigning partitions (default 
-%       1).
+%    src (struct): The source structure describing the objects.
+%    ratio (numeric): The proportion of all instances selected for training 
+%       (default 0.8).
+%    shuffle (boolean): If true, objects are shuffled before assigning parti-
+%       tions (default 1).
+%
 % Output
-%    train_set: The indices of objects in src.objects corresponding to 
+%    train_set (int): The indices of objects in src.objects corresponding to 
 %       training instances.
-%    test_set: The indices of objects in src.objects corresponding to 
+%    test_set (int): The indices of objects in src.objects corresponding to 
 %       testing instances.
+%
+% See also
+%    CREATE_SRC, NEXT_FOLD
 
 function [train_set,test_set,valid_set] = create_partition(obj_class, ...
 	ratio,shuffle)

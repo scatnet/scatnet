@@ -1,13 +1,16 @@
-% renorm_scat: Renormalize a scattering transform.
+% RENORM_SCAT Renormalize a scattering coefficients by their parents
+%
 % Usage
 %    S = renorm_scat(S)
+%
 % Input
 %    S: A scattering transform.
+%
 % Output
 %    S: The scattering transform with second- and higher-order coefficients
 %       divided by their parent coefficients.
 
-function X = renorm_scat(X,epsilon,min_order)
+function X = renorm_scat(X, epsilon, min_order)
 	if nargin < 2
 		epsilon = 2^(-20);		% ~1e-6
 	end

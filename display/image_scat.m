@@ -18,7 +18,6 @@
 %   IMAGE_SCAT_LAYER
 
 function image_scat(S, renorm, dsp_legend)
-	
 	for m = 1:numel(S);
 		figure(m);
 		switch (nargin)

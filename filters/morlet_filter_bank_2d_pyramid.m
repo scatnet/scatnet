@@ -60,6 +60,14 @@ function [filters, options] = morlet_filter_bank_2d_pyramid(options)
     slant_psi = options.slant_psi;
     precision = options.precision;
     
+    switch options.precision
+        case 'single'
+            cast = @single;
+        case 'double'
+            cast = @double;
+        otherwise
+            error('precision must be either double or single');
+    end
     
     N = size_filter(1);
     M = size_filter(2);
@@ -71,7 +79,7 @@ function [filters, options] = morlet_filter_bank_2d_pyramid(options)
 		sigma_phi,...
 		precision,...
         offset);
-    h.filter.coefft = h.filter.coefft./sum(h.filter.coefft(:));
+    h.filter.coefft = cast(h.filter.coefft./sum(h.filter.coefft(:)));
 	h.filter.type = 'spatial_support';
 	
 	angles = (0:L-1)  * pi / L;
@@ -84,14 +92,13 @@ function [filters, options] = morlet_filter_bank_2d_pyramid(options)
 			angle = angles(theta);
 			scale = 2^(q/Q);
 			
-			g.filter{p}.coefft = morlet_2d_pyramid(N,...
+			g.filter{p}.coefft = cast(morlet_2d_pyramid(N,...
 				M, ...
 				sigma_psi*scale,...
 				slant_psi,...
 				xi_psi/scale,...
 				angle,...
-				precision,...
-                offset) ;
+                offset)) ;
 			g.filter{p}.type = 'spatial_support';
 			
 			g.meta.q(p) = q;

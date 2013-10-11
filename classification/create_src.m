@@ -1,13 +1,20 @@
-% create_src: Create a source of files & objects.
+% CREATE_SRC Create a source of files & objects
+%
 % Usage
-%    src = create_src(directory, objects_fun)
+%    src = CREATE_SRC(directory, objects_fun)
+%
 % Input
-%    directory: The directory in which the files are found.
-%    objects_fun: Given a filename, objects_fun returns its constituent 
-%       objects and their respective classes.
+%    directory (char): The directory in which the files are found.
+%    objects_fun (function handle): Given a filename, objects_fun returns its 
+%       constituent objects and their respective classes.
+%
 % Output
-%    src: The source corresponding to all data files (.jpg, .wav, .au)
-%       contained in directory and their objects as defined by objects_fun.
+%    src (struct): The source corresponding to all data files (.jpg, .wav, 
+%       .au) contained in directory and their objects as defined by 
+%       objects_fun.
+%
+% See also
+%    PREPARE_DATABASE
 
 function src = create_src(directory,objects_fun)
 	if nargin < 1

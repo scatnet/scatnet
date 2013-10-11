@@ -1,13 +1,13 @@
 % FILTER_BANK Create a cell array of filter banks
 %
 % Usages
-%    filters = filter_bank(N)
+%    filters = FILTER_BANK(N)
 %
-%    filters = filter_bank(N, options)
+%    filters = FILTER_BANK(N, options)
 %
 % Input
 %    N (int): The size of the input data.
-%    options (optional): Filter parameters, see below.
+%    options (struct): Filter parameters, see below.
 %
 % Output
 %    filters (struct): A cell array of filter banks corresponding to the
@@ -18,6 +18,7 @@
 %    which can have the following values:
 %       'morlet_1d', 'gabor_1d': Calls MORLET_FILTER_BANK_1D.
 %       'spline_1d': Calls SPLINE_FILTER_BANK_1D.
+%       'selesnick_1d': Calls SELESNICK_FILTER_BANK_1D.
 %    The filter parameters in options are then passed on to these functions.
 %    If multiple filter banks are desired, multiple parameters can be supplied
 %    by providing a vector of parameter values instead of a scalar (in the 
@@ -30,8 +31,8 @@
 %
 %    The specific parameters vary between filter bank types, but the follow-
 %    ing are common to all types:
-%       options.filter_type: Can be 'morlet_1d', 'gabor_1d', or 'spline_1d'
-%          (default 'morlet_1d').
+%       options.filter_type: Can be 'morlet_1d', 'gabor_1d', 'spline_1d',
+%          or 'selesnick_1d' (default 'morlet_1d').
 %       options.boundary: Sets the boundary conditions of the wavelet trans-
 %          form. If 'symm', symmetric boundaries will be used, if 'per', per-
 %          iodic boundaries will be used (default 'symm').
@@ -51,7 +52,8 @@
 %                 consumption and increasing speed of calculations (default).
 %
 %    For parameters specific to the filter bank type, see the documentation
-%    for MORLET_FILTER_BANK_1D and SPLINE_FILTER_BANK_1D.
+%    for MORLET_FILTER_BANK_1D, SPLINE_FILTER_BANK_1D, and
+%    SELESNICK_FILTER_BANK_1D.
 %
 % See also
 %    WAVELET_FACTORY_1D, WAVELET_FACTORY_2D, WAVELET_1D, WAVELET_2D
@@ -115,6 +117,8 @@ function filters = filter_bank(sig_length, options)
 			filters{k} = morlet_filter_bank_1d(sig_length,options_k);
 		elseif strcmp(options_k.filter_type,'spline_1d')
 			filters{k} = spline_filter_bank_1d(sig_length,options_k);
+        elseif strcmp(options_k.filter_type,'selesnick_1d')
+            filters{k} = selesnick_filter_bank_1d(sig_length,options_k);
 		else
 			error(['Unknown wavelet type ''' options_k.filter_type '''']);
 		end

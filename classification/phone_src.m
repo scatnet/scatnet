@@ -1,10 +1,14 @@
-% phone_src: Creates a source for the phones in the TIMIT dataset.
+% phone_src: Creates a source for the phones in the TIMIT dataset
+%
 % Usage
 %    src = phone_src(directory)
+%
 % Input
-%    directory: The directory containing the TIMIT dataset.
+%    directory (char): The directory containing the TIMIT dataset.
+%
 % Output
-%    src: The TIMIT phone source.
+%    src (struct): The TIMIT phone source.
+%
 % Description
 %    The function searches through the directory structure, indexing each
 %    audio file by adding it to the src structure and its constituent phones
@@ -12,9 +16,13 @@
 %    48 different phones [1]. Additionally, the clustering specified in [1] is
 %    recorded in src.cluster. This is then used in when calculating the 
 %    classification error to allow confusions within the same cluster.
+%
 % References
 %    [1] K.F. Lee and H-W. Hon, "Speaker-Independent Phone Recognition Using 
 %       Hidden Markov Models," IEEE TASSP 1989
+%
+% See also
+%    CREATE_SRC, PHONE_PARTITION
 
 function src = phone_src(directory)
 	if nargin < 1

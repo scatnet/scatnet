@@ -1,6 +1,20 @@
-%FILL_STRUCT Sets default values of a structure
-%   s = fill_struct(s,'field1',value1,'field2',value2,....) sets the s.field1
-%   to value1 if s.field1 is empty or not set, the same for field2, etc.
+% FILL_STRUCT Sets default values of a structure
+%
+% Usage
+%    s = FILL_STRUCT(s, field, value, ...)
+%
+% Input
+%    s (struct): Structure whose fields are to be set.
+%    field (char): The name of the field to set.
+%    value: The default value of the field.
+%
+% Output
+%    s (struct): The structure with the default values set.
+%
+% Description
+%    If the s.field is empty or not set, it is set to the default value 
+%    specified. If desired, multiple field/value pairs can be specified in the
+%    same function call.
 
 function s = fill_struct(varargin)
 	s = varargin{1};

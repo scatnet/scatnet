@@ -1,11 +1,14 @@
-% flatten_scat: Put scattering coefficients of all layers together
+% FLATTEN_SCAT Put scattering coefficients of all layers together
+%
 % Usage
 %    S = flatten_scat(S)
+%
 % Input
-%    S: A scattering transform.
+%    S (cell): A scattering transform.
+%
 % Output
-%    S: The same scattering transform, but flattened into one layer. As a
-%       result, meta fields from different orders have been concatenated.
+%    S (cell): The same scattering transform, but flattened into one layer. As
+%       a result, meta fields from different orders have been concatenated.
 %       Since different orders have different size meta fields, they have been
 %       augmented with -1 where necessary (for example, the field j).
 

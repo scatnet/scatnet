@@ -1,11 +1,11 @@
+% PlotSpectScat(x,nScatt)
+% Color plot of the scattering power spectrum
+% x gives the horizontal axis
+% nScatt is the normalized scattering tranform which is piecewise constant
+% The color on each interval depends upon the path length:
+% 0 is yellow, 1 is red, 2 is green 3 is blue, 4 is magenta
+
 function plot_spect_scat(x,nScatt)
-	% PlotSpectScat(x,nScatt)
-	% Color plot of the scattering power spectrum
-	% x gives the horizontal axis
-	% nScatt is the normalized scattering tranform which is piecewise constant
-	% The color on each interval depends upon the path length:
-	% 0 is yellow, 1 is red, 2 is green 3 is blue, 4 is magenta
-	
 	%function PlotSpectScat(x,Scat,J)
 	
 	N = size(nScatt,2);
@@ -39,3 +39,4 @@ function plot_spect_scat(x,nScatt)
 		
 	end
 	hold off;
+end
