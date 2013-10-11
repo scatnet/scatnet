@@ -37,7 +37,6 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	options = fill_struct(options, ...
 		'psi_mask', true(1, numel(filters.psi.filter)));
 	options = fill_struct(options, 'x_resolution',0);
-	options = fill_struct(options, 'use_abs', 0);
 
 	N = size(x,1);
 
@@ -47,7 +46,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		'number of signals.']);
 	end
 
-	[temp,psi_bw,phi_bw] = filter_freq(filters);
+	[temp,psi_bw,phi_bw] = filter_freq(filters.meta);
 
 	j0 = options.x_resolution;
 
@@ -58,6 +57,10 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	x = pad_signal(x, N_padded, filters.meta.boundary);
 
 	xf = fft(x,[],1);
+    
+    ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
+	ds = max(ds, 0);
+    
 
 	  %It has been proven sometimes useful to renormalize the first order
     %coefficients of the scattering transform of an audio signal by its
