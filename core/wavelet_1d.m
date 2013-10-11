@@ -61,22 +61,8 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
     ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
 	ds = max(ds, 0);
     
-
-	  %It has been proven sometimes useful to renormalize the first order
-    %coefficients of the scattering transform of an audio signal by its
-    % mean, x_phi=conv(x,phi), but this value is typically nul for audio
-    %so we rather renormalize by x_phi=conv(abs(x),phi). Putting
-    %options.use_abs to 1 should be done in preparation of that fact.
-    
-     if options.use_abs==1 
-        xf_abs=fft(abs(x),[],1);
-        x_phi = real(conv_sub_1d(xf_abs, filters.phi.filter, ds));
-     else 
-        x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
-     end
-
-	ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
-	ds = max(ds, 0);
+     
+    x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
 
 	x_phi = unpad_signal(x_phi, ds, N);
 	meta_phi.j = -1;
