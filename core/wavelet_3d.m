@@ -178,8 +178,6 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d(y, filters, filters_rot
                     filters.psi.meta.j == j2);
                 psi = filters.psi.filter{lambda2p1};
                 
-                %tmp = ...
-                %    conv_sub_unpad_2d(yf(:,:,theta), psi, ds, margins);
                 tmp = conv_sub_2d(yf(:,:,theta), psi, ds);
                 tmp = unpad_signal(tmp, ds*[1,1], [size(y,1), size(y,2)]);
                 
