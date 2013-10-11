@@ -1,13 +1,27 @@
-% WAVELET_LAYER_3D_PYRAMID
+% WAVELET_LAYER_3D_PYRAMID Compute the roto-translation wavelet transform of a scattering layer
+%
 % Usage
+%   [U_Phi, U_Psi] = WAVELET_LAYER_3D_PYRAMID(U, filters, filters_rot, options)
 %
 % Input
+%   U (struct): input scattering layer
+%   filters (struct): 2d filter bank to apply along spatial variable
+%   filters_rot (struct): 1d filter bank to apply along orientation
+%   options (struct): same as wavelet_3d
 %
 % Output
+%   U_Phi (struct): low pass convolutions of all signal of layer U
+%   U_Psi (struct): high pass convolutions of all signal of layer U
 %
 % Description
+%   This function will compute all the roto-translation wavelet transform
+%   of signals contained in the input layer U. If the previous layer
+%   is contains only 2d signal, it starts by extracting rotation orbits.
+%   It then forward each orbit to WAVELET_3D_PYRAMID that will process them
+%   independantly.
 %
 % See also
+%   WAVELET_3D_PYRAMID, WAVELET_FACTORY_3D_PYRAMID
 %
 
 function [U_Phi, U_Psi] = wavelet_layer_3d_pyramid(...
