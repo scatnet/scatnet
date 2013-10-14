@@ -16,4 +16,6 @@ function wavelet = joint_tf_wavelet_factory_1d(N, time_filter_options, freq_filt
 		freq_filt_ind = min(numel(freq_filters), m+1);
 		wavelet{m+1} = @(X)(joint_tf_wavelet_layer_1d(X, {freq_filters{freq_filt_ind}, time_filters{time_filt_ind}}, scat_options));
 	end
+
 end
+
