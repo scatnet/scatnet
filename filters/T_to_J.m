@@ -25,6 +25,12 @@
 %    DEFAULT_FILTER_OPTIONS, MORLET_FILTER_BANK_1D
 
 function J = T_to_J(T, filt_opt)
+
+   if  nargin ==2 && ~isstruct(filt_opt)
+       error('You must provide a filter options structure as second argument!');
+   end
+
+   
 	filt_opt = fill_struct(filt_opt,'Q',1);
 	filt_opt = fill_struct(filt_opt,'B',filt_opt.Q);
 	filt_opt = fill_struct(filt_opt,'phi_bw_multiplier', ...
