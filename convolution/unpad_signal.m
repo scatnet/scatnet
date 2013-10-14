@@ -36,9 +36,7 @@ function x = unpad_signal(x, res, target_sz, center)
     
     padded_sz = size(x);
     
-    if padded_sz(2) == 1
-        padded_sz = padded_sz(1);
-    end
+    padded_sz = padded_sz(1:length(target_sz));
     
     offset = 0.*target_sz;
     
@@ -47,7 +45,7 @@ function x = unpad_signal(x, res, target_sz, center)
     end
     
     offset_ds = floor(offset./2.^res);
-    target_sz_ds = max(1, floor(target_sz./2.^res));
+    target_sz_ds = 1+floor((target_sz-1)./2.^res);
     
     switch length(target_sz)
         case 1

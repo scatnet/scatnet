@@ -44,11 +44,14 @@ function y = pad_signal(x, Npad, boundary, center)
 
 	if nargin < 4
 		center = 0;
-	end
+    end
+    
+    orig_sz = size(x);
+    orig_sz = orig_sz(1:length(Npad));
 
 	if center
-		margins = floor((Npad - size(x))/2);
-	end
+		margins = floor((Npad - orig_sz)/2);
+    end
 
 	has_imag = norm(imag(x(:)))>0;
 
