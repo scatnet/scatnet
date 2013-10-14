@@ -179,40 +179,40 @@ The string \mcode{precision} encodes the numerical precision of the scattering c
 Filter banks correspond to predefined sets of filters. The nature of the used filters is highly important since it determines the result of the scattering transform. Filters bank can be created using the \mcode{wavelet_factory} set of functions, and have a similar skeleton in 1D, 2D or 3D.
 
 \subsection{Architecture \label{sub:filters-architecture}}
-\begin{tikzpicture} [scale=.6]
-\centering
-\tikzstyle{level 1}=[sibling distance=80mm] 
-\tikzstyle{level 2}=[sibling distance=40mm] 
-\tikzstyle{level 3}=[sibling distance=15mm] 
-
- \node{filters(struct)}  
-   child{ node{phi.}
-    child{node{meta.}
-      child{node{J}}}
-    child{node{filter.}
-       child{node{coefft\{\}}}
-       child{node{type}}
-       child{node{N}}}
-       }
-   child{node{psi.}
-      child{node{filter\{\}}
-        child{node{coefft\{\}}}
-        child{node{type}}
-        child{node{N}}
-        }
-       
-       child{node{meta.}
-            child{node{j}}
-            child{node{theta}}
-            }}
-            
-            
-    child{node{meta.}
-       child{node{J(:)}}
-       child{node{Q(:)}}
-       child{node{...}}
-       };
- \end{tikzpicture}
+%\begin{tikzpicture} [scale=.6]
+%\centering
+%\tikzstyle{level 1}=[sibling distance=80mm] 
+%\tikzstyle{level 2}=[sibling distance=40mm] 
+%\tikzstyle{level 3}=[sibling distance=15mm] 
+%
+% \node{filters(struct)}  
+%   child{ node{phi.}
+%    child{node{meta.}
+%      child{node{J}}}
+%    child{node{filter.}
+%       child{node{coefft\{\}}}
+%       child{node{type}}
+%       child{node{N}}}
+%       }
+%   child{node{psi.}
+%      child{node{filter\{\}}
+%        child{node{coefft\{\}}}
+%        child{node{type}}
+%        child{node{N}}
+%        }
+%       
+%       child{node{meta.}
+%            child{node{j}}
+%            child{node{theta}}
+%            }}
+%            
+%            
+%    child{node{meta.}
+%       child{node{J(:)}}
+%       child{node{Q(:)}}
+%       child{node{...}}
+%       };
+% \end{tikzpicture}
  
  In each of this case, \mcode{filters} have the same architecture. The first field corresponds to a low-pass filter, the second to the band-pass filters and a field \mcode{meta} contains the information for the whole bank-filters.
  The band-pass filters are stored as cells of filters.
