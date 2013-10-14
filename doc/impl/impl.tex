@@ -9,13 +9,13 @@
 
 \usepackage{url}
 
-\usepackage[framed,numbered,autolinebreaks,useliterate]{../common/mcode}
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
 
 \graphicspath{{figures/}}
 
 \title{ScatNet : \\ a MATLAB Toolbox for Scattering Networks}
 
-\author{Laurent Sifre, Joakim And\'{e}n, Michel Kapoko, \\ \'{E}douard Oyallon, and Vincent Lostanlen}
+\author{Laurent Sifre, Joakim And\'{e}n, Michel Kapoko, \\ Edouard Oyallon, and Vincent Lostanlen}
 
 \begin{document}
     
@@ -25,10 +25,17 @@
 
 \subsection{Overview}
 ScatNet is a MATLAB scientific toolbox which provides tools for the analysis and classification of digital signals, such as sounds, images or time series. Mostly owing to its properties of group invariance and stability to deformations, it has shown to achieve state-of-the art results in the challenges of music genre recognition, image, texture classification, and fetal heart rate characterization.
-Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of signal processing layers of increasing width. Each layer consist in the association of a linear filter bank \mcode{Wop} with a non-linear operator, namely the complex modulus.
+Its core feature relies on the construction of a \emph{scattering network}, i.e. a stack of signal processing layers of increasing width. Each layer consists in the association of a linear filter bank \mcode{Wop} with a non-linear operator, namely the complex modulus.
 The \emph{scattering transform} of an input signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
 
 \subsection{Getting started}
+\subsubsection{Audio processing quickstart}
+An online tutorial for the scattering representation of audio signals is available at the following page : \\
+\hfill \url{http://www.di.ens.fr/data/software/scatnet/quickstart-audio/} \hfill
+
+\subsubsection{Image processing quickstart}
+An online tutorial for the scattering representation of image signals is available at the following page : \\
+\hfill \url{http://www.di.ens.fr/data/software/scatnet/quickstart-image/} \hfill
 
 \subsection{Outline}
 In this document, the objects in ScatNet are first reviewed from the general to the specific : Sections \ref{sec:scattering-transform}, \ref{sec:wavelet-factories} and \ref{sec:filters} respectively cover the architectures of the scattering operator, of each layer in the network, and of each filter in a layer.
@@ -48,7 +55,7 @@ Interestingly, the array \mcode{x} may either be of dimensions:
 \item $(N_1 \times 1 \times N_3)$, for a set of $N_3$ audio files, each of length $N_1$.
 \end{enumerate}
 
-In all cases, the network of scattering coefficients is obtained throught the single command :
+In all cases, the network of scattering coefficients is obtained through the single command :
 
 \begin{lstlisting}
 S = scat(x, Wop);
@@ -97,7 +104,7 @@ Most often, however, it is not necessary to do so ; indeed, ScatNet provides eff
 
 
 \section{Wavelet factories \label{sec:wavelet-factories}}
-All five built-in factories are available in the \mcode{core} directory. After reviewin their respective implementations and prototypes, we document the customization of the scattering transform throught the \mcode{scat_opt} structure.
+All five built-in factories are available in the \mcode{core} directory. After reviewing their respective implementations and prototypes, we document the customization of the scattering transform through the \mcode{scat_opt} structure.
 
 \subsection{Scattering representations of audio signals and time series \label{sec:wavelet-factory-1d}}
 The function \mcode{wavelet_1d} gives an efficient representation of one-dimensional signals, such as sounds or time series. It bears the following prototype :
@@ -108,17 +115,17 @@ The function \mcode{wavelet_1d} gives an efficient representation of one-dimensi
 
 The input arguments \mcode{filt_opt} and \mcode{scat_opt} respectively gather the parameters of the wavelet filter banks and the scattering network ; note that both can be omitted at first glance. Section \ref{sub:filters-options} explains how to create custom filter banks. As regards \mcode{scat_opt}, the parameter most subject to change is the integer \mcode{scat_opt.M}, which represents the maximal order of the scattering transform, and equals $2$ by default. The \mcode{scat_opt} structure is further specified in Section \ref{sub:scattering-options}.
 
-The first output argument is a cell array of function handles, which fit the required format in the prototype of \mcode{scat} (see Section \ref{sub:scattering-transform-prototype}). The second output is not mandatory for the processing of \mcode{x}, as it is only useful for the visualisation of the filter bank themselves : its architecture is reviewed in Section \ref{sub:filters-architecture}.
+The first output argument is a cell array of function handles, which fit the required format in the prototype of \mcode{scat} (see Section \ref{sub:scattering-transform-prototype}). The second output is not mandatory for the processing of \mcode{x}, as it is only useful for the visualisation of the filter bank themselves: its architecture is reviewed in Section \ref{sub:filters-architecture}.
 
-\subsection{Translation-invariant representations of images \ref{sub:wavelet-factory-2d}}
+\subsection{Translation-invariant representations of images \label{sub:wavelet-factory-2d}}
 
-For its part, \mcode{wavelet_factory_2d} provides a translation-invariant representation of images. Its prototype is exactly the same as in the one-dimensional case (see Section \ref{sec:wavelet-factory-1d}), and all previous remarks hold : 
+The cell array of linear operators produced by the \mcode{wavelet_factory_2d} built-in represents filter banks of two-dimensional wavelets, providing a scattering representation of images which is invariant up to a planar translation. The prototype of \mcode{wavelet_factory_2d} is exactly the same as in the one-dimensional case (see Section \ref{sec:wavelet-factory-1d}), and all previous remarks hold: 
 
 \begin{lstlisting}
 [Wop,filters] = wavelet_factory_2d(size(x),filt_opt,scat_opt);
 \end{lstlisting}
 
-In addition, ScatNet provides another wavelet factory for images, called \mcode{wavelet_factory_2d_pyramid}, and relying on the cascade algorithm.  While pursuing the same goal as \mcode{wavelet_factory_2d}, it happens to be computationally quicker, and doesn't require to be given the size of the signal \mcode{x} as a first input ; hence the following prototype :
+In addition, ScatNet provides another wavelet factory for images, called \mcode{wavelet_factory_2d_pyramid}, and relying on the cascade algorithm.  While pursuing the same goal as \mcode{wavelet_factory_2d}, it happens to be computationally faster, and doesn't require to be given the size of the signal \mcode{x} as a first input; hence the following prototype:
 
 \begin{lstlisting}
 [Wop,filters] = wavelet_factory_2d_pyramid(size(x),filt_opt,scat_opt);
@@ -134,7 +141,7 @@ Finally, the function \mcode{wavelet_factory_3d} enables a scattering representa
 [Wop,filters,filters_rot] = wavelet_factory_3d(size(x), filt_opt, filt_rot_opt,scat_opt);
 \end{lstlisting}
 
-With \mcode{wavelet_factory_3d}, at the first order, the energy is scattered along the vertical and horizontal dimensions of the image, similarly to \mcode{wavelet_factory_2d}. At higher orders, however, \mcode{wavelet_factory_3d} computes a one-dimensional wavelet transform along the orientations of the previous coefficients. Therefore, for a scattering transform of order $2$, each coefficient bank bears three indices — vertical scale, horizontal scale, and angle — hence the "3d" denomination.
+With \mcode{wavelet_factory_3d}, at the first order, the energy is scattered along the spatial dimensions of the image, similarly to \mcode{wavelet_factory_2d}. At higher orders, however, \mcode{wavelet_factory_3d} computes a one-dimensional wavelet transform along the orientations of the previous coefficients. Therefore, for a scattering transform of order $2$, each coefficient bank bears three indices — vertical scale, horizontal scale, and angle — hence the "3d" denomination.
 
 Whereas the structure \mcode{filt_opt} contains the parameters of the filter bank at the first order, \mcode{filt_rot_opt} is related to the roto-translation wavelets of higher orders.
 
@@ -148,46 +155,79 @@ Contrary to what their name might suggest, neither \mcode{wavelet_3d} nor \\
 \mcode{wavelet_3d_pyramid} are adapted to an input array \mcode{x} of size $(N_1 \times N_2 \times N_3)$. Up to now, there is no built-in factory for the processing of three-dimensional signals, such as video clips or voxel-based measurements. Nevertheless, it is not difficult to derive a custom pipeline that matches the geometric dimension of the data, in a similar fashion to the available factories.
 
 \subsection{Customized wavelet factory \label{sub:scattering-options}}
-The structure \mcode{scat_opt} may contain up to the four following fields — sorted here by order 
+All built-in wavelet factories presented above may take a structure \mcode{scat_opt} as last argument, offering a high degree of flexibility for the user. In this section, we review the available fields in \mcode{scat_opt} according to the chosen factory. For instance, one may activate the single floating-point precision by the following instruction :
 
-\begin{itemize}
-    \item \mcode{scat_opt.M} : the maximal order of the scattering transform (see Section \ref{sub:scattering-transform-prototype}). This value must be a positive integer. When set to \mcode{1}, the scattering transform is merely the modulus of a wavelet transform. Equal to \mcode{2} by default whatever be the chosen built-in factory. Increasing \mcode{scat_opt.M} marginally improves classification results, at a great computational cost.
-	\item \mcode{scat_opt.oversampling}: the $log_2$ of the desired oversampoling factor. By default equal to \mcode{1}, which means that .
-    \item \mcode{scat_opt.psi_mask}
-    \item \mcode{scat_opt.x_resolution}
-\end{itemize}
+\begin{lstlisting}
+scat_opt.precision = 'single';
+\end{lstlisting}
 
-If \mcode{scat_opt} is an empty data structure or is omitted in the call to the wavelet factory, all the previous fields are set to their default values, whatever be the chosen built-in factory.
+If \mcode{scat_opt} is an empty data structure or is omitted, all these fields are set to their default values. If the user provides an additional field to \mcode{scat_opt}, or spell one of the available fields mistakenly, ScatNet throws an error.
+
+\subsubsection{Maximal order of the scattering transform}
+The positive integer \mcode{scat_opt.M} encodes the maximal order of the scattering transform (see Section \ref{sub:scattering-transform-prototype}), i.e. the depth of the associated scattering network. When set to \mcode{1}, the scattering transform is merely the modulus of a wavelet transform. By default, it is equal to \mcode{2},  whatever be the chosen built-in factory. In most cases, increasing \mcode{scat_opt.M} marginally improves classification results, yet at a great computational cost.
+
+\subsubsection{Oversampling of the scattering coefficients}
+The positive integer \mcode{scat_opt.oversampling} encodes the $log_2$ of the desired oversampling factor. By default, \mcode{scat_opt.oversampling} is equal to \mcode{1}, which means that the scattering coefficients are computed right at the critical sample rate, and that no oversampling is carried out at all. Although oversampling $S_x$ may be useful for post-processing or visualisation, note that the required memory increases exponentially with the integer \mcode{scat_opt.oversampling}.
+
+\subsubsection{Resolution of the input signal}
+The integer \mcode{scat_opt.x_resolution} encodes the $log_2$ of the resolution of the input signal \mcode{x}, with respect to the finest resolution of the filter bank. By default, \mcode{scat_opt.x_resolution} is equal to \mcode{0}, which means that increasing \mcode{scat_opt.x_resolution} is equivalent to an interpolation of \mcode{x}, whereas decreasing it below $0$ is equivalent to a downsampling operation. Likewise the parameter \mcode{scat_opt.oversampling} (see above), the required memory increases exponentially with the integer \mcode{scat_opt.oversampling}. In summary, relatively to the scattering transform, the integer \mcode{scat_opt.x_resolution} behaves as a prior interpolation, while \mcode{scat_opt.oversampling} behaves as a posterior interpolation.
+
+\subsubsection{Floating-point precision}
+The string \mcode{precision} encodes the numerical precision of the scattering coefficients. Its default value is \mcode{'double'}, which means that real numbers occupy 8 bytes (64 bits) of computer memory, in accordance with the default format in MATLAB. In order to alleviate computational load, the floating-point precision may be manually downgraded to 4 bytes by setting \mcode{scat_opt.precision } to \mcode{'single'}. However, note that this choice may damage the discriminative performance of the resulting machine learning algorithms.
 
 \section{Filter banks \label{sec:filters}}
-Filters bank corresponds to predefined sets of filters.  The nature of the used filters is highly important since it determines the result of the scattering transform. Filters bank can be created using the \mcode{wavelet_factory} set of functions, and have a similar skeleton in 1D, 2D or 3D.
+Filter banks correspond to predefined sets of filters. The nature of the used filters is highly important since it determines the result of the scattering transform. Filters bank can be created using the \mcode{wavelet_factory} set of functions, and have a similar skeleton in 1D, 2D or 3D.
 
 \subsection{Architecture \label{sub:filters-architecture}}
 \begin{tikzpicture} [scale=.6]
-\tikzstyle{level 1}=[sibling distance=60mm] 
-\tikzstyle{level 2}=[sibling distance=30mm] 
-\tikzstyle{level 3}=[sibling distance=20mm] 
+\centering
+\tikzstyle{level 1}=[sibling distance=80mm] 
+\tikzstyle{level 2}=[sibling distance=40mm] 
+\tikzstyle{level 3}=[sibling distance=15mm] 
 
- %\node{filters}  
- %  child{ node{$\phi$}child{node{ Paris }}}
- % child{ node{$\psi$}child{node{name}child{node{ Nord-Pas De Calais }}}child{node{population}child{node{ 3996 }}}}
-  %child{node{meta}child{node{Q}}childe{node{J}}}child{node{region}child{node{name}child{node{ Valle du Rhone }}}child{node{city}child{node{ Lyon }}}child{node{city}child{node{ Valence }}}}; 
+ \node{filters(struct)}  
+   child{ node{phi.}
+    child{node{meta.}
+      child{node{J}}}
+    child{node{filter.}
+       child{node{coefft\{\}}}
+       child{node{type}}
+       child{node{N}}}
+       }
+   child{node{psi.}
+      child{node{filter\{\}}
+        child{node{coefft\{\}}}
+        child{node{type}}
+        child{node{N}}
+        }
+       
+       child{node{meta.}
+            child{node{j}}
+            child{node{theta}}
+            }}
+            
+            
+    child{node{meta.}
+       child{node{J(:)}}
+       child{node{Q(:)}}
+       child{node{...}}
+       };
  \end{tikzpicture}
  
  In each of this case, \mcode{filters} have the same architecture. The first field corresponds to a low-pass filter, the second to the band-pass filters and a field \mcode{meta} contains the information for the whole bank-filters.
- The band-pass filters are stored as cells.
+ The band-pass filters are stored as cells of filters.
 
 
 \subsection{Options \label{sub:filters-options}}
 
 
-As described in the previous section, filter parameters are specified in the \mcode{filt_opt} structure passed to \mcode{wavelet_factory_1d} or \mcode{wavelet_factory_2d}. Depending on the type of filter used, this structure can contain different parameters, but the following can always be specified:
+As described in the previous section, filter parameters are specified in the \mcode{filt_opt} structure passed to \mcode{wavelet_factory_1d}, \mcode{wavelet_factory_2d} or \mcode{wavelet_factory_3d}. Depending on the type of filter used, this structure can contain different parameters, but the following can always be specified:
 \begin{itemize}
 	\item \mcode{filt_opt.filter_type}: The wavelet type, such as `morlet\_1d', `morlet\_2d', `spline\_1d', for example (default \mcode{'morlet_1d'} for 1D signals, \mcode{'morlet_2d'} for 2D signals).
 	\item \mcode{filt_opt.precision}: The numeric precision of the filters. Either \mcode{'double'} or \mcode{'single'} (default \mcode{'double'}).
 \end{itemize}
-Since the \mcode{filter_type} field determines the type of filter bank to create, it determines what other options can be specified. The rest of this section covers the different types of filters and their parameters.
-
+Since the \mcode{filter_type} field determines the type of filter bank to create, it determines which other options can be specified. The rest of this section covers the different types of filters and their parameters.
+\subsection{1D signals}
 For 1D signals, it is often useful to specify different filter parameters for different orders. This is done by using arrays instead of scalar values for parameters in \mcode{filt_opt}. In the case of numeric parameters, this means that they are regular arrays, whereas for string parameters, such as \mcode{filter_type}, they are cell arrays.
 
 For example, setting \mcode{filt_opt.filter_type = \{'gabor\_1d','spline_1d'\}}, means that the first-order filter bank should be a Gabor filter bank whereas the second should be a spline wavelet filter bank. If more filter banks are needed than parameters are available in \mcode{filt_opt}, the last element in each array is repeated as necessary.
@@ -198,7 +238,7 @@ In the case of wavelet transforms used as linear operators, an important field i
 
 Let us consider the example output \mcode{S} from the \mcode{scat} function using wavelet transforms as linear operators. In this case, \mcode{S\{m+1\}} will contain the $m$th-order scattering coefficients, with \mcode{S\{m+1\}.signal\{p\}} being the $p$th signal among these. Its scales $(j_1,j_2,\ldots,j_m)$ are specified in \mcode{S\{m+1\}.meta.j(:,p)}.
 
-\subsection{1D Morlet/Gabor Filters}
+\subsubsection{1D Morlet/Gabor Filters}
 The Gabor wavelets consist of Gaussian envelopes modulated by complex exponentials to cover the entire frequency spectrum. Morlet wavelets are derived from these by subtracting the envelope multiplied by a constant such that the integral of the filter equals zero. As they are closely related, the Gabor and Morlet wavelet have identical sets of options.
 
 These are obtained by setting \mcode{filt_opt.filter_type} to \mcode{'morlet_1d'} or \mcode{'gabor_1d'}, respectively. The Morlet filters are the default filters for 1D signals. 
@@ -221,7 +261,7 @@ To calculate the appropriate \mcode{J} necessary for a given window size \mcode{
 \end{lstlisting}
 This will ensure that the maximum wavelet scale, and thus the averaging scale of the lowpass filter, will be approximately \mcode{T}. Note that the previous prototype, \mcode{T_to_J(T,Q,B,phi_bw_multiplier)} is no longer supported in this version.
 
-\subsection{1D Spline Filters}
+\subsubsection{1D Spline Filters}
 The spline wavelet filter bank is an unitary filter bank as defined in \cite{mallatbook}. As a result, the scattering transform defined using these filters has perfect energy conservation \cite{stephane}.
 
 In addition to the parameters listed above, the spline filter bank has the following options:
@@ -232,11 +272,11 @@ In addition to the parameters listed above, the spline filter bank has the follo
 The maximal bandwidth is specified here by $2^J$.
 
 \subsection{1D Selesnick Filters}
-Selesnick wavelet filters are compactly supported complex wavelets, whose real and imaginary parts have 4 vanishing moments and are nearly Hilbert transform pairs.
+Selesnick wavelet filters are compactly supported complex wavelets, whose real and imaginary parts have four vanishing moments and are nearly Hilbert transform pairs.
 
 In addition to the parameters listed above, the Selesnick filter bank has the following options:
 \begin{itemize}
-	\item \mcode{filt_opt.J}: The number of wavelet scales.
+  \item \mcode{filt_opt.J}: The number of wavelet scales.
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
@@ -245,23 +285,25 @@ The code for the Selesnick wavelet filters is an independent package that has be
 \texttt{http://eeweb.poly.edu/iselesni/WaveletSoftware/dt1D.html}.
 
 
-\subsection{2D Morlet Filters}
-\label{sec_filters_2d}
-The Gabor wavelets consist of Gaussian envelopes modulated by complex exponentials to cover the en- tire frequency spectrum. Morlet wavelets are derived from these by subtracting the envelope multiplied by a constant such that the integral of the filter equals zero. 
 
-A 2D Morlet filter bank consists in a gaussian window 
-\begin{equation}
+\subsection{2D filters}
+\label{sec_filters_2d}
+\subsubsection{Morlet filters bank}
+The Gabor wavelets consist of Gaussian envelopes modulated by complex exponentials to cover the entire frequency spectrum. Morlet wavelets are derived from these by subtracting the envelope multiplied by a constant such that the integral of the filter equals zero. 
+
+A 2D Morlet filter bank consists in a Gaussian window 
+\begin{equation*}
 \phi_J (u) =  2^{-2j/Q} \phi(2^{-j/Q} (u,v))
-\end{equation}
+\end{equation*}
 and in dilated and rotated Morlet filters.
-\begin{equation}
+\begin{equation*}
 \psi_{j, \theta}(u) = 2^{-2j/Q} \psi(r_\theta 2^{-j/Q} (u,v)) 
-\end{equation}
+\end{equation*}
 with 
-\begin{eqnarray}
+\begin{eqnarray*}
 j & \in & [0,J-1] \\
 \pi^{-1} L^{-1} \theta & \in & [0,L-1]
-\end{eqnarray}
+\end{eqnarray*}
 The full filter bank can be obtained by calling 
 \mcode{morlet_filter_bank_2d}. 
 \begin{lstlisting}
@@ -271,7 +313,7 @@ filt_opt.Q = 1;
 filt_opt.J = 3;
 filters = morlet_filter_bank_2d(size_in, filt_opt);
 \end{lstlisting}
-This example builds a \mcode{128x128} filter bank with the following options :
+This example builds a filters bank adapted to \mcode{128x128} images with the following options :
 \begin{itemize}
 	\item \mcode{filt_opt.Q} the number of wavelets per octave. By default $1$.
 	\item \mcode{filt_opt.J}  the number of wavelet scales. By default $4$.
@@ -280,12 +322,12 @@ This example builds a \mcode{128x128} filter bank with the following options :
 
 
 
-The mother Morlet filter is
-\begin{equation}
+The mother Morlet filter is defined by
+\begin{equation*}
 \label{eq_mother_morlet}
 \psi(u,v) = e^{ \frac{u^2 + s^2 v^2}{2 \sigma^2}}(K - e^{i u \xi})
-\end{equation}
-Its parameters are
+\end{equation*}
+whose name of the parameters are
 \begin{itemize}
 \item $\sigma$ the spread of the gaussian envelope 
 \item $\xi$ the frequency of the oscillatory exponential
@@ -300,46 +342,70 @@ This adaptive behavior can be overridden by manually setting $\sigma$, $\xi$, $s
 	\item \mcode{filt_opt.xi_psi} the frequency $\xi$ in (\ref{eq_mother_morlet})
 	\item \mcode{filt_opt.slant_psi} the eccentricity $s$ in (\ref{eq_mother_morlet})
 \end{itemize}	
+\subsubsection{Shanon filters bank}
+Shanon wavelets are separable wavelets with a a finite support in frequency. Thus they suffer from a bad localization in time since their Fourier transform is not regular. Here they are design to show filters bank that respects the Littlewood paley condition. Shanon mother wavelet of the Shanon filters bank is defined by
+\begin{equation}
+\label{eq_shanon_filters_bank}
+\hat\psi(u,v) = e^{2i\pi(u+v)}1_{1>|u|>\frac{1}{2},1>|v|>\frac{1}{2}}
+\end{equation}
+
+In our implementation, these wavelets are set so that the Littlewood paley condition is respected.
+
+The parameters of this filters bank are given by:
+
+\begin{itemize}
+    \item \mcode{filt_opt.J} the scale of the filters
+\end{itemize}	
+
+However, they are not designed for classification purposes, yet only for testing.
 
 
-\section{Manipulating, Formatting Scattering Coefficients \label{sec:utilities}}
 
-To facilitate the manipulation of the scattering coefficients, several functions are provided that perform different operations on the network layer format described above. In addition, we can convert the coefficients to an easier-to-manage array representation, concatenating scattering coefficients and separating out meta-data.
+\section{Post-processing operations on scattering networks \label{sec:utilities}}
+The signal processing tools originally provided in ScatNet were designed to address computer vision and machine listening problems, and can be evaluated through standard challenges in database classification. Most of machine learning tools require vector inputs of the same size with specifical renormalization and averaging(or pooling). In this section, we describe a full set of functions to manipulate the output of the scattering, in order to satisfy any conditions needed by a classifier.
 
-\subsection{Post-processing}
+\subsection{Renormalisation of high-order coefficients}
+As described in \cite{joakim}, second-order scattering coefficients can be renormalized by dividing each $Sx(t,j_1,j_2)$ by $Sx(t,j_1)$, which decorrelates the amplitudes at the second layer from the first layer. The renormalisation utility in ScatNet has the following prototype :
 
-This section describes the different post-processing function that are available to apply to scattering coefficients.
-
-\subsubsection{\mcode{renorm_scat}}
-As described in \cite{joakim}, second-order scattering coefficients can be renormalized by dividing $Sx(t,j_1,j_2)$ by $Sx(t,j_1)$, which decorrelates the second order from the first. A similar procedure is available for higher orders.
-
-In ScatNet, this transformation is available through the \mcode{renorm_scat} function. Its signature is as follows
 \begin{lstlisting}
 S_renorm = renorm_scat(S, epsilon);
 \end{lstlisting}
+
 where \mcode{S} is the scattering transform to be renormalized, and \mcode{epsilon} is a regularization constant that prevents the fraction from diverging when the first order becomes zero.
 
-\subsubsection{\mcode{log_scat}}
+\subsection{Logarithmic transformation of a scattering network}
+Some classification frameworks, such as the MFC in speech recognition, rely on log-power representation of the frequency distribution. ScatNet has the ability to reproduce this behaviour by computing the logarithm of scattering coefficients. Log-scattering coefficients are also useful for visualisation, as they shrink the range of values to a small interval of orders of magnitude.
+
+\begin{lstlisting}
+log_S = log_scat(S,epsilon);
+\end{lstlisting}
+The positive real number \mcode{epsilon} may be omitted : by default, it is set equal to $2^-(20)$, i.e. $10^-6$. It is a small constant taht is added to each coefficient, in order to keep finite results when the original coefficient is null.
+
+If
+\begin{lstlisting}
+log_layer = log_scat(S{1+m},epsilon);
+\end{lstlisting}
 For several signals, it is sometimes necessary to compute the logarithm of scattering coefficients. This is achieved in ScatNet using the \mcode{log_scat} function. Its signature is
+
 \begin{lstlisting}
 S_log = log_scat(S, epsilon);
 \end{lstlisting}
 where \mcode{S} is the scattering transform whose logarithm we want to compute, and \mcode{epsilon} is a regularization constant that prevents the logarithm from going to negative infinity when the scattering coefficients approach zero.
 
-\subsubsection{\mcode{average_scat}}
+\subsection{Time averaging of a one-dimensional scattering representation}
 
-For several classification problems, it is sometimes useful to average features in time as it reduces the complexity of the problem and smoothes the distribution of the features.
-This is achieved in ScatNet using the \mcode{average_scat} function. Its signature is 
+For several classification problems, it is useful to average scattering coefficients in time as it smoothes their distributions along longer time scales. This is achieved in ScatNet using the \mcode{average_scat} function, whose prototye is the following :
 
 \begin{lstlisting}
   S_av =  average_scat(S,T,step,window_fun);
 \end{lstlisting}
-where \mcode{S} is the scattering transform we want to average, \mcode{T} is the length of the window with which to average, \mcode{step} is the stepping of the successive 
-windows (which default value is $T/2$ ), and finally \mcode{window_fun} represents the windowing function to use for averaging(which default value is $@hanning_standalone$). 
 
-\subsubsection{\mcode{aggregate_scat}}
+where \mcode{S} is the scattering transform we want to average, \mcode{T} is the length of the averaging window, \mcode{step} is the stepping of the successive 
+windows (which default value is $T/2$ ), and finally \mcode{window_fun} represents the windowing function to use for averaging. If not provided, \mcode{window_fun} is set to  $@hanning_standalone$ by default ; this function mimicks the behavior of the \mcode{hanning} window function, without requiring to install the MATLAB Signal Processing Toolbox. 
 
- Some signals (mostly audio signals) have a somewhat obvious and particular structure(for e.g the attack sustain and release phases of a muscical note) which we might want 
+\subsection{Node-wise aggregation of consecutive scattering networks}
+
+Some signals (mostly audio signals) have a somewhat obvious and particular structure (e.g. the attack sustain and release phases of a muscical note) which we might want 
 to provide as a cue to classifiers. In that case, it would totally make sense to concatenate features computed over a certain number of successive time frames. In ScatNet,
 the function \mcode{aggregate_scat} empowers you with such an ability. Its  signature is:
 
@@ -348,7 +414,7 @@ the function \mcode{aggregate_scat} empowers you with such an ability. Its  sign
 \end{lstlisting}
 where \mcode{S} is the scattering transform we want to aggregate and \mcode{N} is the length of the window on which we wish to aggregaate the features.
 
-\subsection{Formatting}
+\subsection{Array-like formatting of a scattering network}
 
 In order to use the scattering coefficients for classification and other tasks, it is often useful to convert the representation into a purely numeric format, separating 
 out the metadata. This is the role of the \mcode{format_scat} function, whose signature is
@@ -425,8 +491,7 @@ ScatNet contains a classification pipeline for affine space and support vector c
 \subsection{Batch Computation \label{sec:batch-computation}}
 
 To compute scattering coefficients for a database of signals, we first define a source. A source is a set of files, each file containing a number of objects to be classified. Each object has a class and a location within the file.
-This means that, on a classification point of view, a file is just a physical container of the objects which will be classified. Once the file has been read
-from its storage location, all the scatnet software knows about is the object.
+
 The source can be created using \mcode{create_src(directory, extract_objects_fun)} (or one of its wrappers, such as \mcode{gtzan_src}, \mcode{phone_src}, \mcode{uiuc_src}, etc). Given a directory, this function recursively traverses it, looking for `.jpg', `.wav', or `.au' files. For each such file, it calls \mcode{extract_objects_fun} to determine its constituent objects and their classes. To add a new database, it suffices to write the corresponding \mcode{extract_objects_fun} function.
 
 The \mcode{extract_objects_fun} function has the following signature
@@ -437,50 +502,6 @@ Given a file, it returns a structure array \mcode{objects} of the objects it con
 
 Most often, a file will only contain one object, so \mcode{objects} is a  structure of size one, but this can vary from database to database (for example in speech recognition a file corresponds to a recording of a phrase, which can contain different phones to be classified).
 
-Similarly, in musical instrument recognition, you might want for application purpose, to recognise the instrument over a
-frame of 2 seconds of duration, when the actual audio file in the database is about 1 min long.  For the creation
-of a source in such a context, one could write the following code:
-
-\begin{lstlisting}
-
-function train_src =instrument_sounds_src(directory,T)
-
-if nargin < 2
-    T= 2^16;% at a sampling frequency of 32 KHz, this represents a duration of 2s. 
-end
-
-src = create_src(directory,@(file)(objects_fun(file,directory,T)));
-end
-
-function [objects,classes] = objects_fun(file,directory,T)
-
-tmpsnd=data_read(file);
-sig_sz=size(tmpsnd,1);
-nb_objs = floor(sig_sz/T);
-
-shortf_ind=file;
-path_folders = regexp(directory,filesep,'split');
-
- objects=struct();
- classes={};
- path_str = fileparts(file);
- path_parts = regexp(path_str,filesep,'split');
-    
-  cname=path_parts{end};
-   
-    if mod(slgth,T)~=0
-        error('T must divide slgth and T must be a power of 2');
-    end
-     
- for n=1:nb_objs
-    objects(n).u1=1+(n-1)*T;
-    objects(n).u2=n*T;
-    classes{n}=cname;
- end
-
-end
-
-\end{lstlisting}
 The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in a 2D (or 1D) signal. These bounds are inclusive. For the case where a file only contains one object, the bounds will simply be the bounds of the signal. If desired, additional fields can be specified that will be passed on and saved in the source structure.
 
 Given a directory and this function, \mcode{create_src} returns a source structure \mcode{src}, which has the following fields
@@ -605,9 +626,6 @@ The support vector machine classifier is defined by the functions \mcode{svm_tra
 	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
 	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
 	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
-        \item \mcode{train_opt.w}: w is $\in \{0,1\}$. If 1 then some 
-
-
 \end{itemize}
 
 The following code calculates the error for an SVM classifier with a linear kernel and $C = 8$:
@@ -710,8 +728,4 @@ j = S{3}.meta.j(:,S{3}.meta.fr_order==1 & ...
    S{3}.j(2,:)==9);
 \end{lstlisting}
 
-<<<<<<< HEAD
 \end{document}
-=======
-\end{document}
->>>>>>> c24a078c2450ba10a5e633f6aefdb44f6865a202
