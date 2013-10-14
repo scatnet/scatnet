@@ -27,7 +27,7 @@
 function J = T_to_J(T, filt_opt)
 
    if  nargin ==2 && ~isstruct(filt_opt)
-       error('You must provide a filter options structure!');
+       error('You must provide a filter options structure as second argument!');
    end
 
    
