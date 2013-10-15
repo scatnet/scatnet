@@ -32,7 +32,8 @@ function img = scattergram(varargin)
 		img{n} = scat_img(varargin{(n-1)*2+1},varargin{(n-1)*2+2});
 		subplot(ndisp,1,n);
 		imagesc(img{n});
-	end
+    end
+    colormap gray; % avoids default jet colormap
 end
 
 function img = scat_img(X,j)
