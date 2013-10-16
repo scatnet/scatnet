@@ -2,8 +2,8 @@
 \usepackage{amsmath,cite}
 \usepackage{graphicx}
 
-\usepackage{tikz}
-\usepackage{tikz-qtree}
+%\usepackage{tikz}
+%\usepackage{tikz-qtree}
 
 \usepackage{amssymb}
 
@@ -179,40 +179,40 @@ The string \mcode{precision} encodes the numerical precision of the scattering c
 Filter banks correspond to predefined sets of filters. The nature of the used filters is highly important since it determines the result of the scattering transform. Filters bank can be created using the \mcode{wavelet_factory} set of functions, and have a similar skeleton in 1D, 2D or 3D.
 
 \subsection{Architecture \label{sub:filters-architecture}}
-%\begin{tikzpicture} [scale=.6]
-%\centering
-%\tikzstyle{level 1}=[sibling distance=80mm] 
-%\tikzstyle{level 2}=[sibling distance=40mm] 
-%\tikzstyle{level 3}=[sibling distance=15mm] 
-%
-% \node{filters(struct)}  
-%   child{ node{phi.}
-%    child{node{meta.}
-%      child{node{J}}}
-%    child{node{filter.}
-%       child{node{coefft\{\}}}
-%       child{node{type}}
-%       child{node{N}}}
-%       }
-%   child{node{psi.}
-%      child{node{filter\{\}}
+% \begin{tikzpicture} [scale=.6]
+% \centering
+% \tikzstyle{level 1}=[sibling distance=80mm] 
+% \tikzstyle{level 2}=[sibling distance=40mm] 
+% \tikzstyle{level 3}=[sibling distance=15mm] 
+% 
+%  \node{filters(struct)}  
+%    child{ node{phi.}
+%     child{node{meta.}
+%       child{node{J}}}
+%     child{node{filter.}
 %        child{node{coefft\{\}}}
 %        child{node{type}}
-%        child{node{N}}
+%        child{node{N}}}
 %        }
-%       
-%       child{node{meta.}
-%            child{node{j}}
-%            child{node{theta}}
-%            }}
-%            
-%            
-%    child{node{meta.}
-%       child{node{J(:)}}
-%       child{node{Q(:)}}
-%       child{node{...}}
-%       };
-% \end{tikzpicture}
+%    child{node{psi.}
+%       child{node{filter\{\}}
+%         child{node{coefft\{\}}}
+%         child{node{type}}
+%         child{node{N}}
+%         }
+%        
+%        child{node{meta.}
+%             child{node{j}}
+%             child{node{theta}}
+%             }}
+%             
+%             
+%     child{node{meta.}
+%        child{node{J(:)}}
+%        child{node{Q(:)}}
+%        child{node{...}}
+%        };
+%  \end{tikzpicture}
  
  In each of this case, \mcode{filters} have the same architecture. The first field corresponds to a low-pass filter, the second to the band-pass filters and a field \mcode{meta} contains the information for the whole bank-filters.
  The band-pass filters are stored as cells of filters.
@@ -262,7 +262,7 @@ To calculate the appropriate \mcode{J} necessary for a given window size \mcode{
 This will ensure that the maximum wavelet scale, and thus the averaging scale of the lowpass filter, will be approximately \mcode{T}. Note that the previous prototype, \mcode{T_to_J(T,Q,B,phi_bw_multiplier)} is no longer supported in this version.
 
 \subsubsection{1D Spline Filters}
-The spline wavelet filter bank is an unitary filter bank as defined in \cite{mallatbook}. As a result, the scattering transform defined using these filters has perfect energy conservation \cite{stephane}.
+The spline wavelet filter bank is a unitary filter bank as defined in \cite{mallatbook}. As a result, the scattering transform defined using these filters has perfect energy conservation \cite{stephane}.
 
 In addition to the parameters listed above, the spline filter bank has the following options:
 \begin{itemize}
@@ -343,7 +343,7 @@ This adaptive behavior can be overridden by manually setting $\sigma$, $\xi$, $s
 	\item \mcode{filt_opt.slant_psi} the eccentricity $s$ in (\ref{eq_mother_morlet})
 \end{itemize}	
 \subsubsection{Shanon filters bank}
-Shanon wavelets are separable wavelets with a a finite support in frequency. Thus they suffer from a bad localization in time since their Fourier transform is not regular. Here they are design to show filters bank that respects the Littlewood paley condition. Shanon mother wavelet of the Shanon filters bank is defined by
+Shanon wavelets are separable wavelets with a a finite support in frequency. Thus they suffer from a bad localization in time since their Fourier transform is not regular. Here they are designed to show filter banks that respects the Littlewood paley condition. Shanon mother wavelet of the Shanon filters bank is defined by
 \begin{equation}
 \label{eq_shanon_filters_bank}
 \hat\psi(u,v) = e^{2i\pi(u+v)}1_{1>|u|>\frac{1}{2},1>|v|>\frac{1}{2}}
@@ -373,6 +373,12 @@ S_renorm = renorm_scat(S, epsilon);
 
 where \mcode{S} is the scattering transform to be renormalized, and \mcode{epsilon} is a regularization constant that prevents the fraction from diverging when the first order becomes zero.
 
+
+%\subsection{Full Renormalization of one-dimensional scattering representation}
+%It has been proven completely useful
+
+
+
 \subsection{Logarithmic transformation of a scattering network}
 Some classification frameworks, such as the MFC in speech recognition, rely on log-power representation of the frequency distribution. ScatNet has the ability to reproduce this behaviour by computing the logarithm of scattering coefficients. Log-scattering coefficients are also useful for visualisation, as they shrink the range of values to a small interval of orders of magnitude.
 
@@ -381,7 +387,6 @@ log_S = log_scat(S,epsilon);
 \end{lstlisting}
 The positive real number \mcode{epsilon} may be omitted : by default, it is set equal to $2^-(20)$, i.e. $10^-6$. It is a small constant taht is added to each coefficient, in order to keep finite results when the original coefficient is null.
 
-If
 \begin{lstlisting}
 log_layer = log_scat(S{1+m},epsilon);
 \end{lstlisting}
@@ -401,9 +406,9 @@ For several classification problems, it is useful to average scattering coeffici
 \end{lstlisting}
 
 where \mcode{S} is the scattering transform we want to average, \mcode{T} is the length of the averaging window, \mcode{step} is the stepping of the successive 
-windows (which default value is $T/2$ ), and finally \mcode{window_fun} represents the windowing function to use for averaging. If not provided, \mcode{window_fun} is set to  $@hanning_standalone$ by default ; this function mimicks the behavior of the \mcode{hanning} window function, without requiring to install the MATLAB Signal Processing Toolbox. 
+windows (which default value is $T/2$ ), and finally \mcode{window_fun} represents the windowing function to use for averaging. If not provided, \mcode{window_fun} is set to  $@hanning\_standalone$ by default ; this function mimicks the behavior of the \mcode{hanning} window function, without requiring to install the MATLAB Signal Processing Toolbox. 
 
-\subsection{Node-wise aggregation of consecutive scattering networks}
+\subsection{Time aggregation of a one-dimensional scattering representation}
 
 Some signals (mostly audio signals) have a somewhat obvious and particular structure (e.g. the attack sustain and release phases of a muscical note) which we might want 
 to provide as a cue to classifiers. In that case, it would totally make sense to concatenate features computed over a certain number of successive time frames. In ScatNet,
@@ -502,6 +507,51 @@ Given a file, it returns a structure array \mcode{objects} of the objects it con
 
 Most often, a file will only contain one object, so \mcode{objects} is a  structure of size one, but this can vary from database to database (for example in speech recognition a file corresponds to a recording of a phrase, which can contain different phones to be classified).
 
+Similarly, in musical instrument recognition, you might want for application purpose, to recognise the instrument over a
+frame of 2 seconds of duration, when the actual audio file in the database is about 1 min long.  For the creation
+of a source in such a context, one could write the following code:
+
+\begin{lstlisting}
+
+function train_src =instrument_sounds_src(directory,T)
+
+if nargin < 2
+    T= 2^16;% at a sampling frequency of 32 KHz, this represents a duration of 2s. 
+end
+
+src = create_src(directory,@(file)(objects_fun(file,directory,T)));
+end
+
+function [objects,classes] = objects_fun(file,directory,T)
+
+tmpsnd = data_read(file);
+sig_sz = size(tmpsnd,1);
+nb_objs = floor(sig_sz/T);
+
+shortf_ind = file;
+path_folders = regexp(directory,filesep,'split');
+
+ objects = struct();
+ classes = {};
+ path_str = fileparts(file);
+ path_parts = regexp(path_str,filesep,'split');
+    
+  cname = path_parts{end};
+   
+    if mod(slgth,T) ~= 0
+        error('T must divide slgth and T must be a power of 2');
+    end
+     
+ for n = 1:nb_objs
+    objects(n).u1 = 1+(n-1)*T;
+    objects(n).u2 = n*T;
+    classes{n} = cname;
+ end
+
+end
+
+\end{lstlisting}
+
 The objects structure has the fields \mcode{objects.u1} and \mcode{objects.u2} which correspond to the lower-left and upper-right corners (start- and endpoints) of the object in a 2D (or 1D) signal. These bounds are inclusive. For the case where a file only contains one object, the bounds will simply be the bounds of the signal. If desired, additional fields can be specified that will be passed on and saved in the source structure.
 
 Given a directory and this function, \mcode{create_src} returns a source structure \mcode{src}, which has the following fields
@@ -582,11 +632,18 @@ err = classif_err(labels, test_set, src);
 \end{lstlisting}
 Note that the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
 
+To calculate the average recognition rate, the \mcode{classif_recog} is used:
+\begin{lstlisting}
+    mean_recog_rate = classif_recog(labels, test_set, src);
+\end{lstlisting}
+Note that the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
+
 To calculate the errors over a range of training parameters in \mcode{train_opt}, the functions \mcode{affine_param_search} and \mcode{svm_param_search} are available. Denoting them both by \mcode{param_search}, they have the following signature
 \begin{lstlisting}
 [err, param1, param2] = param_search( ...
 	database, train_set, valid_set, train_opt);
 \end{lstlisting}
+
 Where \mcode{database} and \mcode{train_set} are the feature database and training set, respectively, \mcode{valid_set} is a validation set to calculate the errors on and \mcode{train_opt} contain the training parameters for the model. Multiple training parameters are specified by setting the field to an array instead of a scalar in \mcode{train_opt}. The classification error for different parameter combinations is then given in \mcode{err}, with the actual parameter values stored in \mcode{param1}, \mcode{param2}, etc.
 
 The validation set can be taken to be \mcode{test_set}, but this would lead to overfitting of the parameters. For some tasks, a separate validation test is given for this purpose. Another alternative is to perform cross-validation on the training set \mcode{train_set}. This is obtained by setting \mcode{test_set} to \mcode{[]}. By default, \mcode{param_search} will then split \mcode{train_set} into five parts, train on four and test on the remaining one, then shuffle and repeat. The number of folds can be determined by the \mcode{train_opt.cv_folds} option. In this case, \mcode{err} is a 2D matrix, with the parameter set index along the first dimension and the fold index along the second. To obtain the best parameter set, an average can then be performed along the fold index.
@@ -626,7 +683,17 @@ The support vector machine classifier is defined by the functions \mcode{svm_tra
 	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
 	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
 	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
-\end{itemize}
+    \item \mcode{train_opt.w}: w is $\in \{0,1\}$. If w is set to one, then for a 2-class SVM classication problem where the two classes are numbered $1$ and $2$, the function to minimize in the svm optimization problem will be :
+    \begin{equation*}
+        \operatorname*{arg\,min}_{w,b,\xi} \, \frac{1}{2}w^{T}w + \frac{C}{N_1}\sum_{i=1}^{N_1}\xi_i +  \frac{C}{N_2}\sum_{i=1}^{N_2}\xi_i
+    \end{equation*}
+    
+    where $N_1$ and $N_2$ are the total numbers of training features respectively for class $1$ and 
+    class $2$.
+  \end{itemize}  
+    Sometimes, it happens that the database is very unbalanced, with some of the classes containing far more samples than others. In such case, one of the most convenient way to measure the perfomance of the classifier is the \mcode{average recognition rate} (this is achieved in ScatNet through the function \mcode{classif_recog} which computes the individual recognition rate of each class as well as their mean).   
+    In such case we should tell the svm that we want it to give the same importance to the individual error rate of each class and this is achieved by setting the training option \mcode{w} to 1.
+    The following lines provide more informatio on how to use ScatNet to do svm classification.
 
 The following code calculates the error for an SVM classifier with a linear kernel and $C = 8$:
 \begin{lstlisting}
