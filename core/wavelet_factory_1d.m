@@ -45,7 +45,7 @@ function [Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt)
 	
 	if nargin < 3
 		scat_opt = struct(); 
-    else
+    end
     scat_opt = fill_struct(scat_opt, 'M', 2); % M is the scattering order
 	
     Wop = cell(1,scat_opt.M);
