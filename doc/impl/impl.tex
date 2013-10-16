@@ -388,16 +388,16 @@ where:
     \item \mcode{X} is the scattering transform S or U whose layer should be normalized.
 	\item \mcode{Xn} is the scattering transform S or U whose layer would be used to normalize the one of X
 	\item \mcode{layerNb} is the indice of the layer of Xn to use for normalization
-    \item \mcode{epsilon}  is a regularization constant that prevents the fraction from diverging when the first order becomes zero. It is set to 2^(-20) by default.
+    \item \mcode{epsilon}  is a regularization constant that prevents the fraction from diverging when the first order becomes zero. It is set to $2^(-20)$ by default.
 
 \end{itemize}
 
 You would then need to proceed similarly as indicated in the sample code below:
 
 \begin{lstlisting}
-  filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
-  filt1_opt.Q = [8 1];
-  filt1_opt.J = T_to_J(T,filt1_opt);
+filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
+filt1_opt.Q = [8 1];
+filt1_opt.J = T_to_J(T,filt1_opt);
 
 % set the scattering options
 sc1_opt = struct();
@@ -427,20 +427,22 @@ Sx = rdivide_scat(x_scat(x),absx_scat(x),1);
 \subsection{Full Renormalization of one-dimensional scattering representation}
 
 When working with the second order scattering representation of an audio signal, the combination
-of the functions renorm_scat and rdivide_scat enables you to build a fully renormalized second order
-scattering representation. This makes the feature insensible to amplitutde variation and in some situations conisderably improve the results. Using the framework set in the code example of the function rdivide_scat,  one could compute this feature using the lines below:
+of the functions \mcode{renorm_scat} and  \mcode{rdivide_scat} enables you to build a fully renormalized second order
+scattering representation. This makes the feature insensible to amplitutde variation and in some situations conisderably improve the results. 
+Using the framework set in the code example of the function \mcode{rdivide_scat},  one could compute this feature using the lines below:
 
 
 \begin{lstlisting}
  absx_scat = @(x)(scat(abs(x),Wop1));
  x_scat = @(x)(scat(x,Wop2));
- Sx = rdivide_scat(renorm_scat(x_scat(x)),absx_scat,1);
+ Sx = rdivide_scat(renorm_scat(x_scat(x)),absx_scat(x),1);
 
 \end{lstlisting}
 
 
 \subsection{Logarithmic transformation of a scattering network}
-Some classification frameworks, such as the MFC in speech recognition, rely on log-power representation of the frequency distribution. ScatNet has the ability to reproduce this behaviour by computing the logarithm of scattering coefficients. Log-scattering coefficients are also useful for visualisation, as they shrink the range of values to a small interval of orders of magnitude.
+Some classification frameworks, such as the MFC in speech recognition, rely on log-power representation of the frequency distribution. ScatNet has the 
+ability to reproduce this behaviour by computing the logarithm of scattering coefficients. Log-scattering coefficients are also useful for visualisation, as they shrink the range of values to a small interval of orders of magnitude.
 
 \begin{lstlisting}
 log_S = log_scat(S,epsilon);
@@ -573,7 +575,7 @@ of a source in such a context, one could write the following code:
 
 \begin{lstlisting}
 
-function train_src =instrument_sounds_src(directory,T)
+function src = instrument_sounds_src(directory,T)
 
 if nargin < 2
     T= 2^16;% at a sampling frequency of 32 KHz, this represents a duration of 2s. 
