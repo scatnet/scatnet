@@ -44,14 +44,13 @@ function [Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt)
     end
 	
 	if nargin < 3
-		scat_opt.M = 2; % M is the scattering order
+		scat_opt.M = struct(); 
     else
-        scat_opt = fill_struct(scat_opt, 'M', 2);
-    end
+    scat_opt = fill_struct(scat_opt, 'M', 2); % M is the scattering order
 	
     Wop = cell(1,scat_opt.M);
 	for m = 0:scat_opt.M
-		filt_ind = min(numel(filters), m+1);
-		Wop{m+1} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, scat_opt));
+		filt_ind = min(numel(filters), 1+m);
+		Wop{1+m} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, scat_opt));
 	end
 end
