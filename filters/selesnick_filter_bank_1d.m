@@ -1,6 +1,6 @@
 % selesnick_filter_bank_1d: Creates a Selesnick wavelet filter bank.
 % Usage
-%    filters = spline_filter_bank_1d(sz, options)
+%    filters = selesnick_filter_bank_1d(sz, options)
 % Input
 %    sz: The size of the input data.
 %    options (optional): Filter parameters.

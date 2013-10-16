@@ -1,7 +1,7 @@
-% MORLET_FREQ_1D Compute center frequencies and bandwidths for the 1D Morlet
+% DYADIC_FREQ_1D Compute center frequencies and bandwidths for the 1D Dyadic
 %
 % Usage
-%	[psi_xi, psi_bw, phi_bw] = MORLET_FREQ_1D(filt_opt)
+%	[psi_xi, psi_bw, phi_bw] = DYADIC_FREQ_1D(filt_opt)
 %
 % Input
 %    filt_opt (struct): The parameters defining the filter bank. For example,
