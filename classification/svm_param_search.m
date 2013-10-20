@@ -56,21 +56,20 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			opt1 = opt;
 			opt1.C = C(r);
 			opt1.gamma = gamma(r);
-            
-            %added line
-            
-            opt1.w= opt.w;
 			
 			fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
 
 			tm0 = tic;
-            %db_weights=calc_train_weights(db,train_set);
+        
 			model = svm_train(db,train_set,opt1);
             labels = svm_test(db,model,valid_set);
-
-			err(r,1) = classif_mean_err(labels,valid_set,db.src);
-             % err(r,1)=classif_err(labels,valid_set,db.src);
-             
+        
+          if opt1.w 
+			err(r,1) = 1-classif_recog(labels,valid_set,db.src);
+          else
+            err(r,1) = classif_err(labels,valid_set,db.src);
+          end
+          
 			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
 		end
 	end
