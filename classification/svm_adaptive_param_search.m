@@ -30,11 +30,8 @@
 function [err,C,gamma] = svm_adaptive_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'gamma',1e-4);
 	opt = fill_struct(opt,'C',8);
-
 	opt = fill_struct(opt,'search_depth',2);
     
-    opt = fill_struct(opt,'w',0);
-
 	gamma0 = opt.gamma;
 	C0 = opt.C;
 
