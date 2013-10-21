@@ -4,13 +4,13 @@
 %    S = flatten_scat(S)
 %
 % Input
-%    S (cell): A scattering transform.
+%    S (cell): A scattering representation.
 %
 % Output
-%    S (cell): The same scattering transform, but flattened into one layer. As
-%       a result, meta fields from different orders have been concatenated.
-%       Since different orders have different size meta fields, they have been
-%       augmented with -1 where necessary (for example, the field j).
+%    S (cell): The same scattering representation, but flattened into one layer. As
+%       a result, meta fields from different orders are concatenated.
+%       Since different orders have meta fields of different sizes, such as meta.j,
+%       the meta fields are filled with  -1's where necessary.
 
 function Y = flatten_scat(X)
 	Y.signal = {};
