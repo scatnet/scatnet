@@ -1,4 +1,4 @@
-% FORMAT_SCAT Formats a scattering transform
+% FORMAT_SCAT Formats a scattering representation
 %
 % Usages
 %    [out,meta]  = FORMAT_SCAT(S)
@@ -6,13 +6,13 @@
 %    [out, meta] = FORMAT_SCAT(S, fmt)
 %
 % Input
-%    S (cell): The scattering transform to be formatted.
+%    S (cell): The scattering representation to be formatted.
 %    fmt (string): The desired format. Can be either 'raw',
 %     'order_table' or 'table' (default 'table').
 %
 % Output
-%    out: The scattering transform in the desired format (see below).
-%    meta (struct): Properties of the signals in out.
+%    out: The scattering representation in the desired format (see below).
+%    meta (struct): Properties of the scattering nodes in out.
 %
 % Description
 %    Three different formats are available for the scattering transform:
