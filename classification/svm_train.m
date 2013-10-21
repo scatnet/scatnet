@@ -19,7 +19,7 @@
 %             the kernel is only defined on the training vectors (default 
 %             false).
 %          options.w (boolean): Add weights to rebalance the training set if 
-%             it is inbalanced. The rebalancing is done so that the distribu-
+%             it is imbalanced. The rebalancing is done so that the distribu-
 %             tion of the training samples seem to be uniform for all the 
 %             classes (default 0).
 %
