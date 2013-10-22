@@ -66,8 +66,8 @@ function db = prepare_database(src,feature_fun,opt)
 			for l = 1:length(file_objects)
 				features{k}{l} = buf(:,1:opt.feature_sampling:end,l);
 			end
-			
-			fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
+			fprintf('.'); % Different display
+			%fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
 		end
 	else
 		time_start = clock;
@@ -101,8 +101,9 @@ function db = prepare_database(src,feature_fun,opt)
 			end
 			time_elapsed = etime(clock, time_start);
 			estimated_time_left = time_elapsed * (length(src.files)-k) / k;
-			fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
-			fprintf('%d / %d : estimated time left %d seconds\n',k,length(src.files),floor(estimated_time_left));
+			fprintf('.');% Different display
+            %fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
+			%fprintf('%d / %d : estimated time left %d seconds\n',k,length(src.files),floor(estimated_time_left));
 		end
 	end
 	

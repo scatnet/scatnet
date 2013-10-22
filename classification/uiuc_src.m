@@ -15,7 +15,7 @@
 
 function src = uiuc_src(directory)
 	if (nargin<1)
-		directory = '/Users/laurentsifre/TooBigForDropbox/Databases/cvr_uiuc';
+		directory = ''; % PUT DEFAULT DIRECTORY HERE
 	end
 	src = create_src(directory, @uiuc_extract_objects_fun);
 end
