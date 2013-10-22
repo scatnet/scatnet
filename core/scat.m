@@ -9,8 +9,8 @@
 %       layer from the previous one.
 %
 % Output
-%    S (cell): The scattering coefficients.
-%    U (cell): Intermediate covariant modulus coefficients.
+%    S (cell): The scattering representation of x.
+%    U (cell): Intermediate covariant modulus coefficients of x.
 %
 % Description
 %    The signal x is decomposed using linear operators Wop and modulus 
