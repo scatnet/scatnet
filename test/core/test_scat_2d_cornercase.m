@@ -1,4 +1,4 @@
-x = lena;
+x = mandrill;
 x = x(1:1,1:64);
 
 filt_opt.J = 4;

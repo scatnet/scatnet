@@ -3,7 +3,7 @@
 clear; close all;
 
 %% load an image
-x = lena;
+x = mandrill;
 
 %% compute scattering
 Wop = wavelet_factory_3d_pyramid();

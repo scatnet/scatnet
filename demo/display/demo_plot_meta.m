@@ -11,7 +11,7 @@
 % corresponds to the meta of a layer, each column to a different parameter
 % indicated in the y-label.
 %
-x = lena;
+x = mandrill;
 [Wop, filters] = wavelet_factory_2d(size(x));
 [S, U] = scat(x, Wop);
 

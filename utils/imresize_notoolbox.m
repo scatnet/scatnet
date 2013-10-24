@@ -1,7 +1,7 @@
 function out = imresize_notoolbox(in,size_out)
 % laurent sifre - 7 nov 2012
 % do the same thing as imresize but without the image toolbox
-% in = lena;
+% in = mandrill;
 % in = in(:,1:400);
 % size_out = [1024,1024];
 % in(end,end) = 1;

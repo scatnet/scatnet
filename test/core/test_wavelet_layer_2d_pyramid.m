@@ -1,5 +1,5 @@
 % Initialize signal and meta
-x = lena;
+x = mandrill;
 U{1}.signal{1} = x;
 U{1}.meta.j = zeros(0,1);
 filters = morlet_filter_bank_2d_pyramid();
