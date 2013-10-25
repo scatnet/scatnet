@@ -13,7 +13,7 @@
 % signal $x$. 
 clear; close all; 
 
-x = lena;
+x = mandrill;
 
 % Create $ U[\empty]x $
 U{1}.signal{1} = x;

@@ -11,7 +11,7 @@
 % function comput the linear operators necessar to compute the next
 % coefficients of scattering.
 
-x = lena;
+x = mandrill;
 
 % Create $ U[\empty]x $
 [Wop, filters] = wavelet_factory_2d(size(x));

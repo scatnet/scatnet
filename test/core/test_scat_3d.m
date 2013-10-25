@@ -1,7 +1,7 @@
 % this script demonstrates how to compute the roto-translation
 % scattering transform of an image
 
-x = lena;
+x = mandrill;
 
 filt_opt = struct();
 filt_opt.J = 5;

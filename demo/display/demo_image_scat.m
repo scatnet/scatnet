@@ -7,7 +7,7 @@
 %
 %% Example
 % The following code will produce 3 images.
-x = lena;
+x = mandrill;
 [Wop,filters] = wavelet_factory_2d(size(x));
 [S,U] = scat(x,Wop);
 image_scat(S);

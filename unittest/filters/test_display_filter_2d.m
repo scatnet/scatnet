@@ -5,7 +5,7 @@
 classdef test_display_filter_2d < matlab.unittest.TestCase
     methods(Test)
         function testWithNoOptions(testcase)
-            x=lena;
+            x=mandrill;
             filters = morlet_filter_bank_2d(x);
             filter = filters.psi.filter{1};
             filt=filter.coefft{1};

@@ -1,7 +1,7 @@
 %% simple example of use for renorm_sibling_2d_same_scale
 %% compute scattering
 clear;
-x = lena;
+x = mandrill;
 %%
 Wop = wavelet_factory_2d_pyramid();
 Sx = scat(x, Wop);
@@ -13,7 +13,7 @@ Sx_renorm = renorm_sibling_2d_same_scale(Sx, op);
 %% more sophisticated example of use for renorm_sibling_2d_same_scale
 %% compute scattering
 clear;
-x = lena;
+x = mandrill;
 Wop = wavelet_factory_2d_pyramid();
 Sx = scat(x, Wop);
 
@@ -40,7 +40,7 @@ plot([sxs,Rsxs])
 clear; close all;
 
 %% compute scattering
-x = lena;
+x = mandrill;
 options.Q = 2;
 Wop = wavelet_factory_2d_pyramid(options, options);
 Sx = scat(x, Wop);

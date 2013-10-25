@@ -14,7 +14,7 @@
 %
 % Here are shown 4 examples of filters:
 
-x = lena;
+x = mandrill;
 filters1=morlet_filter_bank_2d(size(x));
 filters2=morlet_filter_bank_2d_pyramid();
 filters3=haar_filter_bank_2d_pyramid();

@@ -1,5 +1,5 @@
 clear; close all;
-x = lena;
+x = mandrill;
 x = x(1:128,:);
 % compute filter bank
 opt_filters = struct();

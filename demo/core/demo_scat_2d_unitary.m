@@ -5,7 +5,7 @@
 
 %% clear the workspace and load an image
 clear; close all;
-x = lena;
+x = mandrill;
 
 %% build the wavelet transform operator with shannon filters
 size_in = size(x);

@@ -1,6 +1,6 @@
 %% demonstrates the rotation invariance of the roto-translation scattering
 clear; close all;
-x = lena;
+x = mandrill;
 x = x(128:128+255, 128:128+255);
 
 filt_opt = struct();
