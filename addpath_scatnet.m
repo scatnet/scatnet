@@ -6,6 +6,7 @@ addpath(fullfile(path_to_scatnet, 'core'));
 addpath(genpath(fullfile(path_to_scatnet, 'demo')));
 addpath(fullfile(path_to_scatnet, 'display'));
 addpath(fullfile(path_to_scatnet, 'filters'));
+addpath(fullfile(path_to_scatnet, 'filters/selesnick'));
 addpath(fullfile(path_to_scatnet, 'utils'));
 addpath(genpath(fullfile(path_to_scatnet, 'papers')));
 addpath(fullfile(path_to_scatnet, 'scatutils'));
