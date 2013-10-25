@@ -57,16 +57,22 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 					xf(end/2+1:end,:)];
 			end
 			if filter.start<=0
-				% filter support starts in negative frequencies, extract
-				% negative frequencies of signal
+				% filter support starts in negative frequencies and continues
+				% into positive frequencies, extract both parts
 				yf = bsxfun(@times, ...
 					xf([end+filter.start:end 1:nCoeffts+filter.start-1],:), ...
                     coefft);
-			else
-				% filter support starts in positive frequencies, only extract
-				% positive frequencies of signal
+			elseif filter.start+nCoeffts-1 <= size(xf,1)
+				% filter support contained in positive frequencies, only ex-
+				% tract positive frequencies of signal
 				yf = bsxfun(@times, ...
 					xf(filter.start:nCoeffts+filter.start-1,:), coefft);
+			else
+				% filter support starts in positive frequencies, but continues
+				% and wraps around, extract both parts
+				yf = bsxfun(@times, ...
+					xf([filter.start:end 1:nCoeffts+filter.start-size(xf,1)-1],:), ...
+                    coefft);
 			end
 			
 			if filter.recenter
