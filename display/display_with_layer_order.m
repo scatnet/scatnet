@@ -1,3 +1,22 @@
+% DISPLAY_WITH_LAYER_ORDER displays scattering outputs with a structured
+% visualization.
+%
+% Usage
+%   DISPLAY_WITH_LAYER_ORDER(S,renorm)
+%	
+% Input
+%	S (cell): layers of  scattering 
+%	renorm (boolean): if 1 renormalize each path by its max. Default
+%	value is set to 1.
+%
+% Description
+%	Display the scattering coefficients in an image, ordered by paths. The 
+%   scattering coefficients can be easier to read with this output than 
+%   with IMAGE_SCAT.
+%
+% See also
+%   IMAGE_SCAT
+
 function display_with_layer_order(Sx,renorm)
 
 % Renormalized by default
