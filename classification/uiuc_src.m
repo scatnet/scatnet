@@ -1,7 +1,7 @@
-% uiuc_src: Creates a source for the UIUC Texture dataset.
+% UIUC_SRC Creates a source for the UIUC Texture dataset
 %
 % Usage
-%    src = uiuc_src(directory)
+%    src = UIUC_SRC(directory)
 %
 % Input
 %    directory: The directory containing the UIUC Texture dataset.

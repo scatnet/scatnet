@@ -18,68 +18,68 @@
 %    SVM_TRAIN, SVM_TEST, SVM_ADAPTIVE_PARAM_SEARCH
 
 function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
-if nargin < 3
-    valid_set = [];
-end
+	if nargin < 3
+		valid_set = [];
+	end
 
-if nargin < 4
-    opt = struct();
-end
+	if nargin < 4
+		opt = struct();
+	end
 
-opt = fill_struct(opt,'gamma',1e-4);
-opt = fill_struct(opt,'C',8);
-opt = fill_struct(opt,'cv_folds',5);
-opt = fill_struct(opt,'w',0);
+	opt = fill_struct(opt,'gamma',1e-4);
+	opt = fill_struct(opt,'C',8);
+	opt = fill_struct(opt,'cv_folds',5);
+	opt = fill_struct(opt,'w',0);
 
-if isempty(valid_set)
-    
-    obj_class = [db.src.objects(train_set).class];
-    
-    ratio = (opt.cv_folds-1)/opt.cv_folds;
-    
-    [cvtrain_set,cvvalid_set] = create_partition(obj_class,ratio,0);
-    cvtrain_set = cvtrain_set;
-    cvvalid_set = cvvalid_set;
-    
-    % If some reweighting is needed let svm_train know that even in
-    % this phase, the weigths should be computed base on the total
-    % training_set, set opt.w to 2.
-    % opt.w can take the value of 2 only during cross_validation!
-    
-    if opt.w == 1
-        opt.w = 2;
-    end
-    
-    for f = 1:opt.cv_folds
-        [err(:,f),C,gamma] = svm_param_search(db, ...
-            train_set(cvtrain_set),train_set(cvvalid_set),opt);
-        
-        [cvtrain_set,cvvalid_set] = ...
-            next_fold(cvtrain_set,cvvalid_set,obj_class);
-    end
-else
-    r = 1;
-    [C,gamma] = ndgrid(opt.C,opt.gamma);
-    C = C(:);
-    gamma = gamma(:);
-    for r = 1:numel(C)
-        opt1 = opt;
-        opt1.C = C(r);
-        opt1.gamma = gamma(r);
-        
-        fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
-        
-        tm0 = tic;
-        
-        model = svm_train(db,train_set,opt1);
-        labels = svm_test(db,model,valid_set);
-        
-        if opt.w > 0
-            err(r,1) = 1 - classif_recog(labels,valid_set,db.src);
-        else err(r,1) = classif_err(labels,valid_set,db.src);
-        end
-        
-        fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
-    end
-end
+	if isempty(valid_set)	
+		obj_class = [db.src.objects(train_set).class];
+		
+		ratio = (opt.cv_folds-1)/opt.cv_folds;
+		
+		[cvtrain_set,cvvalid_set] = create_partition(obj_class,ratio,0);
+		cvtrain_set = cvtrain_set;
+		cvvalid_set = cvvalid_set;
+		
+		% If some reweighting is needed let svm_train know that even in
+		% this phase, the weigths should be computed base on the total
+		% training_set, set opt.w to 2.
+		% opt.w can take the value of 2 only during cross_validation!
+		
+		if opt.w == 1
+			opt.w = 2;
+		end
+		
+		for f = 1:opt.cv_folds
+			[err(:,f),C,gamma] = svm_param_search(db, ...
+				train_set(cvtrain_set),train_set(cvvalid_set),opt);
+			
+			[cvtrain_set,cvvalid_set] = ...
+				next_fold(cvtrain_set,cvvalid_set,obj_class);
+		end
+	else
+		r = 1;
+		[C,gamma] = ndgrid(opt.C,opt.gamma);
+		C = C(:);
+		gamma = gamma(:);
+		for r = 1:numel(C)
+			opt1 = opt;
+			opt1.C = C(r);
+			opt1.gamma = gamma(r);
+			
+			fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
+			
+			tm0 = tic;
+			
+			model = svm_train(db,train_set,opt1);
+			labels = svm_test(db,model,valid_set);
+			
+			if opt.w > 0
+				err(r,1) = 1-classif_recog(labels,valid_set,db.src);
+			else
+				err(r,1) = classif_err(labels,valid_set,db.src);
+			end
+			
+			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
+		end
+	end
 end

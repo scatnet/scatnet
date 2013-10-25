@@ -1,10 +1,7 @@
-% srcfun : apply fun to each filenames of a ScatNet-compatible src
+% SRCFUN Apply function to each filenames of a ScatNet-compatible src
 %
-% Usage :
-%   cell_out = srcfun(fun, src);
-%
-% Example of use :
-%   
+% Usage
+%   cell_out = SRCFUN(fun, src);
 
 function cell_out = srcfun(fun, src)
 	time_start = clock;

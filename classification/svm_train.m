@@ -121,15 +121,12 @@ function model = svm_train(db,train_set,opt)
                 end
         end
 
-
         if opt.w > 0
                 db_weights = calc_train_weights(db, train_set, opt);
                 params = [params db_weights];
         end
 
-
-        params=[params ' -b ' num2str(opt.b)];
-
+        params = [params ' -b ' num2str(opt.b)];
 
         model.full_test_kernel = opt.full_test_kernel;
 
@@ -146,35 +143,34 @@ end
 
 
 function db_weights = calc_train_weights(db,train_set,opt)
+	% the weight of a particular class is always the inverse of the total
+	% number of its training features, even in the cross_validation phase!
 
-        % the weight of a particular class is always the inverse of the total
-        %number of its  training features, even in the cross_validation phase!
+	ind_objs={};
+	ind_feats={};
+	nb_feats=[];
 
-        ind_objs={};
-        ind_feats={};
-        nb_feats=[];
+	db_weights=[];
 
-        db_weights=[];
-    
-    if opt.w == 1
-        factor = 1;
-    elseif opt.w == 2
-        factor = opt.cv_folds/(opt.cv_folds-1);
-    else
-        error('opt.w must be equal to 1 or 2!');
-    end
+	if opt.w == 1
+		factor = 1;
+	elseif opt.w == 2
+		factor = opt.cv_folds/(opt.cv_folds-1);
+	else
+		error('opt.w must be equal to 1 or 2!');
+	end
 
-        for k = 1:length(db.src.classes)
-                ind_objs{k} = find([db.src.objects.class]==k);
+	for k = 1:length(db.src.classes)
+		ind_objs{k} = find([db.src.objects.class]==k);
 
-                ind_feats{k} = [db.indices{ind_objs{k}}];
+		ind_feats{k} = [db.indices{ind_objs{k}}];
 
-                mask2 = ismember(ind_feats{k},[db.indices{train_set}]);
-                ind_maxp2 = find(mask2>0);
-                ind_feats{k} = ind_feats{k}(ind_maxp2);
+		mask2 = ismember(ind_feats{k},[db.indices{train_set}]);
+		ind_maxp2 = find(mask2>0);
+		ind_feats{k} = ind_feats{k}(ind_maxp2);
 
-                nb_feats(k) = factor*numel(ind_feats{k});
+		nb_feats(k) = factor*numel(ind_feats{k});
 
-                db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))]
-        end
+		db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))]
+	end
 end
