@@ -36,111 +36,141 @@
 %    SVM_TEST, CLASSIF_ERR, CLASSIF_RECOG
 
 function model = svm_train(db,train_set,opt)
-	  if nargin < 3
-                opt = struct();
-        end
+	if nargin < 3
+		opt = struct();
+	end
 
-        %if ~exist('svmtrain_inplace')
-        %        error('you should make sure svmtrain_inplace is available...');
-        %end
+	% Set default options.
+	opt = fill_struct(opt, 'no_inplace', 0);
+	opt = fill_struct(opt, 'full_test_kernel', 0);
 
-        opt = fill_struct(opt,'no_inplace',0);
-        opt = fill_struct(opt,'full_test_kernel',0);
+	opt = fill_struct(opt, 'kernel_type', 'gaussian');
 
-        opt = fill_struct(opt,'kernel_type','gaussian');
+	opt = fill_struct(opt, 'gamma', 1e-4);
+	opt = fill_struct(opt, 'C', 8);
+	opt = fill_struct(opt, 'w', 0);
+	opt = fill_struct(opt, 'b', 0);
 
-        opt = fill_struct(opt,'gamma',1e-4);
-        opt = fill_struct(opt,'C',8);
-        opt = fill_struct(opt, 'w',0);
-        opt = fill_struct(opt, 'b',0);
+	% Extract feature vector indices of the objects in the training set and their
+	% respective classes.
+	ind_features = [];
+	feature_class = [];
+	for k = 1:length(train_set)
+		ind = db.indices{train_set(k)};
+		ind_features = [ind_features ind];
+		feature_class = [feature_class ...
+			db.src.objects(train_set(k)).class*ones(1,length(ind))];
+	end
 
-        ind_features = [];
-        feature_class = [];
-        for k = 1:length(train_set)
-                ind = db.indices{train_set(k)};
-                ind_features = [ind_features ind];
-                feature_class = [feature_class ...
-                db.src.objects(train_set(k)).class*ones(1,length(ind))];
-        end
+	% Is there are pre-calculated kernel of the same type as specified in the op-
+	% tions?
+	precalc_kernel = isfield(db,'kernel') && ...
+		strcmp(opt.kernel_type,db.kernel.kernel_type);
 
+	% Slackness parameter is always specified.
+	params = ['-q -c ' num2str(opt.C)];
+	if ~precalc_kernel
+		% Non-precalculated kernel - specify type to LIBSVM.
+		if strcmp(opt.kernel_type,'linear')
+			params = [params ' -t 0'];
+		elseif strcmp(opt.kernel_type,'gaussian')
+			% Gaussian kernel - also give gamma parameter.
+			params = [params ' -t 2 -g ' num2str(opt.gamma)];
+		else
+			error('Unknown kernel type!');
+		end
+		% Feature matrix for LIBSVM is just the submatrix containing the training
+		% feature vectors.
+		features = db.features(:,ind_features);
+	else
+		% Precalculated kernel. If inplace version of LIBSVM is available, we pass
+		% it the kernel plus a mask, otherwise we extract the relevant parts of the
+		% kernel.
 
-        precalc_kernel = isfield(db,'kernel') && ...
-        strcmp(opt.kernel_type,db.kernel.kernel_type);
+		% If only parts of the training feature vectors are included among the vec-
+		% tors in the kernel, use only those.
+		[kernel_mask,kernel_ind] = ismember(1:size(db.features,2),db.kernel.kernel_set);
+		ind_features = kernel_ind(ind_features(kernel_mask(ind_features)));
 
-        params = ['-q -c ' num2str(opt.C)];
-        if ~precalc_kernel
-                if strcmp(opt.kernel_type,'linear')
-                        params = [params ' -t 0'];
-                elseif strcmp(opt.kernel_type,'gaussian')
-                        params = [params ' -t 2 -g ' num2str(opt.gamma)];
-                else
-                        error('Unknown kernel type!');
-                end
-                features = db.features(:,ind_features);
-        else
-                [kernel_mask,kernel_ind] = ismember(1:size(db.features,2),db.kernel.kernel_set);
+		if exist('svmtrain_inplace') && ~opt.no_inplace
+			% The inplace version of LIBSVM exists and we can use it.
 
-                ind_features = kernel_ind(ind_features(kernel_mask(ind_features)));
+			% Calculate the classes for the vectors in the kernel. 
+			feature_class = zeros(1,size(db.features,2));
+			for k = 1:length(db.indices)
+				feature_class(db.indices{k}) = db.src.objects(k).class;
+			end
+			feature_class = feature_class(db.kernel.kernel_set);
 
-                if exist('svmtrain_inplace') && ~opt.no_inplace
-                        feature_class = zeros(1,size(db.features,2));
-                        for k = 1:length(db.indices)
-                                feature_class(db.indices{k}) = db.src.objects(k).class;
-                        end
-                        feature_class = feature_class(db.kernel.kernel_set);
-                        features = db.kernel.K;
+			% Send the whole kernel to LIBSVM.
+			features = db.kernel.K;
 
-                        if strcmp(db.kernel.kernel_type,'linear') && ...
-                                strcmp(db.kernel.kernel_format,'square')
-                                params = [params ' -t 4'];
-                        elseif strcmp(db.kernel.kernel_type,'linear') && ...
-                                strcmp(db.kernel.kernel_format,'triangle')
-                                params = [params ' -t 5'];
-                        elseif strcmp(db.kernel.kernel_type,'gaussian') && ...
-                                strcmp(db.kernel.kernel_format,'square')
-                                params = [params ' -t 6 -g ' num2str(opt.gamma)];
-                        elseif strcmp(db.kernel.kernel_type,'gaussian') && ...
-                                strcmp(db.kernel.kernel_format,'triangle')
-                                params = [params ' -t 7 -g ' num2str(opt.gamma)];
-                        else
-                                error('Unknown kernel type/format!');
-                        end
-                else
-                        params = [params ' -t 4'];
+			if strcmp(db.kernel.kernel_type,'linear') && ...
+				strcmp(db.kernel.kernel_format,'square')
+				% Feature matrix contains kernel values in square form.
+				params = [params ' -t 4'];
+			elseif strcmp(db.kernel.kernel_type,'linear') && ...
+				strcmp(db.kernel.kernel_format,'triangle')
+				% Feature matrix contains kernel values in triangular form.
+				params = [params ' -t 5'];
+			elseif strcmp(db.kernel.kernel_type,'gaussian') && ...
+				strcmp(db.kernel.kernel_format,'square')
+				% Feature matrix contains \|x_i-x_j\|^2 in square form. To obtain a Gauss-
+				% ian kernel, LIBSM thus needs to multiply by -gamma and exponentiate.
+				params = [params ' -t 6 -g ' num2str(opt.gamma)];
+			elseif strcmp(db.kernel.kernel_type,'gaussian') && ...
+				strcmp(db.kernel.kernel_format,'triangle')
+				% Same as above, but in triangular form.
+				params = [params ' -t 7 -g ' num2str(opt.gamma)];
+			else
+				error('Unknown kernel type/format!');
+			end
+		else
+			% We don't have the inplace version of LIBSVM. 
+			params = [params ' -t 4'];
 
-                        if strcmp(db.kernel.kernel_format, 'triangle')
-                                error(['Triangular kernels not supported for standard ' ...
-                                ' LIBSVM version. Please try libsvm-compact.'])
-                        end
-                        features = db.kernel.K(:,ind_features);
+			if strcmp(db.kernel.kernel_format, 'triangle')
+				error(['Triangular kernels not supported for standard ' ...
+					' LIBSVM version. Please try libsvm-compact.'])
+			end
+			
+			% Send the part of the kernel containing the training vector columns.
+			features = db.kernel.K(:,ind_features);
 
-                        if strcmp(db.kernel.kernel_type,'gaussian')
-                                features(2:end,:) = exp(-opt.gamma*features(2:end,:));
-                                params = [params ' -g ' num2str(opt.gamma)];
-                        end
-                end
-        end
+			if strcmp(db.kernel.kernel_type,'gaussian')
+				% Since this version of LIBSVM doesn't support on-the-fly exponentiation,
+				% we calculate the correct Gaussian kernel here.
+				features(2:end,:) = exp(-opt.gamma*features(2:end,:));
+				params = [params ' -g ' num2str(opt.gamma)];
+			end
+		end
+	end
 
-        if opt.w > 0
-                db_weights = calc_train_weights(db, train_set, opt);
-                params = [params db_weights];
-        end
+	if opt.w > 0
+		% If reweighting to obtain uniform distribution is needed, add the weights.
+		db_weights = calc_train_weights(db, train_set, opt);
+		params = [params db_weights];
+	end
 
-        params = [params ' -b ' num2str(opt.b)];
+	% Probability outputs?
+	params = [params ' -b ' num2str(opt.b)];
 
-        model.full_test_kernel = opt.full_test_kernel;
+	% Are we to calculate complete kernel when testing?
+	model.full_test_kernel = opt.full_test_kernel;
 
-        model.train_set = train_set;
+	% Which vectors were used to train the SVM?
+	model.train_set = train_set;
 
-        if ~exist('svmtrain_inplace') || opt.no_inplace
-                model.svm = svmtrain(double(feature_class.'), ...
-                double(features.'),params);
-        else
-                model.svm = svmtrain_inplace(feature_class, ...
-                single(features),params,ind_features);
-        end
+	% Call the desired LIBSVM routine.
+	if ~exist('svmtrain_inplace') || opt.no_inplace
+		model.svm = svmtrain(double(feature_class.'), ...
+			double(features.'),params);
+	else
+		% To specify the training vectors, ind_features is passed as a mask.
+		model.svm = svmtrain_inplace(feature_class, ...
+			single(features),params,ind_features);
+	end
 end
-
 
 function db_weights = calc_train_weights(db,train_set,opt)
 	% the weight of a particular class is always the inverse of the total
@@ -171,6 +201,6 @@ function db_weights = calc_train_weights(db,train_set,opt)
 
 		nb_feats(k) = factor*numel(ind_feats{k});
 
-		db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))]
+		db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))];
 	end
 end
