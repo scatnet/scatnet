@@ -95,7 +95,7 @@ function y = pad_signal(x, Npad, boundary, center)
 				x = x-2*i*bsxfun(@times,conjugate.',imag(x));
 			end
 			if strcmp(boundary,'zero')
-				x(Norig+1:Npad,:,:) = 0;
+				x(Norig+1:Npad(d),:,:) = 0;
 			end
 		elseif d == 2
 			x = x(:,ind,:);
@@ -103,7 +103,7 @@ function y = pad_signal(x, Npad, boundary, center)
 				x = x-2*i*bsxfun(@times,conjugate,imag(x));
 			end
 			if strcmp(boundary,'zero')
-				x(:,Norig+1:Npad,:) = 0;
+				x(:,Norig+1:Npad(d),:) = 0;
 			end
 		end
 	end
