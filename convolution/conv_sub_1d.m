@@ -50,13 +50,12 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 			% truncated filter, output of TRUNCATE_FILTER
 			start = filter.start;
 			coefft = filter.coefft;
+			if length(coefft) > sig_length
+				% filter is larger than signal, periodize the former
+				coefft = sum(reshape(coefft,[sig_length length(coefft)/sig_length]),2);
+			end
 			nCoeffts = length(coefft);
 			j = log2(nCoeffts/sig_length);
-			if j > 0
-				% filter is larger than signal, so zero-pad the latter
-				xf = [xf(1:end/2,:); zeros(nCoeffts-sig_length,size(xf,2)); ...
-					xf(end/2+1:end,:)];
-			end
 			start = mod(start-1,size(xf,1))+1;
 			if start+nCoeffts-1 <= size(xf,1)
 				% filter support contained in one period, no wrap-around
