@@ -1,5 +1,7 @@
+% CLASSIF_RECOG Calculates the average recognition rate
+%
 % Usage
-%    [rr_mean,recog_rate] =  classif_recog(labels,test_set,truth)
+%    [rr_mean,recog_rate] =  CLASSIF_RECOG(labels,test_set,truth)
 %
 % Input
 %    labels (int): The labels attributed to the testing instances.
@@ -9,12 +11,12 @@
 % Output
 %    rr_mean (real): The mean recognition rate
 %    recog_rate(real): array containing the individual recognition rates of
-% each class.
+%       each class.
 %
 % Description
 %    This function computes the average recognition rate of each class.
-% It is a widely used measure of the performance of the classifier when the
-% data set is highly unbalanced.
+%    It is a widely used measure of the performance of the classifier when the
+%    data set is highly unbalanced.
 %
 % See also
 %    SVM_TEST, CLASSIF_ERR, CLASSIF_RECOG
