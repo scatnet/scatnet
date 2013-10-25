@@ -15,7 +15,7 @@
 %   large image with their meta in the upper left hand corner
 %
 % See also
-%   IMAGE_SCAT_LAYER
+%   IMAGE_SCAT_LAYER, DISPLAY_WITH_LAYER_ORDER
 
 function image_scat(S, renorm, dsp_legend)
 	for m = 1:numel(S);

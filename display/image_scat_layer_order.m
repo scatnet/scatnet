@@ -1,7 +1,7 @@
 % image_scat_layer_order
 function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
-	
-	margin = 3;
+
+        margin = 3;
 	margin_inter = 20;
 	big_img = [];
 	
@@ -27,22 +27,20 @@ function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
 		begin_pos_y(n_var_y) = var_y{n_var_y}.min;
 		end_pos_y(n_var_y) = var_y{n_var_y}.max;
 	end
-	
-	begin_pos_x(end) = begin_pos_x(end) -1;
-	begin_pos_y(end) = begin_pos_y(end) -1;
-	
-	pos_y = begin_pos_y;
+        
+	pos_y = begin_pos_y; pos_y(end) = pos_y(end)-1 ;
 	offset_y = 0;
 	
 	while (norm(pos_y-end_pos_y)~=0)
-		pos_x = begin_pos_x;
+                pos_x = begin_pos_x;
+                pos_x(end) = pos_x(end)-1 ;
 		offset_x = 0;
 		% incr
 		pos_y(end) = pos_y(end)+1;
 		% update
 		while (sum(pos_y>end_pos_y)>0)
 			ind = find(pos_y>end_pos_y);
-			pos_y(ind) = 0;
+			pos_y(ind) = begin_pos_y(ind);
 			pos_y(ind-1) = pos_y(ind-1)+1;
 			if (new_write_y)
 				offset_y = offset_y + margin_inter;
@@ -58,13 +56,13 @@ function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
 			% update
 			while (sum(pos_x>end_pos_x)>0)
 				ind = find(pos_x>end_pos_x);
-				pos_x(ind) = 0;
+				pos_x(ind) = begin_pos_x(ind);
 				pos_x(ind-1) = pos_x(ind-1)+1;
 				if (new_write_x)
 					offset_x = offset_x + margin_inter;
 					new_write_x = 0;
 				end
-			end
+                        end
 			
 			% construct query
 			query = 'find(' ;
@@ -72,8 +70,10 @@ function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
 				cur_var_name = var_x{n_var_x}.name;
 				cur_var_index = var_x{n_var_x}.index;
 				query = sprintf('%s S.meta.%s(%d,:)==%d &',...
-					query,cur_var_name, cur_var_index, pos_x(n_var_x));
-			end
+					query,cur_var_name, ...
+                                                cur_var_index, ...
+                                                pos_x(n_var_x)) ;
+                        end
 			for n_var_y = 1:numel(var_y)
 				cur_var_name = var_y{n_var_y}.name;
 				cur_var_index = var_y{n_var_y}.index;
@@ -83,8 +83,8 @@ function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
 				else
 					query = sprintf('%s S.meta.%s(%d,:)==%d );',...
 						query,cur_var_name, cur_var_index, pos_y(n_var_y));
-				end
-			end
+                                end
+                        end
 			
 			% find corresponding path and draw on big image
 			ind = eval(query);
@@ -98,7 +98,8 @@ function big_img = image_scat_layer_order(S, var_x, var_y, renorm)
 				[ncur, mcur] = size(img);
 				big_img(offset_y + (1:ncur), offset_x + (1:mcur)) = img;
 				offset_x = offset_x + mcur + margin;
-			end
+                       end
+
 			
 		end
 		if (new_write_y)
