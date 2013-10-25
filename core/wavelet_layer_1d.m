@@ -11,10 +11,15 @@
 % Input
 %    U (struct): The input layer to be transformed.
 %    filters (cell): The filters of the wavelet transform.
-%    scat_opt (struct): The options that are transferred to the wavelet
-%    function handle.
-%    wavelet (function handle): the wavelet transform function (default is
-%    @wavelet_1d).  
+%    scat_opt (struct): The options of the wavelet layer. Some are used in the
+%       function itself, while others are passed on to the wavelet transform.
+%       The parameters used by WAVELET_LAYER_1D are:
+%          path_margin: The margin used to determine wavelet decomposition
+%             scales with respect to the bandwidth of the signal. If the band-
+%             with of a signal in U is bw, only wavelet filters of center fre-
+%             quency less than bw*2^path_margin are applied (default 0).
+%    wavelet (function handle): the wavelet transform function (default
+%       @wavelet_1d).  
 %
 % Output
 %    U_phi The coefficients of in, lowpass-filtered (scattering
@@ -39,6 +44,8 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, scat_opt, wavelet)
 		wavelet = @wavelet_1d;
 	end
 	
+	scat_opt = fill_struct(scat_opt, 'path_margin', 0);
+	
 	calc_U = (nargout>=2);
 
 	[psi_xi,psi_bw,phi_bw] = filter_freq(filters.meta);
@@ -58,7 +65,8 @@ function [U_phi, U_psi] = wavelet_layer_1d(U, filters, scat_opt, wavelet)
 	
 	r = 1;
 	for p1 = 1:length(U.signal)
-		psi_mask = calc_U&(U.meta.bandwidth(p1)>psi_xi);
+		current_bw = U.meta.bandwidth(p1)*2^scat_opt.path_margin;
+		psi_mask = calc_U&(current_bw>psi_xi);
 		
 		scat_opt.x_resolution = U.meta.resolution(p1);
 		scat_opt.psi_mask = psi_mask;
