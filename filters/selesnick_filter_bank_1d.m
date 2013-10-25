@@ -71,7 +71,7 @@ function filters = selesnick_filter_bank_1d(sig_length,options)
 	
     filters.phi = [];
     
-    outf = selesnick_bis(N, options);
+    outf = selesnick_bis([N 1], options);
     
     for j1=0:J-1
         filter_f = outf.psi{1}{j1+1}{1};
