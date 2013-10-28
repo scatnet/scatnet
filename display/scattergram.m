@@ -35,7 +35,9 @@ function img = scattergram(varargin)
 	for n = 1:ndisp
 		img{n} = ...
             scattergram_layer(varargin{(n-1)*2+1},varargin{(n-1)*2+2});
-        subplot(ndisp,1,n);
+        if ndisp > 1
+			subplot(ndisp,1,n);
+		end
 		imagesc(img{n});
     end
     colormap gray; % avoids default jet colormap
