@@ -18,7 +18,7 @@
 %             kernel instead of relying on the precalculated kernel. Used if 
 %             the kernel is only defined on the training vectors (default 
 %             false).
-%          options.w (boolean): Add weights to rebalance the training set if 
+%          options.reweight (boolean): Add weights to rebalance the training set if 
 %             it is imbalanced. The rebalancing is done so that the distribu-
 %             tion of the training samples seem to be uniform for all the 
 %             classes (default 0).
@@ -49,7 +49,7 @@ function model = svm_train(db,train_set,opt)
 
 	opt = fill_struct(opt, 'gamma', 1e-4);
 	opt = fill_struct(opt, 'C', 8);
-	opt = fill_struct(opt, 'w', 0);
+	opt = fill_struct(opt, 'reweight', 0);
 	opt = fill_struct(opt, 'b', 0);
 
 	% Extract feature vector indices of the objects in the training set and their
@@ -147,7 +147,7 @@ function model = svm_train(db,train_set,opt)
 		end
 	end
 
-	if opt.w > 0
+	if opt.reweight
 		% If reweighting to obtain uniform distribution is needed, add the weights.
 		db_weights = calc_train_weights(db, train_set, opt);
 		params = [params db_weights];
