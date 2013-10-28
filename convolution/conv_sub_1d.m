@@ -87,7 +87,9 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 			[size(yf,1)/2^dsj size(yf,2)]);
 	elseif dsj < 0
 		% upsample, so zero-pad in Fourier
-		yf_ds = [yf; zeros((2^(-dsj)-1)*length(yf),size(yf,2))];
+		yf_ds = [yf(1:end/2,:); yf(end/2+1,:)/2; ...
+			zeros((2^(-dsj)-1)*size(yf,1)-1,size(yf,2)); ...
+			yf(end/2+1,:)/2; yf(end/2+2:end,:)]; 
 	else
 		yf_ds = yf;
 	end
