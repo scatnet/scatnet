@@ -755,17 +755,17 @@ The support vector machine classifier is defined by the functions \mcode{svm_tra
 	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
 	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
 	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
-    \item \mcode{train_opt.w}: w is $\in \{0,1\}$. If w is set to one, then for a 2-class SVM classication problem where the two classes are numbered $1$ and $2$, the function to minimize in the svm optimization problem will be :
+    \item \mcode{train_opt.reweight}: reweight is $\in \{0,1\}$. If reweight is set to one, then for a 2-class SVM classication problem where the two classes are numbered $1$ and $2$, the function to minimize in the svm optimization problem will be :
     \begin{equation*}
-        \operatorname*{arg\,min}_{w,b,\xi} \, \frac{1}{2}w^{T}w + \frac{C}{N_1}\sum_{i=1}^{N_1}\xi_i +  \frac{C}{N_2}\sum_{i=1}^{N_2}\xi_i
+        \operatorname*{arg\,min}_{w,b,\xi} \, \frac{1}{2}w^{T}w + \frac{C(N_1+N_2)}{N_1}\sum_{i=1}^{N_1}\xi_i +  \frac{C(N_1 + N_2)}{N_2}\sum_{i=1}^{N_2}\xi_i
     \end{equation*}
     
-    where $N_1$ and $N_2$ are the total numbers of training features respectively for class $1$ and 
-    class $2$.
+    where $N_1$ and $N_2$ are the total numbers of training features respectively for class $1$ and class $2$. This remains true for any N-class classification problem with N >= 2.
   \end{itemize}  
     Sometimes, it happens that the database is very unbalanced, with some of the classes containing far more samples than others. In such case, one of the most convenient way to measure the perfomance of the classifier is the \mcode{average recognition rate} (this is achieved in ScatNet through the function \mcode{classif_recog} which computes the individual recognition rate of each class as well as their mean).   
-    In such case we should tell the svm that we want it to give the same importance to the individual error rate of each class and this is achieved by setting the training option \mcode{w} to 1.
-    The following lines provide more informatio on how to use ScatNet to do svm classification.
+    In such case we should tell the svm that we want it to give the same importance to the individual error rate of each class and this is achieved by setting the training option \mcode{reweight} to 1. The function \mcode{classif_mean_err} is a derived function which computes the average recognition
+error of a classification experiment.
+    The following lines provide more information on how to use ScatNet to do svm classification.
 
 The following code calculates the error for an SVM classifier with a linear kernel and $C = 8$:
 \begin{lstlisting}
