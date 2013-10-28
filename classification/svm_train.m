@@ -122,7 +122,7 @@ function model = svm_train(db,train_set,opt)
         end
 
 
-        if opt.w > 0
+        if opt.w 
                 db_weights = calc_train_weights(db, train_set, opt);
                 params = [params db_weights];
         end
@@ -144,37 +144,27 @@ function model = svm_train(db,train_set,opt)
         end
 end
 
+function db_weights = calc_train_weights(db,train_set)
 
-function db_weights = calc_train_weights(db,train_set,opt)
-
-        % the weight of a particular class is always the inverse of the total
-        %number of its  training features, even in the cross_validation phase!
-
-        ind_objs={};
-        ind_feats={};
-        nb_feats=[];
-
-        db_weights=[];
+    % The weight of each class k is the ratio btw the total number of
+    % training features Nfeat_tot, and the number of training features of 
+    % the class Nfeat_train_k ie w_k =  Nfeat_tot/Nfeat_train_k
     
-    if opt.w == 1
-        factor = 1;
-    elseif opt.w == 2
-        factor = opt.cv_folds/(opt.cv_folds-1);
-    else
-        error('opt.w must be equal to 1 or 2!');
-    end
-
+        ind_objs = {};
+        ind_feats = {};
+        db_weights = [];
+    
+    % Find the total number of features in the training set
+        tot_ind_objs = 1:numel(db.src.objects);
+        tot_ind_feats = [db.indices{tot_ind_objs}];
+        mask = ismember(tot_ind_feats,[db.indices{train_set}]);
+        nb_train_feats = numel(tot_ind_feats(mask>0));
+       
         for k = 1:length(db.src.classes)
-                ind_objs{k} = find([db.src.objects.class]==k);
-
+                ind_objs{k} = find([db.src.objects.class] == k);
                 ind_feats{k} = [db.indices{ind_objs{k}}];
-
-                mask2 = ismember(ind_feats{k},[db.indices{train_set}]);
-                ind_maxp2 = find(mask2>0);
-                ind_feats{k} = ind_feats{k}(ind_maxp2);
-
-                nb_feats(k) = factor*numel(ind_feats{k});
-
-                db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))]
+                mask_class = ismember(ind_feats{k},[db.indices{train_set}]);
+                ind_feats{k} = ind_feats{k}(mask_class > 0);
+                db_weights = [db_weights ' -w' num2str(k) ' ' num2str(nb_train_feats/numel(ind_feats{k}))];
         end
 end
