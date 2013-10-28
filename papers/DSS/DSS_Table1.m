@@ -20,7 +20,7 @@ scat_opt.oversampling = 2;
 for l = 1:length(Js)
 	opts{l} = opt;
 	
-	opts{l}.J = T_to_J(2^Js(l),opts{l}.Q,opts{l}.B);
+	opts{l}.J = T_to_J(2^Js(l),opts{l});
 
 	[Wop{l},filters{l}] = wavelet_factory_1d(N, opts{l}, scat_opt); 
 end
