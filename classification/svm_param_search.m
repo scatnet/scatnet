@@ -46,10 +46,6 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 		% training_set, set opt.w to 2.
 		% opt.w can take the value of 2 only during cross_validation!
 		
-		if opt.w == 1
-			opt.w = 2;
-		end
-		
 		for f = 1:opt.cv_folds
 			[err(:,f),C,gamma] = svm_param_search(db, ...
 				train_set(cvtrain_set),train_set(cvvalid_set),opt);
@@ -74,8 +70,8 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			model = svm_train(db,train_set,opt1);
 			labels = svm_test(db,model,valid_set);
 			
-			if opt.w > 0
-				err(r,1) = 1-classif_recog(labels,valid_set,db.src);
+			if opt.w 
+				err(r,1) = classif_mean_err_rate(labels,valid_set,db.src);
 			else
 				err(r,1) = classif_err(labels,valid_set,db.src);
 			end
