@@ -1,6 +1,6 @@
 run_name = 'test_gtzan_svm';
 
-src = gtzan_src('~/matlab/y/gtzan');
+src = gtzan_src('/path/to/gtzan');
 
 N = 5*2^17;
 

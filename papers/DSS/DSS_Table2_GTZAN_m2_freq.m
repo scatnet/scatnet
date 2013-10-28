@@ -5,7 +5,7 @@
 
 run_name = 'DSS_Table2_GTZAN_m2_freq';
 
-src = gtzan_src('~/GTZAN/gtzan');
+src = gtzan_src('/path/to/gtzan');
 
 N = 5*2^17;
 
