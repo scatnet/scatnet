@@ -1,32 +1,33 @@
+% Generate Figure 6 of the "Deep Scattering Spectrum" paper.
 
-%Reproduce the figure 6 of the paper "Deep Scattering Spectrum" , J. Anden
-%and S. Mallat to be published in Transactions of Signal Processing.
+% Load the signal.
+x_file = load('Chord_display.mat');
+x = x_file.X;
 
-% Load the signal
-v=load('Chord_display.mat');
-v=v.X;
+% Prepare the filters and scattering operators.
+filt_opt.filter_type = {'gabor_1d','morlet_1d'};
+filt_opt.B = [4 4];
+filt_opt.Q = 4*filt_opt.B; 
+filt_opt.J = T_to_J([256 8192],filt_opt);
 
-% Prepare the filters appropriate for audio processing
-fparam.filter_type = {'gabor_1d','morlet_1d'};
-fparam.B = [8 4];
-fparam.Q = 4*fparam.B;
+scat_opt.oversampling = 8;
+scat_opt.M = 2;
 
-T = [1024 65536];
+Wop = wavelet_factory_1d(length(x), filt_opt, scat_opt);
 
-fparam.J = T_to_J(T,fparam);
+% Compute scattering coefficients.
+[S, U] = scat(x, Wop);
 
-options.oversampling = 5;
-options.M = 2;
+% Renormalize coefficients.
+epsilon = 1e-2;
+S = renorm_scat(S, epsilon);
+S = renorm_1st_phi(S, U, Wop, epsilon);
 
-Wop = wavelet_factory_1d(length(v), fparam, options);
+% Compute the logarithm.
+S = log_scat(S,1e-3);
+U = log_scat(U,1e-3);
 
-% Compute the scattering vector with options.oversampling set to 100
-[S, U]=scat(v, Wop);
+% Display scalogram U{2}, first-order coefficients S{2} and second-order
+% coefficients S{3} for j1 = 58.
+scattergram(U{2}, [], S{2}, [], S{3}, 58);
 
-S = renorm_scat(S,1e-2);
-
-S = log_scat(S,1e-6);
-U = log_scat(U,1e-6);
-
-% Compute the scalograms for the orders 1 and 2(layerNb=1) and for j1=120;
-scattergram(U{2},[],S{2},[],S{3},120);
