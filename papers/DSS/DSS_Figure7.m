@@ -1,8 +1,7 @@
 % Generate Figure 7 of the "Deep Scattering Spectrum" paper.
 
 % Load the signal.
-x_file=load('mod_display.mat');
-x = x_file.X;
+x = wavread('mod_signal.wav');
 
 % Prepare the filters and scattering operators.
 filt_opt.filter_type = {'gabor_1d','morlet_1d'};
