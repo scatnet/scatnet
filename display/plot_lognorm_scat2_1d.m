@@ -3,7 +3,7 @@
 % Usage
 %    plot_lognorm_scat2_1d(S)
 % Input
-%    S: The scattering coefficients as outputted by the scat function.
+%    S: The log normalized scattering coefficients.
 % Output
 %    N/A
 % Description

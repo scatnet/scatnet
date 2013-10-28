@@ -271,7 +271,7 @@ In addition to the parameters listed above, the spline filter bank has the follo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
-\subsection{1D Selesnick Filters}
+\subsubsection{1D Selesnick Filters}
 Selesnick wavelet filters are compactly supported complex wavelets, whose real and imaginary parts have four vanishing moments and are nearly Hilbert transform pairs.
 
 In addition to the parameters listed above, the Selesnick filter bank has the following options:
@@ -280,7 +280,7 @@ In addition to the parameters listed above, the Selesnick filter bank has the fo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
-The code for the Selesnick wavelet filters is an independent package that has been included in ScatNet. The standalone package, including more documentation, can be found at:
+The code for the Selesnick wavelet filters was written by Shihua Cai, Keyong Li, and Ivan Selesnick. It is an independent package that has been included in ScatNet. The standalone package, including more documentation, can be found at:
 
 \texttt{http://eeweb.poly.edu/iselesni/WaveletSoftware/dt1D.html}.
 
@@ -511,6 +511,16 @@ img = scattergram(S{m1+1}, jprefix_1, S{m2+1}, jprefix_2, ...);
 where \mcode{S} is the scattering transform, \mcode{m1} is the order of the first display, \mcode{jprefix_1} is the first scale prefix, and so on. Note that is \mcode{m1 = 1} the layer is of first order so no scale prefix is necessary and we set \mcode{jprefix_1} to \mcode{[]}.
 
 Instead of a scattering output \mcode{S}, we can also specify intermediate modulus coefficients \mcode{U}.
+
+\subsubsection{\mcode{display_slice}}
+
+The \mcode{display_slice} function displays the scattering coefficients of two consecutive scattering levels $m$ and $m+1$ (with $m = 1, 2, \ldots$) as a function of $j_m$ and $j_{m+1}$ for a fixed time and fixed $j_1, j_2, \ldots, j_{m-1}$. This display consists of a column that shows the scattering coefficients for all index values $j_m$ at time $t$ (with the fixed $j_1, j_2, \ldots, j_{m-1}$), and a matrix that shows the scattering coefficients for all index pair values $(j_m,j_{m+1})$ (i.e., rows indexed by $j_m$ and columns indexed by $j_{m+1}$) at time $t$ (with the fixed $j_1, j_2, \ldots, j_{m-1}$). Notice the matrix only displays coefficient values for $j_{m+1} > j_m$, and all other coefficients are displayed as $-\infty$ since they should not contain important information according to scattering properties.
+
+The signature of \mcode{display_slice} is the following
+\begin{lstlisting}
+[sc1,sc2] = display_slice(S,t,scale);
+\end{lstlisting}
+where \mcode{S} is the scattering transform, \mcode{t} is time, and \mcode{scale} contains the fixed scale path $j_1, j_2, \ldots, j_{m-1}$. By default, when used without providing the \mcode{scale} list (or using an empty list), the function displays the first two levels (i.e., $j_1$ and $j_2$) of the scattering.
 
 \subsection{2D}
 

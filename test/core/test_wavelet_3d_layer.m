@@ -1,6 +1,6 @@
 
 clear;
-x = lena;
+x = mandrill;
 sz_in = size(x);
 filters = morlet_filter_bank_2d(sz_in);
 

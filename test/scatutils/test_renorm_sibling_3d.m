@@ -1,6 +1,6 @@
 %% simple example of use of renorm_sibling_3d
 clear; close all;
-x = lena;
+x = mandrill;
 %% compute roto-translation scattering of an image
 options.Q = 2;
 Wop = wavelet_factory_3d_pyramid(options, options, options);

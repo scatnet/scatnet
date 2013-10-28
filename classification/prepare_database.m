@@ -36,16 +36,23 @@ function db = prepare_database(src,feature_fun,opt)
 	cols = 0;
 	precision = 'double';
 	
-	if (opt.parallel)
-		% parfor loop
+	if opt.parallel
+		% parfor loop - note that the contents are the same as the serial loop, but
+		% MATLAB doesn't seem to offer an easy way of deduplicating the code.
+
+		% Loop through all the files in the source
 		parfor k = 1:length(src.files)
+			% Identify all the objects contained in the current file
 			file_objects = find([src.objects.ind]==k);
-			
+	
 			if length(file_objects) == 0
+				% No objects, skip.
 				continue;
 			end
 			
 			tm0 = tic;
+
+			% Load the complete file and normalize as needed.
 			x = data_read(src.files{k});
 			
 			if ~isempty(opt.file_normalize)
@@ -57,17 +64,27 @@ function db = prepare_database(src,feature_fun,opt)
 					x = x/max(abs(x(:)));
 				end
 			end
-			
+		
+			% Due to parallelization constraints, each file stores its feature vectors 
+			% in one index of the features cell array. The corresponding object indices
+			% are stored in the obj_ind cell array.
 			features{k} = cell(1,length(file_objects));
 			obj_ind{k} = file_objects;
 			
+			% Apply all the feature functions to the objects contained in x. The output
+			% buf is a PxNxK vector, where P corresponds to number of feature coeffi-
+			% cients, N corresponds to the number of features - the number of "windows"
+			% - in each object, and K corresponds to the number of objects.
 			buf = apply_features(x,src.objects(file_objects),feature_fun,opt);
 			
+			% Subsample among the features as needed.
+			buf = buf(:,1:opt.feature_sampling:end,:);
+
+			% Separate each of the objects into its own array element.
 			for l = 1:length(file_objects)
-				features{k}{l} = buf(:,1:opt.feature_sampling:end,l);
+				features{k}{l} = buf(:,:,l);
 			end
-			
-			fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
+			fprintf('.');
 		end
 	else
 		time_start = clock;
@@ -96,18 +113,22 @@ function db = prepare_database(src,feature_fun,opt)
 			
 			buf = apply_features(x,src.objects(file_objects),feature_fun,opt);
 			
+			buf = buf(:,1:opt.feature_sampling:end,:);
+
 			for l = 1:length(file_objects)
-				features{k}{l} = buf(:,1:opt.feature_sampling:end,l);
+				features{k}{l} = buf(:,:,l);
 			end
 			time_elapsed = etime(clock, time_start);
 			estimated_time_left = time_elapsed * (length(src.files)-k) / k;
-			fprintf('calculated features for %s. (%.2fs)\n',src.files{k},toc(tm0));
-			fprintf('%d / %d : estimated time left %d seconds\n',k,length(src.files),floor(estimated_time_left));
+			fprintf('.');
 		end
 	end
-	
+
+	% Identify the files for which objects have been computed.
 	nonempty = find(~cellfun(@isempty,features));
-	
+
+	% Determine the size of the features array. Each row corresponds to a feature 
+	% coefficient, each column corresponds to a feature vector.
 	rows = size(features{nonempty(1)}{1},1);
 	cols = sum(cellfun(@(x)(sum(cellfun(@(x)(size(x,2)),x))),features(nonempty)));
 	precision = class(features{nonempty(1)}{1});
@@ -118,6 +139,7 @@ function db = prepare_database(src,feature_fun,opt)
 	
 	db.indices = cell(1,length(src.objects));
 	
+	% Fill in the features array using the pre-calculated features.
 	r = 1;
 	for k = 1:length(features)
 		for l = 1:length(features{k})
@@ -130,23 +152,33 @@ function db = prepare_database(src,feature_fun,opt)
 end
 
 function out = apply_features(x,objects,feature_fun,opt)
+	% For each feature function, apply it to the objects in x and concatenate
+	% the results.
+
 	if ~iscell(feature_fun)
 		feature_fun = {feature_fun};
 	end
+	
 	out = {};
 	for k = 1:length(feature_fun)
 		if nargin(feature_fun{k}) == 2
+			% If only two inputs are given, the feature function will handle the cut
+			% ting up of x into objects itself.
 			out{k,1} = feature_fun{k}(x,objects);
 		elseif nargin(feature_fun{k}) == 1
+			% If only one input is given, the feature function relies on us to cut up
+			% the input x into objects and feed them to it.
 			out{k,1} = feature_wrapper(x,objects,feature_fun{k},opt);
 		else
 			error('Invalid number of inputs for feature function!')
 		end
 	end
-	
+
 	if length(feature_fun) == 1
 		out = out{1};
 	else
+		% Concatenate along the first dimension - the feature dimension - of each
+		% element.
 		out = cellfun(@(x)(permute(x,[2 1 3])),out,'UniformOutput',false);
 		out = permute([out{:}],[2 1 3]);
 	end

@@ -1,7 +1,7 @@
-% uiuc_src: Creates a source for the UIUC Texture dataset.
+% UIUC_SRC Creates a source for the UIUC Texture dataset
 %
 % Usage
-%    src = uiuc_src(directory)
+%    src = UIUC_SRC(directory)
 %
 % Input
 %    directory: The directory containing the UIUC Texture dataset.
@@ -15,7 +15,7 @@
 
 function src = uiuc_src(directory)
 	if (nargin<1)
-		directory = '/Users/laurentsifre/TooBigForDropbox/Databases/cvr_uiuc';
+		directory = ''; % PUT DEFAULT DIRECTORY HERE
 	end
 	src = create_src(directory, @uiuc_extract_objects_fun);
 end

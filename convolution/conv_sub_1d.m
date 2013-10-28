@@ -48,31 +48,24 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 			yf = bsxfun(@times, xf, filter.coefft{1+log2(filter.N/sig_length)});
 		elseif strcmp(filter.type,'fourier_truncated')
 			% truncated filter, output of TRUNCATE_FILTER
+			start = filter.start;
 			coefft = filter.coefft;
+			if length(coefft) > sig_length
+				% filter is larger than signal, periodize the former
+				coefft = sum(reshape(coefft,[sig_length length(coefft)/sig_length]),2);
+			end
 			nCoeffts = length(coefft);
 			j = log2(nCoeffts/sig_length);
-			if j > 0
-				% filter is larger than signal, so zero-pad the latter
-				xf = [xf(1:end/2,:); zeros(nCoeffts-sig_length,size(xf,2)); ...
-					xf(end/2+1:end,:)];
-			end
-			if filter.start<=0
-				% filter support starts in negative frequencies, extract
-				% negative frequencies of signal
+			start = mod(start-1,size(xf,1))+1;
+			if start+nCoeffts-1 <= size(xf,1)
+				% filter support contained in one period, no wrap-around
 				yf = bsxfun(@times, ...
-					xf([end+filter.start:end 1:nCoeffts+filter.start-1],:), ...
-                    coefft);
+					xf(start:nCoeffts+start-1,:), coefft);
 			else
-				% filter support starts in positive frequencies, only extract
-				% positive frequencies of signal
+				% filter support wraps around, extract both parts
 				yf = bsxfun(@times, ...
-					xf(filter.start:nCoeffts+filter.start-1,:), coefft);
-			end
-			
-			if filter.recenter
-				% result has been shifted in frequency so that the zero fre-
-				% quency is actually at -filter.start+1
-				yf = circshift(yf,filter.start-1);
+					xf([start:end 1:nCoeffts+start-size(xf,1)-1],:), ...
+                    coefft);
 			end
 		end
 	else
@@ -88,9 +81,21 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 			[size(yf,1)/2^dsj size(yf,2)]);
 	elseif dsj < 0
 		% upsample, so zero-pad in Fourier
-		yf_ds = [yf; zeros((2^(-dsj)-1)*length(yf),size(yf,2))];
+		% note that this only happens for fourier_truncated filters, since otherwise
+		% filter sizes are always the same as the signal size
+		% also, we have to do one-sided padding since otherwise we might break 
+		% continuity of Fourier transform
+		yf_ds = [yf; zeros((2^(-dsj)-1)*size(yf,1),size(yf,2))];
 	else
 		yf_ds = yf;
+	end
+	
+	if isstruct(filter) && ...
+		strcmp(filter.type, 'fourier_truncated') && ...
+		filter.recenter
+		% result has been shifted in frequency so that the zero fre-
+		% quency is actually at -filter.start+1
+		yf_ds = circshift(yf_ds, filter.start-1);
 	end
 
 	y_ds = ifft(yf_ds)/2^(ds/2);

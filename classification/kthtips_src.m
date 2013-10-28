@@ -1,17 +1,16 @@
-% uiuc_src: Creates a source for the UIUC Texture dataset.
+% KTHTIPS_SRC Creates a source for the KTH TIPS Texture dataset
 %
 % Usage
-%    src = uiuc_src(directory)
+%    src = KTHTIPS_SRC(directory)
 %
 % Input
-%    directory: The directory containing the UIUC Texture dataset.
+%    directory: The directory containing the KTH TIPS Texture dataset.
 %
 % Output
-%    src: The UIUC source.
+%    src: The KTH TIPS source.
 %
 % Note
-%	The dataset is available at http://www-cvr.ai.uiuc.edu/ponce_grp/data/
-
+%	The dataset is available at http://www.nada.kth.se/cvap/databases/kth-tips/
 
 function src = kthtips_src(directory)
 	if (nargin<1)

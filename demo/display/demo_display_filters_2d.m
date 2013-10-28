@@ -11,7 +11,7 @@
 %
 % This displays the whole filter bank used in Fourier multiresolution. Here
 % n designs the size of the filter one wants to display.
-x = lena;
+x = mandrill;
 [Wop, filters] = wavelet_factory_2d(size(x));
 n = 30;
 renorm = 1;
@@ -21,7 +21,7 @@ display_filter_bank_2d(filters, renorm, n);
 % This displays the whole filter bank used in Fourier multiresolution.
 % Here, the parameter n is not used. This displays the "h" and "g" filters for
 % the cascading algorithm.
-x = lena;
+x = mandrill;
 [Wop, filters] = wavelet_factory_2d_pyramid();
 renorm = 1;
 display_filter_bank_2d(filters, renorm, n);

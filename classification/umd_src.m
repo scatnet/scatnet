@@ -1,7 +1,7 @@
-% umd_src: Creates a source for the UMD Texture dataset.
+% UMD_SRC Creates a source for the UMD Texture dataset
 %
 % Usage
-%    src = umd_src(directory)
+%    src = UMD_SRC(directory)
 %
 % Input
 %    directory: The directory containing the UMD Texture dataset.

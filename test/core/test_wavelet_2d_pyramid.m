@@ -1,5 +1,5 @@
 clear; close all;
-x = lena;
+x = mandrill;
 opt_filters.P = 2;
 
 K = 10;
@@ -19,7 +19,7 @@ imagesc(img);
 
 %%
 clear;
-x = lena;
+x = mandrill;
 filt_opt.J = 5;
 scat_opt.oversampling = 0;
 options.L = 8;

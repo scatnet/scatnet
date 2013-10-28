@@ -1,7 +1,7 @@
-% phone_src: Creates a source for the phones in the TIMIT dataset
+% PHONE_SRC Creates a source for the phones in the TIMIT dataset
 %
 % Usage
-%    src = phone_src(directory)
+%    src = PHONE_SRC(directory)
 %
 % Input
 %    directory (char): The directory containing the TIMIT dataset.

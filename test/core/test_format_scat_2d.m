@@ -1,5 +1,5 @@
-%% with lena
-x = lena;
+%% with mandrill
+x = mandrill;
 
 wavelet = wavelet_factory_2d(size(x));
 Sx = scat(x, wavelet);

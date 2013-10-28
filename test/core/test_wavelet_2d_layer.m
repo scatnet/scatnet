@@ -1,7 +1,7 @@
 %%
 clear;
 close all;
-x = lena;
+x = mandrill;
 %%
 filters = morlet_filter_bank_2d(size(x));
 U.signal{1} = x;

@@ -17,9 +17,9 @@
 % instance. The filter size have to be adapted to the size of the input
 % signal $x$.
 
-x = lena;
+x = mandrill;
 filters = morlet_filter_bank_2d(size(x));
-[x_phi,x_psi]=wavelet_2d(lena,filters);
+[x_phi,x_psi]=wavelet_2d(mandrill,filters);
 figure;
 
 colormap gray;

@@ -28,7 +28,7 @@ function src = create_src(directory,objects_fun)
 	files = find_files(directory);
 	
 	if length(files) == 0
-		error('No audio files found in the specified directory!');
+		error('No data files found in the specified directory!');
 	end
 	
 	objects = [];
