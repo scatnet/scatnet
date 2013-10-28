@@ -67,12 +67,6 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 					xf([start:end 1:nCoeffts+start-size(xf,1)-1],:), ...
                     coefft);
 			end
-			
-			if filter.recenter
-				% result has been shifted in frequency so that the zero fre-
-				% quency is actually at -filter.start+1
-				yf = circshift(yf,filter.start-1);
-			end
 		end
 	else
 		error('Unsupported filter type');
@@ -87,11 +81,21 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 			[size(yf,1)/2^dsj size(yf,2)]);
 	elseif dsj < 0
 		% upsample, so zero-pad in Fourier
-		yf_ds = [yf(1:end/2,:); yf(end/2+1,:)/2; ...
-			zeros((2^(-dsj)-1)*size(yf,1)-1,size(yf,2)); ...
-			yf(end/2+1,:)/2; yf(end/2+2:end,:)]; 
+		% note that this only happens for fourier_truncated filters, since otherwise
+		% filter sizes are always the same as the signal size
+		% also, we have to do one-sided padding since otherwise we might break 
+		% continuity of Fourier transform
+		yf_ds = [yf; zeros((2^(-dsj)-1)*size(yf,1),size(yf,2))];
 	else
 		yf_ds = yf;
+	end
+	
+	if isstruct(filter) && ...
+		strcmp(filter.type, 'fourier_truncated') && ...
+		filter.recenter
+		% result has been shifted in frequency so that the zero fre-
+		% quency is actually at -filter.start+1
+		yf_ds = circshift(yf_ds, filter.start-1);
 	end
 
 	y_ds = ifft(yf_ds)/2^(ds/2);
