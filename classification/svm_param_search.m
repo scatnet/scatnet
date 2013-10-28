@@ -29,7 +29,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'gamma',1e-4);
 	opt = fill_struct(opt,'C',8);
 	opt = fill_struct(opt,'cv_folds',5);
-	opt = fill_struct(opt,'w',0);
+	opt = fill_struct(opt,'reweight',0);
 
 
 	if isempty(valid_set)	
@@ -43,8 +43,8 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 		
 		% If some reweighting is needed let svm_train know that even in
 		% this phase, the weigths should be computed base on the total
-		% training_set, set opt.w to 2.
-		% opt.w can take the value of 2 only during cross_validation!
+		% training_set, set opt.reweight to 2.
+		% opt.reweight can take the value of 2 only during cross_validation!
 		
 		for f = 1:opt.cv_folds
 			[err(:,f),C,gamma] = svm_param_search(db, ...
@@ -70,7 +70,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			model = svm_train(db,train_set,opt1);
 			labels = svm_test(db,model,valid_set);
 			
-			if opt.w 
+			if opt.reweight 
 				err(r,1) = classif_mean_err_rate(labels,valid_set,db.src);
 			else
 				err(r,1) = classif_err(labels,valid_set,db.src);
