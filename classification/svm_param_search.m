@@ -41,15 +41,7 @@ if isempty(valid_set)
     cvtrain_set = cvtrain_set;
     cvvalid_set = cvvalid_set;
     
-    % If some reweighting is needed let svm_train know that even in
-    % this phase, the weigths should be computed base on the total
-    % training_set, set opt.w to 2.
-    % opt.w can take the value of 2 only during cross_validation!
-    
-    if opt.w == 1
-        opt.w = 2;
-    end
-    
+
     for f = 1:opt.cv_folds
         [err(:,f),C,gamma] = svm_param_search(db, ...
             train_set(cvtrain_set),train_set(cvvalid_set),opt);
