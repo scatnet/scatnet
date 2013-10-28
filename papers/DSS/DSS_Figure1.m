@@ -48,7 +48,7 @@ spec = log(spec+1);
 melspec = log(melspec+1);
 
 % Display the spectrogram and mel-frequency spectrogram.
-figure;
+figure(1);
 subplot(1,10,1:4);
 imagesc(spec);
 set(gca,'YDir','normal');

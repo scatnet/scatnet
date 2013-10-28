@@ -29,6 +29,7 @@ axes('Units', 'inches', ...
 	'Position', [0.05 0.05 fig_width-0.1 fig_height-0.1]);
 
 % Plot psis and phi.
+figure(3);
 plot(1:size(psi_f,1), phi_f, 'r', ...
 	1:size(psi_f,1),psi_f,'b');
 

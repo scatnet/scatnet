@@ -67,7 +67,7 @@ dWop = wavelet_factory_1d(length(x1), filt_opt, disp_scat_opt);
 [~,U2t2] = scat(x2t2, dWop);
 
 % Display scalograms.
-figure;
+figure(5);
 subplot(231);
 scattergram(log_scat(U1{2}, log_epsilon),[]);
 subplot(232);

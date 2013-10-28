@@ -34,7 +34,7 @@ xt1 = log(xt1+1e-6);
 xt2 = log(xt2+1e-6);
 
 % Display the representations.
-figure;
+figure(2);
 subplot(121);
 imagesc(xt1.');
 set(gca,'XTick',[]);

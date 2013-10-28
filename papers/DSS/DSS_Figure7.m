@@ -28,4 +28,5 @@ U = log_scat(U,1e-3);
 
 % Display scalogram U{2}, first-order coefficients S{2} and second-order
 % coefficients S{3} for j1 = 110.
+figure(7);
 scattergram(U{2}, [], S{2}, [], S{3}, 110);
