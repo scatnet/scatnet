@@ -1,14 +1,13 @@
 % Generate Figure 6 of the "Deep Scattering Spectrum" paper.
 
 % Load the signal.
-x_file = load('Chord_display.mat');
-x = x_file.X;
+x = wavread('chord_signal.wav');
 
 % Prepare the filters and scattering operators.
 filt_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt_opt.B = [4 4];
 filt_opt.Q = 4*filt_opt.B; 
-filt_opt.J = T_to_J([256 8192],filt_opt);
+filt_opt.J = T_to_J([256 32768],filt_opt);
 
 scat_opt.oversampling = 8;
 scat_opt.M = 2;
