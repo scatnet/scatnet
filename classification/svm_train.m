@@ -18,7 +18,7 @@
 %             kernel instead of relying on the precalculated kernel. Used if 
 %             the kernel is only defined on the training vectors (default 
 %             false).
-%          options.w (boolean): Add weights to rebalance the training set if 
+%          options.reweight (boolean): Add weights to rebalance the training set if 
 %             it is imbalanced. The rebalancing is done so that the distribu-
 %             tion of the training samples seem to be uniform for all the 
 %             classes (default 0).
@@ -36,6 +36,7 @@
 %    SVM_TEST, CLASSIF_ERR, CLASSIF_RECOG
 
 function model = svm_train(db,train_set,opt)
+
 	if nargin < 3
 		opt = struct();
 	end
@@ -48,7 +49,7 @@ function model = svm_train(db,train_set,opt)
 
 	opt = fill_struct(opt, 'gamma', 1e-4);
 	opt = fill_struct(opt, 'C', 8);
-	opt = fill_struct(opt, 'w', 0);
+	opt = fill_struct(opt, 'reweight', 0);
 	opt = fill_struct(opt, 'b', 0);
 
 	% Extract feature vector indices of the objects in the training set and their
@@ -146,7 +147,7 @@ function model = svm_train(db,train_set,opt)
 		end
 	end
 
-	if opt.w > 0
+	if opt.reweight
 		% If reweighting to obtain uniform distribution is needed, add the weights.
 		db_weights = calc_train_weights(db, train_set, opt);
 		params = [params db_weights];
@@ -172,35 +173,29 @@ function model = svm_train(db,train_set,opt)
 	end
 end
 
-function db_weights = calc_train_weights(db,train_set,opt)
-	% the weight of a particular class is always the inverse of the total
-	% number of its training features, even in the cross_validation phase!
+function db_weights = calc_train_weights(db,train_set)
+    % The weight of each class k is the ratio btw the total number of
+    % training features Nfeat_tot, and the number of training features of 
+    % the class Nfeat_train_k ie w_k =  Nfeat_tot/Nfeat_train_k
+    % Note that the range of the values of C used for cross_validation 
+    % should take these weights into consideration.
+    
+        ind_objs = {};
+        ind_feats = {};
+        db_weights = [];
+    
+    % Find the total number of features in the training set
+        tot_ind_objs = 1:numel(db.src.objects);
+        tot_ind_feats = [db.indices{tot_ind_objs}];
+        mask = ismember(tot_ind_feats,[db.indices{train_set}]);
+        nb_train_feats = numel(tot_ind_feats(mask>0));
+       
+        for k = 1:length(db.src.classes)
+                ind_objs{k} = find([db.src.objects.class] == k);
+                ind_feats{k} = [db.indices{ind_objs{k}}];
+                mask_class = ismember(ind_feats{k},[db.indices{train_set}]);
+                ind_feats{k} = ind_feats{k}(mask_class > 0);
+                db_weights = [db_weights ' -w' num2str(k) ' ' num2str(nb_train_feats/numel(ind_feats{k}))];
+        end
 
-	ind_objs={};
-	ind_feats={};
-	nb_feats=[];
-
-	db_weights=[];
-
-	if opt.w == 1
-		factor = 1;
-	elseif opt.w == 2
-		factor = opt.cv_folds/(opt.cv_folds-1);
-	else
-		error('opt.w must be equal to 1 or 2!');
-	end
-
-	for k = 1:length(db.src.classes)
-		ind_objs{k} = find([db.src.objects.class]==k);
-
-		ind_feats{k} = [db.indices{ind_objs{k}}];
-
-		mask2 = ismember(ind_feats{k},[db.indices{train_set}]);
-		ind_maxp2 = find(mask2>0);
-		ind_feats{k} = ind_feats{k}(ind_maxp2);
-
-		nb_feats(k) = factor*numel(ind_feats{k});
-
-		db_weights = [db_weights ' -w' num2str(k) ' ' num2str(1/nb_feats(k))];
-	end
 end

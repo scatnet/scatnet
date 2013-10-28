@@ -2,8 +2,8 @@
 \usepackage{amsmath,cite}
 \usepackage{graphicx}
 
-%\usepackage{tikz}
-%\usepackage{tikz-qtree}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
 
 \usepackage{amssymb}
 
@@ -17,6 +17,8 @@
 
 \author{Laurent Sifre, Joakim And\'{e}n, Michel Kapoko, \\ Edouard Oyallon, and Vincent Lostanlen}
 
+\date{v0.2, october 2013}
+
 \begin{document}
     
 \maketitle
@@ -29,11 +31,11 @@ Its core feature relies on the construction of a \emph{scattering network}, i.e.
 The \emph{scattering transform} of an input signal \mcode{x} is defined as the set of all paths that \mcode{x} might take from layer to layer. In this sense, the architecture of a scattering network closely resembles a convolutional deep network.
 
 \subsection{Getting started}
-\subsubsection{Audio processing quickstart}
+\subsubsection{Audio signal processing}
 An online tutorial for the scattering representation of audio signals is available at the following page : \\
 \hfill \url{http://www.di.ens.fr/data/software/scatnet/quickstart-audio/} \hfill
 
-\subsubsection{Image processing quickstart}
+\subsubsection{Image processing}
 An online tutorial for the scattering representation of image signals is available at the following page : \\
 \hfill \url{http://www.di.ens.fr/data/software/scatnet/quickstart-image/} \hfill
 
@@ -134,7 +136,7 @@ In addition, ScatNet provides another wavelet factory for images, called \mcode{
 In spite of these assets, \mcode{wavelet_factory_2d_pyramid} is not as customizable as its counterpart, especially in terms of anti-aliasing and numerical approximations. As a matter of fact, these two functions mainly differ in the format of \mcode{filters} : while \mcode{wavelet_factory_2d}, like \mcode{wavelet_1d}, stores its filters in the Fourier domain, \mcode{wavelet_factory_2d_pyramid} uses their spatial support.
 
 \subsection{Roto-translation invariant representations of images}
-Finally, the function \mcode{wavelet_factory_3d} enables a scattering representation of images which is invariant to both translations and rotations. This original feature dramatically improves the performance of texture recognition in comparison with the translation-invariant representation provided by \\
+Finally, the function \mcode{wavelet_factory_3d} enables a scattering representation of images which is invariant to both translations and rotations \cite{sifre13}. This original feature dramatically improves the performance of texture recognition in comparison with the translation-invariant representation provided by \\
 \mcode{wavelet_factory_2d}. 
 
 \begin{lstlisting}
@@ -179,40 +181,40 @@ The string \mcode{precision} encodes the numerical precision of the scattering c
 Filter banks correspond to predefined sets of filters. The nature of the used filters is highly important since it determines the result of the scattering transform. Filters bank can be created using the \mcode{wavelet_factory} set of functions, and have a similar skeleton in 1D, 2D or 3D.
 
 \subsection{Architecture \label{sub:filters-architecture}}
-% \begin{tikzpicture} [scale=.6]
-% \centering
-% \tikzstyle{level 1}=[sibling distance=80mm] 
-% \tikzstyle{level 2}=[sibling distance=40mm] 
-% \tikzstyle{level 3}=[sibling distance=15mm] 
-% 
-%  \node{filters(struct)}  
-%    child{ node{phi.}
-%     child{node{meta.}
-%       child{node{J}}}
-%     child{node{filter.}
-%        child{node{coefft\{\}}}
-%        child{node{type}}
-%        child{node{N}}}
-%        }
-%    child{node{psi.}
-%       child{node{filter\{\}}
-%         child{node{coefft\{\}}}
-%         child{node{type}}
-%         child{node{N}}
-%         }
-%        
-%        child{node{meta.}
-%             child{node{j}}
-%             child{node{theta}}
-%             }}
-%             
-%             
-%     child{node{meta.}
-%        child{node{J(:)}}
-%        child{node{Q(:)}}
-%        child{node{...}}
-%        };
-%  \end{tikzpicture}
+\begin{tikzpicture} [scale=.6]
+\centering
+\tikzstyle{level 1}=[sibling distance=80mm] 
+\tikzstyle{level 2}=[sibling distance=40mm] 
+\tikzstyle{level 3}=[sibling distance=15mm] 
+
+ \node{filters(struct)}  
+   child{ node{phi.}
+    child{node{meta.}
+      child{node{J}}}
+    child{node{filter.}
+       child{node{coefft\{\}}}
+       child{node{type}}
+       child{node{N}}}
+       }
+   child{node{psi.}
+      child{node{filter\{\}}
+        child{node{coefft\{\}}}
+        child{node{type}}
+        child{node{N}}
+        }
+       
+       child{node{meta.}
+            child{node{j}}
+            child{node{theta}}
+            }}
+            
+            
+    child{node{meta.}
+       child{node{J(:)}}
+       child{node{Q(:)}}
+       child{node{...}}
+       };
+ \end{tikzpicture}
  
  In each of this case, \mcode{filters} have the same architecture. The first field corresponds to a low-pass filter, the second to the band-pass filters and a field \mcode{meta} contains the information for the whole bank-filters.
  The band-pass filters are stored as cells of filters.
@@ -271,7 +273,7 @@ In addition to the parameters listed above, the spline filter bank has the follo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
-\subsubsection{1D Selesnick Filters}
+\subsection{1D Selesnick Filters}
 Selesnick wavelet filters are compactly supported complex wavelets, whose real and imaginary parts have four vanishing moments and are nearly Hilbert transform pairs.
 
 In addition to the parameters listed above, the Selesnick filter bank has the following options:
@@ -280,9 +282,9 @@ In addition to the parameters listed above, the Selesnick filter bank has the fo
 \end{itemize}
 The maximal bandwidth is specified here by $2^J$.
 
-The code for the Selesnick wavelet filters was written by Shihua Cai, Keyong Li, and Ivan Selesnick. It is an independent package that has been included in ScatNet. The standalone package, including more documentation, can be found at:
+The code for the Selesnick wavelet filters is an independent package that has been included in ScatNet. The standalone package, including more documentation, can be found at:
 
-\texttt{http://eeweb.poly.edu/iselesni/WaveletSoftware/dt1D.html}.
+\texttt{http://eeweb.poly.edu/iselesni/WaveletSoftware/}.
 
 
 
@@ -359,8 +361,6 @@ The parameters of this filters bank are given by:
 
 However, they are not designed for classification purposes, yet only for testing.
 
-
-
 \section{Post-processing operations on scattering networks \label{sec:utilities}}
 The signal processing tools originally provided in ScatNet were designed to address computer vision and machine listening problems, and can be evaluated through standard challenges in database classification. Most of machine learning tools require vector inputs of the same size with specifical renormalization and averaging(or pooling). In this section, we describe a full set of functions to manipulate the output of the scattering, in order to satisfy any conditions needed by a classifier.
 
@@ -395,9 +395,9 @@ where:
 You would then need to proceed similarly as indicated in the sample code below:
 
 \begin{lstlisting}
-filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
-filt1_opt.Q = [8 1];
-filt1_opt.J = T_to_J(T,filt1_opt);
+  filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
+  filt1_opt.Q = [8 1];
+  filt1_opt.J = T_to_J(T,filt1_opt);
 
 % set the scattering options
 sc1_opt = struct();
@@ -425,24 +425,19 @@ Sx = rdivide_scat(x_scat(x),absx_scat(x),1);
 
 
 \subsection{Full Renormalization of one-dimensional scattering representation}
-
-When working with the second order scattering representation of an audio signal, the combination
-of the functions \mcode{renorm_scat} and  \mcode{rdivide_scat} enables you to build a fully renormalized second order
-scattering representation. This makes the feature insensible to amplitutde variation and in some situations conisderably improve the results. 
-Using the framework set in the code example of the function \mcode{rdivide_scat},  one could compute this feature using the lines below:
+When working with the second order scattering representation of an audio signal, the combination of the functions \mcode{renorm_scat} and \mcode{rdivide_scat} enables a fully renormalized second-order scattering representation. This makes the feature insensible to amplitude variation, resulting to a considerable improvement in some cases. Keeping the framework introduced in \mcode{rdivide_scat}, one may compute this feature using the lines below:
 
 
 \begin{lstlisting}
  absx_scat = @(x)(scat(abs(x),Wop1));
  x_scat = @(x)(scat(x,Wop2));
- Sx = rdivide_scat(renorm_scat(x_scat(x)),absx_scat(x),1);
+ Sx = rdivide_scat(renorm_scat(x_scat(x)),absx_scat,1);
 
 \end{lstlisting}
 
 
 \subsection{Logarithmic transformation of a scattering network}
-Some classification frameworks, such as the MFC in speech recognition, rely on log-power representation of the frequency distribution. ScatNet has the 
-ability to reproduce this behaviour by computing the logarithm of scattering coefficients. Log-scattering coefficients are also useful for visualisation, as they shrink the range of values to a small interval of orders of magnitude.
+Some classification frameworks, such as the MFC in speech recognition, rely on log-power representation of the frequency distribution. ScatNet has the ability to reproduce this behaviour by computing the logarithm of scattering coefficients. Log-scattering coefficients are also useful for visualisation, as they shrink the range of values to a small interval of orders of magnitude.
 
 \begin{lstlisting}
 log_S = log_scat(S,epsilon);
@@ -524,7 +519,7 @@ where \mcode{S} is the scattering transform, \mcode{t} is time, and \mcode{scale
 
 \subsection{2D}
 
-The \mcode{image_scat} opens one figure per layer and display all the path of a layer in the corresponding figure. Its signature is 
+The \mcode{image_scat} opens one figure per layer and displays all the path of a layer in the corresponding figure. Its signature is 
 \begin{lstlisting}
 Sx = scat(x, Wop);
 % display scattering coefficients
@@ -536,7 +531,7 @@ To display all the coefficients of a particular layer, one can use
 m = 2;
 image_scat_layer(Sx{m+1})
 \end{lstlisting}
-This stacks all paths of the layer next to each other, renormalize them and overlay their meta information. Both these feature can be turned off using
+This stacks all paths of the layer next to each other, renormalize them and overlay their meta information. Both these features can be turned off using
 \begin{lstlisting}
 m = 2;
 image_scat_layer(S{m+1}, 0, 0);
@@ -556,7 +551,7 @@ var_x{2}.index = 2;
 m = 2;
 image_scat_layer_order(S{3},var_x, var_y,1);
 \end{lstlisting}
-The spatial coefficients of all filter of a filter bank can be displayed using
+The spatial coefficients of all filters of a filter bank can be displayed using
 \begin{lstlisting}
 display_filter_bank_2d(filters);
 \end{lstlisting}
@@ -585,7 +580,7 @@ of a source in such a context, one could write the following code:
 
 \begin{lstlisting}
 
-function src = instrument_sounds_src(directory,T)
+function train_src =instrument_sounds_src(directory,T)
 
 if nargin < 2
     T= 2^16;% at a sampling frequency of 32 KHz, this represents a duration of 2s. 
@@ -710,6 +705,14 @@ To calculate the average recognition rate, the \mcode{classif_recog} is used:
 \end{lstlisting}
 Note that the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
 
+
+To compute the average error rate, the \mcode{classif_mean_err_rate} is used:
+\begin{lstlisting}
+    mean_err_rate = classif_mean_err_rate(labels, test_set, src);
+\end{lstlisting}
+Note that, just like for the functions above, the original \mcode{src} structure is necessary here to verify the class membership of the testing instances.
+
+
 To calculate the errors over a range of training parameters in \mcode{train_opt}, the functions \mcode{affine_param_search} and \mcode{svm_param_search} are available. Denoting them both by \mcode{param_search}, they have the following signature
 \begin{lstlisting}
 [err, param1, param2] = param_search( ...
@@ -747,25 +750,25 @@ To find the optimal dimension of the affine space, \mcode{affine_param_search} i
 where \mcode{database}, \mcode{train_set}, \mcode{valid_set}, \mcode{train_opt} are as described in the previous subsection. The output \mcode{dim} is equal to \mcode{train_opt.dim}, and \mcode{err} contains the errors for this range of dimensions.
 
 \subsection{Support Vector Classifier}
-
-\textbf{NOTE: Requires the LIBSVM library, see \url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/}}
+ScatNet is compatible with the LIBSVM library (see \url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/}), which provides tools for linear classification based on support vector machines. To execute the operations described here, you will first need to download this free software.
 
 The support vector machine classifier is defined by the functions \mcode{svm_train} and \mcode{svm_test}. The training options consist of:
 \begin{itemize}
 	\item \mcode{train_opt.kernel_type}: The kernel type used in the SVM. Can be \mcode{'linear'} for a linear kernel $u^Tv$ or \mcode{'gaussian'} for a Gaussian kernel $e^{-\gamma\|u-v\|^2}$.
 	\item \mcode{train_opt.C}: The slack factor $C$ used for training the SVM.
 	\item \mcode{train_opt.gamma}: The regularity constant $\gamma$ used in the case of a Gaussian SVM kernel.
-    \item \mcode{train_opt.w}: w is $\in \{0,1\}$. If w is set to one, then for a 2-class SVM classication problem where the two classes are numbered $1$ and $2$, the function to minimize in the svm optimization problem will be :
+    \item \mcode{train_opt.reweight}: reweight $\in \{0,1\}$. If reweight is set to one, then for a 2-class SVM classication problem where the two classes are numbered $1$ and $2$, the function to minimize in the svm optimization problem will be :
     \begin{equation*}
-        \operatorname*{arg\,min}_{w,b,\xi} \, \frac{1}{2}w^{T}w + \frac{C}{N_1}\sum_{i=1}^{N_1}\xi_i +  \frac{C}{N_2}\sum_{i=1}^{N_2}\xi_i
+        \operatorname*{arg\,min}_{w,b,\xi} \, \frac{1}{2}w^{T}w + \frac{C(N_1+N_2)}{N_1}\sum_{i=1}^{N_1}\xi_i +  \frac{C(N_1 + N_2)}{N_2}\sum_{i=1}^{N_2}\xi_i
     \end{equation*}
     
-    where $N_1$ and $N_2$ are the total numbers of training features respectively for class $1$ and 
-    class $2$.
+    where $N_1$ and $N_2$ are the total numbers of training features respectively for class $1$ and class $2$. This remains true for any K-class classification problem with $K \geq 2$. This means
+    that an error on the class with the smallest number of features will be penalized more than an error
+    on the class with the highest number of features.
   \end{itemize}  
     Sometimes, it happens that the database is very unbalanced, with some of the classes containing far more samples than others. In such case, one of the most convenient way to measure the perfomance of the classifier is the \mcode{average recognition rate} (this is achieved in ScatNet through the function \mcode{classif_recog} which computes the individual recognition rate of each class as well as their mean).   
-    In such case we should tell the svm that we want it to give the same importance to the individual error rate of each class and this is achieved by setting the training option \mcode{w} to 1.
-    The following lines provide more informatio on how to use ScatNet to do svm classification.
+    In such case we should tell the svm that we want it to give the same importance to the individual error rate of each class and this is achieved by setting the training option \mcode{reweight} to 1.\par The function \mcode{classif_mean_err_rate} is derived from \mcode{classif_recog} and computes the average error rate of a classification experiment.
+  
 
 The following code calculates the error for an SVM classifier with a linear kernel and $C = 8$:
 \begin{lstlisting}
@@ -798,7 +801,7 @@ If a linear kernel is used, we can extract the discriminant vector $w$ and bias 
 \section{Separable time and frequency scattering}
 \label{sec:separable-tf}
 
-For temporal signals, the regular scattering transform as implemented in \mcode{scat} using operators \mcode{Wop} from \mcode{wavelet_factory_1d} calculates a representation that is locally invariant to time-shifts and stable to time-warping deformation. However, for many tasks, this is not sufficient. Often a additional invariance to frequency transposition and stability to frequency warping is needed. For example, this is the case for speaker-independent phone segment identification, where a single phone can be pronounced at different pitches, and the formant peaks can be deformed in frequency.
+For temporal signals, the regular scattering transform as implemented in \mcode{scat} using operators \mcode{Wop} from \mcode{wavelet_factory_1d} calculates a representation that is locally invariant to time-shifts and stable to time-warping deformation. However, for many tasks, this is not sufficient. Often an additional invariance to frequency transposition and stability to frequency warping is needed. For example, this is the case for speaker-independent phone segment identification, where a single phone can be pronounced at different pitches, and the formant peaks can be deformed in frequency.
 
 A simple way of creating such an invariant representation out of the scattering transform is to average along the log-frequency axis $\lambda_1$. Since a frequency transposition corresponds to a translation along log-frequency, this will create the desired invariance and stability properties. However, it also loses a great amount of information on frequential structure.
 
@@ -866,5 +869,8 @@ j = S{3}.meta.j(:,S{3}.meta.fr_order==1 & ...
    S{3}.meta.fr_j==0 & ...
    S{3}.j(2,:)==9);
 \end{lstlisting}
+
+\bibliographystyle{plain}
+\bibliography{doc_references}
 
 \end{document}
