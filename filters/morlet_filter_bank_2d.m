@@ -42,7 +42,8 @@ function filters = morlet_filter_bank_2d(size_in, options)
     end
 
     white_list = {'Q', 'L', 'J', 'sigma_phi', 'sigma_psi', ...
-        'xi_psi', 'slant_psi', 'min_margin', 'precision'};
+        'xi_psi', 'slant_psi', 'min_margin', 'precision', ...
+		'filter_format'};
     check_options_white_list(options, white_list);
     
     % Options
