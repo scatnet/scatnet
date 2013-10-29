@@ -32,13 +32,15 @@ function [out,l1norms,l1orig,l1eq]=equalize_first_order_scattering(f,g,psi,phi,l
 		GW = equalize(GW,l1norms,J,L);
 		% reproducing kernel
 		[GW,GPhi,out]=wavelet_rk(GW,GPhi,psi,phi,dpsi,dphi,options);
-	end
+		n
 
 	% how close did we end up?
 	for j=1:J
 		for l=1:L
 			l1eq(j,l)=sum(abs(GW{j}{l}(:)));
 		end
+	end
+		fprintf('%d  %f \n', n, norm(l1eq(:)-l1norms(:))/norm(l1norms(:)))
 	end
 
 end
