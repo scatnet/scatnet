@@ -49,16 +49,25 @@ function xt = inverse_scat(S, filters, options, node)
 	if isempty(options)
 		options = struct();
 	end
-	
-	% TODO: we don't always want to upsample/deconvolve/griffin&lim to highest
-	% resolution, this should depend on where we are in the cascade
-	N0 = length(S{1}.signal{1})*2^S{1}.meta.resolution(1);
-	
+
+	options = fill_struct(options, 'oversampling', 1);
+
 	m = node(1);
 	p = node(2);
 	
 	% find the filter bank used to calculate mth layer
 	filt_ind = min(m+1,length(filters));
+	
+	% what's the original signal size?
+	N0 = length(S{1}.signal{1})*2^S{1}.meta.resolution(1);
+	if m > 0
+		[psi_xi, psi_bw] = filter_freq(filters{min(max(m,1),length(filters))}.meta);
+		bw = psi_bw(S{m+1}.meta.j(m,p)+1);
+	else
+		bw = 2*pi;
+	end
+	% what is the resolution, ie size, of the current coefficient?
+	N = min(2^(-round(log2(2*pi/bw/2))+options.oversampling),1)*N0;
 	
 	j_node = S{m+1}.meta.j(:,p);
 	
@@ -74,7 +83,7 @@ function xt = inverse_scat(S, filters, options, node)
 		children = [];
 	end
 	
-	x_phi = upsample(S{m+1}.signal{p}, N0);
+	x_phi = upsample(S{m+1}.signal{p}, N);
 	
 	if length(children) > 0
 		% recurse on the children to estimate wavelet modulus coefficients,
@@ -84,11 +93,13 @@ function xt = inverse_scat(S, filters, options, node)
 			j_child = S{m+2}.meta.j(m+1,children(k));
 			x_psi_mod{j_child+1} = inverse_scat(S, filters, options, ...
 				[m+1 children(k)]);
+			x_psi_mod{j_child+1} = upsample(x_psi_mod{j_child+1}, N);
 		end
 	
 		% TODO: we don't always need this, do we?
 		options1.oversampling = 100;
-	
+		options1.x_resolution = log2(N0/N);
+
 		xt = griffin_lim(x_phi, x_phi, x_psi_mod, filters{filt_ind}, ...
 			options1);
 	else
@@ -97,3 +108,4 @@ function xt = inverse_scat(S, filters, options, node)
 		xt = richardson_lucy(x_phi, filters{filt_ind}.phi.filter, options);
 	end
 end
+
