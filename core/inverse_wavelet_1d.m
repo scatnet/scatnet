@@ -38,14 +38,18 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 	if length(N0)>1
 		error('Only 1D for the moment!')
 	end
+
+	options = fill_struct(options, 'x_resolution', 0);
 	
 	temp = zeros(N0,1);
+
+	j0 = options.x_resolution;
 	
-	N0_padded = dual_filters.meta.size_filter;
+	N0_padded = dual_filters.meta.size_filter/2^j0;
 
 	N_padded = dual_filters.meta.size_filter/2^meta_phi.resolution;
 	x_phi = pad_signal(x_phi, N_padded, dual_filters.meta.boundary);
-	
+
 	x_phi = upsample(x_phi, N0_padded);
 	
 	x = conv_sub_1d(fft(x_phi), dual_filters.phi.filter, 0);
