@@ -35,7 +35,7 @@ function filter = periodize_filter(filter_f)
 	
 	j0 = 0;
 	while 1
-		if any(abs(floor(N./2^j0)-N./2^j0)>1e-6)
+		if any(abs(floor(N./2^(j0+1))-N./2^(j0+1))>1e-6)
 			break;
 		end
 		
@@ -46,9 +46,19 @@ function filter = periodize_filter(filter_f)
 			sz_in = [N(1)/2^j0 2^j0 N(2)/2^j0 2^j0];
 			sz_out = N./2^j0;
 		end
-		
+
+		filter_fj = filter_f;
+		for d = 1:length(N)
+			mask = [ones(N(d)/2^(j0+1),1); 1/2; zeros((1-2^(-j0-1))*N(d)-1,1)] + ...
+				[zeros((1-2^(-j0-1))*N(d),1); 1/2; ones(N(d)/2^(j0+1)-1,1)];
+			if d > 1
+				mask = permute(mask,[d 2:d-1 1 d+1:ndims(mask)]);
+			end
+			filter_fj = bsxfun(@times, filter_fj, mask);
+		end
+
 		filter.coefft{j0+1} = reshape( ...
-			sum(sum(reshape(filter_f,sz_in),2),4),sz_out);
+			sum(sum(reshape(filter_fj,sz_in),2),4),sz_out);
 		
 		j0 = j0+1;
 	end
