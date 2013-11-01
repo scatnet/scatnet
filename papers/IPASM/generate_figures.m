@@ -9,7 +9,6 @@
 
 close all;
 clear all;
-startup;
 
 %set the maximum analysis scale
 filt_opt.J = 14;
