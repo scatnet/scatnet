@@ -1,0 +1,8 @@
+Each folder corresponds to a paper. We have chosen not to include the PDF file related to the paper in the software. However, they are available at http://www.di.ens.fr/data/software/scatnet/papers/
+
+Paper list:
+ISCV: Invariant Scattering Convolution Networks, J. Bruna, S. Mallat, submitted to IEEE Transactions in Pattern Analysis and Machine intelligence.
+GIS: Group Invariant Scattering, S. Mallat. Communications in Pure and Applied Mathematics, October 2012.
+RSDS: Rotation, Scaling and Deformation InvariantScattering for Texture Discrimination, L. Sifre, S. Mallat, submitted to IEEE CVPR 2013.
+DSS: Deep Scattering Spectrum, J. Anden, S. Mallat, submitted to IEEE trans on signal processing.
+IPASM: Intermittent Process Analysis with Scattering Moments, J. Bruna, S. Mallat, E. Bacry and J-F. Muzy
