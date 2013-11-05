@@ -45,7 +45,7 @@ function [out,meta] = spec_freq_average(in,filters,options)
 	supp_mult = 4;
 	
 	N = size(in,1);
-	Nfilt = filters1.N;
+	Nfilt = filters1.meta.size_filter;
 	N1 = 2^round(log2(2*pi/phi2_bw));
 	
 	fs = zeros(N1*supp_mult,length(filters1.psi.filter));
@@ -81,10 +81,10 @@ function [out,meta] = spec_freq_average(in,filters,options)
 	
 	resolution = round(log2(N1))-options.oversampling;
 
-	meta.order = ones(size(fs,2),1);
-	meta.scale = [0:size(fs,2)-1]';
-	meta.bandwidth = phi2_bw*ones(size(fs,2),1);
-	meta.resolution = resolution*ones(size(fs,2),1);
+	meta.order = ones(1,size(fs,2));
+	meta.scale = [0:size(fs,2)-1];
+	meta.bandwidth = phi2_bw*ones(1,size(fs,2));
+	meta.resolution = resolution*ones(1,size(fs,2));
 	
 	X = cell(1,2);
 	X{1}.signal = {};

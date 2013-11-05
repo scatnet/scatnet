@@ -10,7 +10,7 @@ classdef test_aggregate_scat < matlab.unittest.TestCase
             sig=rand(N1,1);
             filt_opt.filter_type = {'gabor_1d','morlet_1d'};
             filt_opt.Q = [1 1];
-            filt_opt.J = T_to_J(2^10,filt_opt.Q); %371.5 ms
+            filt_opt.J = T_to_J(2^10,filt_opt); %371.5 ms
             
             %% set the scattering options
             scat_opt = struct();

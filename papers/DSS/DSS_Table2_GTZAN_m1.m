@@ -11,7 +11,7 @@ src=gtzan_src('/path/to/gtzan');
 
 fparam.filter_type = {'gabor_1d','morlet_1d'};
 fparam.Q = [8 2];
-fparam.J = T_to_J(8192,fparam.Q);
+fparam.J = T_to_J(8192,fparam);
 
 options.M = 1;
 

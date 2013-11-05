@@ -1,12 +1,12 @@
 run_name = 'test_gtzan_svm';
 
-src = gtzan_src('~/matlab/y/gtzan');
+src = gtzan_src('/path/to/gtzan');
 
 N = 5*2^17;
 
 filt_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt_opt.Q = [8 1];
-filt_opt.J = T_to_J(8192,filt_opt.Q);
+filt_opt.J = T_to_J(8192,filt_opt);
 
 cascade = cascade_factory_1d(N, filt_opt, struct(), 2);
 

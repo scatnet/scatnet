@@ -5,13 +5,13 @@
 
 run_name = 'DSS_Table2_GTZAN_m2_freq';
 
-src = gtzan_src('~/GTZAN/gtzan');
+src = gtzan_src('/path/to/gtzan');
 
 N = 5*2^17;
 
 filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
-filt1_opt.J = T_to_J(8192,filt1_opt.Q);
+filt1_opt.J = T_to_J(8192,filt1_opt);
 
 sc1_opt.M = 2;
 

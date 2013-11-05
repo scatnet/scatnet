@@ -11,7 +11,7 @@ N = 5*2^17;
 
 filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
-filt1_opt.J = T_to_J(8192,filt1_opt.Q);
+filt1_opt.J = T_to_J(8192,filt1_opt);
 
 sc1_opt.M = 2;
 
@@ -29,7 +29,7 @@ feature_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 
 filt2_opt = filt1_opt;
 filt2_opt.Q = [1 1];
-filt2_opt.J = T_to_J(8192,filt2_opt.Q);
+filt2_opt.J = T_to_J(8192,filt2_opt);
 
 sc2_opt = sc1_opt;
 
@@ -46,7 +46,7 @@ fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
 feature_fun2 = @(x)(format_scat(fscatt_fun2(x)));
 
 filt3_opt = filt1_opt;
-filt3_opt.J = T_to_J(2*8192,filt3_opt.Q);
+filt3_opt.J = T_to_J(2*8192,filt3_opt);
 
 sc3_opt = sc1_opt;
 
@@ -57,7 +57,7 @@ fscatt_fun3 = @(x)(func_output(@scat_freq,2,scatt_fun3(x),fWop1));
 feature_fun3 = @(x)(format_scat(fscatt_fun3(x)));
 
 filt4_opt = filt2_opt;
-filt4_opt.J = T_to_J(2*8192,filt4_opt.Q);
+filt4_opt.J = T_to_J(2*8192,filt4_opt);
 
 sc4_opt = sc2_opt;
 
@@ -68,7 +68,7 @@ fscatt_fun4 = @(x)(func_output(@scat_freq,2,scatt_fun4(x),fWop2));
 feature_fun4 = @(x)(format_scat(fscatt_fun4(x)));
 
 filt5_opt = filt1_opt;
-filt5_opt.J = T_to_J(4*8192,filt5_opt.Q);
+filt5_opt.J = T_to_J(4*8192,filt5_opt);
 
 sc5_opt = sc1_opt;
 
@@ -79,7 +79,7 @@ fscatt_fun5 = @(x)(func_output(@scat_freq,2,scatt_fun5(x),fWop1));
 feature_fun5 = @(x)(format_scat(fscatt_fun5(x)));
 
 filt6_opt = filt2_opt;
-filt6_opt.J = T_to_J(4*8192,filt6_opt.Q);
+filt6_opt.J = T_to_J(4*8192,filt6_opt);
 
 sc6_opt = sc2_opt;
 

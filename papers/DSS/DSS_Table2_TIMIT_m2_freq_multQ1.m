@@ -11,7 +11,7 @@ T_s = 2560;
 
 filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
 filt1_opt.Q = [8 1];
-filt1_opt.J = T_to_J(512,filt1_opt.Q);
+filt1_opt.J = T_to_J(512,filt1_opt);
 
 sc1_opt.M = 2;
 
@@ -29,7 +29,7 @@ format_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 
 filt2_opt = filt1_opt;
 filt2_opt.Q = [1 1];
-filt2_opt.J = T_to_J(512,filt2_opt.Q);
+filt2_opt.J = T_to_J(512,filt2_opt);
 
 sc2_opt = sc1_opt;
 

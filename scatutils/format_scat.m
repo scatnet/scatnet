@@ -46,7 +46,8 @@ function [out,meta] = format_scat(X,fmt)
 	end
 
 	if strcmp(fmt,'table')
-		resolution = cellfun(@(x) length(x.signal{1}),X);
+		non_empties = cellfun(@(x) ~isempty(x.signal),X);
+		resolution = cellfun(@(x) length(x.signal{1}),X(non_empties));
 		% if not all nonzero resolutions are equal, an error is thrown
 		if ~all(nonzeros(resolution)==resolution(1))
 			error(['To use ''table'' output format, all orders ' ...

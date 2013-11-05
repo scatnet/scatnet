@@ -9,7 +9,7 @@ Js = [9:2:15];
 
 N = 2^17;
 
-src = phone_src('~/timit/TIMIT');
+src = phone_src('/path/to/timit');
 files = src.files;
 rs = RandStream.create('mt19937ar','Seed',floor(pi*1e9));
 files = files(rs.randperm(length(files)));
@@ -20,7 +20,7 @@ scat_opt.oversampling = 2;
 for l = 1:length(Js)
 	opts{l} = opt;
 	
-	opts{l}.J = T_to_J(2^Js(l),opts{l}.Q,opts{l}.B);
+	opts{l}.J = T_to_J(2^Js(l),opts{l});
 
 	[Wop{l},filters{l}] = wavelet_factory_1d(N, opts{l}, scat_opt); 
 end
