@@ -53,8 +53,22 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 			start = filter.start;
 			coefft = filter.coefft;
 			if length(coefft) > sig_length
-				% filter is larger than signal, periodize the former
-				coefft = sum(reshape(coefft,[sig_length length(coefft)/sig_length]),2);
+				% filter is larger than signal, lowpass filter & periodize the former
+				% create lowpass filter
+				start0 = mod(start-1,filter.N)+1;
+				nCoeffts0 = length(coefft);
+				if start0+nCoeffts0-1 <= filter.N
+					rng = start0+0:nCoeffts0-1;
+				else
+					rng = [start0:filter.N 1:nCoeffts0+start0-filter.N-1];
+				end
+				lowpass = zeros(size(coefft));
+				lowpass(rng<sig_length/2+1) = 1;
+				lowpass(rng==sig_length/2+1) = 1/2;
+				lowpass(rng==filter.N-sig_length/2+1) = 1/2;
+				lowpass(rng>filter.N-sig_length/2+1) = 1;
+				% filter and periodize
+				coefft = sum(reshape(coefft.*lowpass,[sig_length length(coefft)/sig_length]),2);
 			end
 			nCoeffts = length(coefft);
 			j = log2(nCoeffts/sig_length);
