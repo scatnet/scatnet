@@ -37,13 +37,20 @@
 % See also 
 %   GRIFFIN_LIM, INVERSE_WAVELET_1D, RICHARDSON_LUCY
 
-function xt = inverse_scat(S, filters, options, node)	
+function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	if nargin < 3
 		options = [];
 	end
 
 	if nargin < 4
 		node = [0 1];
+	end
+	
+	if nargin < 5
+		Ut = cell(size(S));
+		for m0 = 0:length(Ut)-1
+			Ut{m0+1}.signal = cell(size(S{m0+1}.signal));
+		end
 	end
 	
 	if isempty(options)
@@ -91,8 +98,8 @@ function xt = inverse_scat(S, filters, options, node)
 	
 		for k = 1:length(children)
 			j_child = S{m+2}.meta.j(m+1,children(k));
-			x_psi_mod{j_child+1} = inverse_scat(S, filters, options, ...
-				[m+1 children(k)]);
+			[x_psi_mod{j_child+1},Ut] = inverse_scat(S, filters, options, ...
+				[m+1 children(k)], Ut);
 			x_psi_mod{j_child+1} = upsample(x_psi_mod{j_child+1}, N);
 		end
 	
@@ -107,5 +114,7 @@ function xt = inverse_scat(S, filters, options, node)
 
 		xt = richardson_lucy(x_phi, filters{filt_ind}.phi.filter, options);
 	end
+	
+	Ut{m+1}.signal{p} = xt;
 end
 
