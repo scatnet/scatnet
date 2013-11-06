@@ -35,6 +35,7 @@
 % See also
 %    SVM_TEST, CLASSIF_ERR, CLASSIF_RECOG
 
+
 function model = svm_train(db,train_set,opt)
 
 	if nargin < 3
@@ -149,7 +150,7 @@ function model = svm_train(db,train_set,opt)
 
 	if opt.reweight
 		% If reweighting to obtain uniform distribution is needed, add the weights.
-		db_weights = calc_train_weights(db, train_set, opt);
+		db_weights = calc_train_weights(db, train_set);
 		params = [params db_weights];
 	end
 
