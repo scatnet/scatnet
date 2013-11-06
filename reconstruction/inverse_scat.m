@@ -58,9 +58,12 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	end
 
 	options = fill_struct(options, 'oversampling', 1);
+	options = fill_struct(options, 'verbose', 0);
 
 	m = node(1);
 	p = node(2);
+	
+	if options.verbose, fprintf('estimating node [%d %d]\n',m,p); end
 	
 	% find the filter bank used to calculate mth layer
 	filt_ind = min(m+1,length(filters));
@@ -95,6 +98,8 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	if length(children) > 0
 		% recurse on the children to estimate wavelet modulus coefficients,
 		% then recover original signal using Griffin & Lim
+		
+		if options.verbose, fprintf('has children; recovering\n'); end
 	
 		for k = 1:length(children)
 			j_child = S{m+2}.meta.j(m+1,children(k));
@@ -104,13 +109,17 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 		end
 	
 		% TODO: we don't always need this, do we?
+		options1 = options;
 		options1.oversampling = 100;
 		options1.x_resolution = log2(N0/N);
 
+		if options.verbose, fprintf('applying Griffin & Lim\n'); end
 		xt = griffin_lim(x_phi, x_phi, x_psi_mod, filters{filt_ind}, ...
 			options1);
 	else
 		% no children, deconvolve using Richardson & Lucy
+		
+		if options.verbose, fprintf('no children; deconvolving\n'); end
 
 		xt = richardson_lucy(x_phi, filters{filt_ind}.phi.filter, options);
 	end
