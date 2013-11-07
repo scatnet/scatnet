@@ -24,7 +24,7 @@ See homepage of the project for license, documentation, tutorials, bug reports
 http://www.di.ens.fr/data/software/scatnet/
 
 Contact
-_______
+-------
 
 scatnet[AT]di[DOT]ens[DOT]fr
 
