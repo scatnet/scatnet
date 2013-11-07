@@ -105,13 +105,11 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 			j_child = S{m+2}.meta.j(m+1,children(k));
 			[x_psi_mod{j_child+1},Ut] = inverse_scat(S, filters, options, ...
 				[m+1 children(k)], Ut);
-			x_psi_mod{j_child+1} = upsample(x_psi_mod{j_child+1}, N);
 		end
 	
-		% TODO: we don't always need this, do we?
 		options1 = options;
-		options1.oversampling = 100;
 		options1.x_resolution = log2(N0/N);
+		options1.x_phi_resolution = log2(N0/N);
 
 		if options.verbose, fprintf('applying Griffin & Lim\n'); end
 		xt = griffin_lim(x_phi, x_phi, x_psi_mod, filters{filt_ind}, ...

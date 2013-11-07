@@ -39,12 +39,25 @@
 function x = griffin_lim(x_init, x_phi, x_psi_mod, filters, options)
 	options = fill_struct(options, 'gl_iter', 32);
 	options = fill_struct(options, 'verbose', 0);
-	
+	options = fill_struct(options, 'x_phi_resolution', 0);
+
 	dual_filters = dual_filter_bank(filters);
 	
 	x0 = x_init;
 	[x0_phi, x0_psi, meta_phi, meta_psi] = wavelet_1d(x0, filters, options);
 	
+	for k = 1:length(filters.psi.filter)
+		if isempty(x_psi_mod{k})
+			continue;
+		end
+		ds = length(x_psi_mod{k})/length(x0_psi{k});
+		if ds > 1
+			x_psi_mod{k} = x_psi_mod{k}(1:ds:end)*sqrt(ds);
+		else
+			x_psi_mod{k} = upsample(x_psi_mod{k}, length(x0_psi{k}));
+		end
+	end
+
 	for iter = 1:options.gl_iter
 		if options.verbose, fprintf('%d...',iter); end
 		for k = 1:length(filters.psi.filter)
@@ -54,6 +67,8 @@ function x = griffin_lim(x_init, x_phi, x_psi_mod, filters, options)
 				x1_psi{k} = x0_psi{k}.*x_psi_mod{k}./abs(x0_psi{k});
 			end
 		end
+		
+		meta_phi.resolution = options.x_phi_resolution;
 		
 		x1 = inverse_wavelet_1d(length(x_init), x_phi, x1_psi, meta_phi, ...
 			meta_psi, dual_filters, options);
