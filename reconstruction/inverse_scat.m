@@ -68,7 +68,13 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 
 	m = node(1);
 	p = node(2);
-	
+
+	if ~isempty(Ut{m+1}.signal{p})
+		if options.verbose, fprintf('node [%d %d] is already estimated\n',m,p); end
+		xt = Ut{m+1}.signal{p};
+		return;
+	end
+
 	if options.verbose, fprintf('estimating node [%d %d]\n',m,p); end
 	
 	% find the filter bank used to calculate mth layer
@@ -109,8 +115,12 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	
 		for k = 1:length(children)
 			j_child = S{m+2}.meta.j(m+1,children(k));
-			[x_psi_mod{j_child+1},Ut] = inverse_scat(S, filters, options, ...
-				[m+1 children(k)], Ut);
+			if isempty(Ut{m+2}.signal{children(k)})
+				[x_psi_mod{j_child+1},Ut] = inverse_scat(S, filters, ...
+					options, [m+1 children(k)], Ut);
+			else
+				x_psi_mod{j_child+1} = Ut{m+2}.signal{children(k)};
+			end
 		end
 	
 		options1 = options;
