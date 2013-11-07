@@ -13,6 +13,11 @@
 %        WAVELET_1D and INVERSE_WAVELET_1D that are called. Parameters for
 %        GRIFFIN_LIM are:
 %            gl_iter (numeric): The number of iterations (default 32).
+%            verbose (boolean): If true, shows computation information (default
+%               false).
+%            x_phi_resolution (numeric): The resolution of the x_phi input,
+%               with respect to the maximum resolution allowed by filters
+%               (default 0).
 %
 % Output
 %     x (numeric): The result of the algorithm.

@@ -1,7 +1,7 @@
 % INVERSE_SCAT Reconstruct a signal from its scattering coefficients
 %
 % Usage
-%    xt = inverse_scat(S, filters, options, node)
+%    [xt, Ut] = inverse_scat(S, filters, options, node, Ut)
 %
 % Input
 %    S (cell): The scattering coefficients output by SCAT.
@@ -10,15 +10,25 @@
 %    options (struct, optional): Specifies different parameters for the 
 %        inversion. These are passed on to GRIFFIN_LIM and RICHARDSON_LUCY, so
 %        please see the documentation for these functions for specific 
-%        parameter settings.
+%        parameter settings. The parameter settings used by INVERSE_SCAT are:
+%           oversampling (integer): The amount of oversampling used when
+%              determining the resolution of a signal with respect to its
+%              critical sampling rate, expressed as a power of 2 (default 1).
+%           verbose (boolean): If true, shows computational information.
 %    node (numeric, optional): A vector of the form [m p], where m is the 
 %        coefficient to recover and p is its index. If [S,U] is the output of
 %        the SCAT function, this corresponds to estimating U{m+1}.singal{p}.
 %        To recover the original signal, node is therefore [0 1] (Default 
 %        [0 1])
+%    Ut (cell array, optional): A cell array of layers, representing the coef-
+%        icients already estimated. If a coefficient is already present in Ut,
+%        INVERSE_SCAT will use them instead of estimating them.
 %
 % Output
 %    xt (numeric): The reconstructed signal.
+%    Ut (cell array): A cell array of layers containing the wavelet modulus 
+%       coefficients estimated by the algorithm, added to those provided as
+%       input in Ut, if present.
 %
 % Description
 %    The scattering transform is inverted recursively, estimating 
