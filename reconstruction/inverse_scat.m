@@ -50,6 +50,12 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 		Ut = cell(size(S));
 		for m0 = 0:length(Ut)-1
 			Ut{m0+1}.signal = cell(size(S{m0+1}.signal));
+			Ut{m0+1}.meta = struct();
+			field_names = fieldnames(S{m0+1}.meta);
+			for k = 1:length(field_names)
+				Ut{m0+1}.meta = setfield(Ut{m0+1}.meta, field_names{k}, ...
+					zeros(size(getfield(S{m0+1}.meta, field_names{k}),1),0));
+			end
 		end
 	end
 	
@@ -123,5 +129,8 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	end
 	
 	Ut{m+1}.signal{p} = xt;
+	Ut{m+1}.meta = map_meta(S{m+1}.meta, p, Ut{m+1}.meta, p, {'bandwidth', 'resolution'});
+	Ut{m+1}.meta.bandwidth(1,p) = bw;
+	Ut{m+1}.meta.resolution(1,p) = log2(N0/N);
 end
 
