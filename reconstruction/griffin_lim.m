@@ -37,6 +37,10 @@
 %    WAVELET_1D, INVERSE_WAVELET_1D
 
 function x = griffin_lim(x_init, x_phi, x_psi_mod, filters, options)
+	if nargin < 5
+		options = struct();
+	end
+
 	options = fill_struct(options, 'gl_iter', 32);
 	options = fill_struct(options, 'verbose', 0);
 	options = fill_struct(options, 'x_phi_resolution', 0);
