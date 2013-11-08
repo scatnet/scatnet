@@ -12,7 +12,7 @@ clear all;
 
 %set the maximum analysis scale
 filt_opt.J = 14;
-filt_opt.filter_format='fourier';
+filt_opt.filter_format='fourier_truncated';
 %size of realizations
 N=2^(4+filt_opt.J);
 
