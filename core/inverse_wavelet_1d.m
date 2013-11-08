@@ -32,11 +32,15 @@
 % See also 
 %   DUAL_FILTER_BANK, WAVELET_1D
 
-function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
+function [x,x_psi] = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 	dual_filters, options)
 	
 	if length(N0)>1
 		error('Only 1D for the moment!')
+	end
+	
+	if nargin < 7
+		options = struct();
 	end
 
 	options = fill_struct(options, 'x_resolution', 0);
@@ -62,9 +66,43 @@ function x = inverse_wavelet_1d(N0, x_phi, x_psi, meta_phi, meta_psi, ...
 		N_padded = dual_filters.meta.size_filter/2^meta_psi.resolution(k);
 		x_psi{k} = pad_signal(x_psi{k}, N_padded, dual_filters.meta.boundary);
 
-		x_psi{k} = upsample(x_psi{k}, N0_padded);
+		% Calculate dual filter at current resolution as given by N0_padded.
+		dpsi = realize_filter(dual_filters.psi.filter{k});
+		dpsi = [dpsi(1:N0_padded/2); ...
+			dpsi(N0_padded/2+1)/2+dpsi(end-N0_padded/2+1)/2; ...
+			dpsi(end-N0_padded/2+2:end)];
+		
+		% Determine the energy in each of the subsampled blocks.
+		n2 = sum(abs(reshape(dpsi, [N_padded N0_padded/N_padded]).^2),1);
+		
+		% Find the blocks with the most energy.
+		[temp,ind] = sort(n2,'descend');
+		if n2(ind(1)) > sum(n2)*0.9
+			% Most of the energy is contained into one block; just put all the
+			% frequencies into this block.
+			x_psi_f = fft(x_psi{k});
+			x_psi_f = [zeros((ind(1)-1)*N_padded,1); ...
+				x_psi_f;  ...
+				zeros(N0_padded-ind(1)*N_padded,1)];
+			x_psi{k} = ifft(x_psi_f);
+		else
+			% Most of the energy is divided between two blocks; split the 
+			% frequencies between the two blocks.
+			x_psi_f = fft(x_psi{k});
+			x_psi_f = fftshift(x_psi_f);
+			x_psi_f = [zeros(((ind(1)+ind(2))/2-1)*N_padded,1); ...
+				x_psi_f; ...
+				zeros(N0_padded-((ind(1)+ind(2))/2)*N_padded,1)];
+			x_psi{k} = ifft(x_psi_f);
+		end
+		
+		% Multiply by the energy-preserving factor. Note that the zero-padding
+		% of the FFT has already divided by N0_padded/N_padded.
+		x_psi{k} = x_psi{k}*sqrt(N0_padded/N_padded);
 		
 		x = x+conv_sub_1d(fft(x_psi{k}), dual_filters.psi.filter{k}, 0);
+		
+		x_psi{k} = unpad_signal(x_psi{k}, 0, N0);
 	end
 	
 	x = real(x);

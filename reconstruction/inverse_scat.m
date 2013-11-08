@@ -1,7 +1,7 @@
 % INVERSE_SCAT Reconstruct a signal from its scattering coefficients
 %
 % Usage
-%    xt = inverse_scat(S, filters, options, node)
+%    [xt, Ut] = inverse_scat(S, filters, options, node, Ut)
 %
 % Input
 %    S (cell): The scattering coefficients output by SCAT.
@@ -10,15 +10,25 @@
 %    options (struct, optional): Specifies different parameters for the 
 %        inversion. These are passed on to GRIFFIN_LIM and RICHARDSON_LUCY, so
 %        please see the documentation for these functions for specific 
-%        parameter settings.
+%        parameter settings. The parameter settings used by INVERSE_SCAT are:
+%           oversampling (integer): The amount of oversampling used when
+%              determining the resolution of a signal with respect to its
+%              critical sampling rate, expressed as a power of 2 (default 1).
+%           verbose (boolean): If true, shows computational information.
 %    node (numeric, optional): A vector of the form [m p], where m is the 
 %        coefficient to recover and p is its index. If [S,U] is the output of
 %        the SCAT function, this corresponds to estimating U{m+1}.singal{p}.
 %        To recover the original signal, node is therefore [0 1] (Default 
 %        [0 1])
+%    Ut (cell array, optional): A cell array of layers, representing the coef-
+%        icients already estimated. If a coefficient is already present in Ut,
+%        INVERSE_SCAT will use them instead of estimating them.
 %
 % Output
 %    xt (numeric): The reconstructed signal.
+%    Ut (cell array): A cell array of layers containing the wavelet modulus 
+%       coefficients estimated by the algorithm, added to those provided as
+%       input in Ut, if present.
 %
 % Description
 %    The scattering transform is inverted recursively, estimating 
@@ -37,7 +47,7 @@
 % See also 
 %   GRIFFIN_LIM, INVERSE_WAVELET_1D, RICHARDSON_LUCY
 
-function xt = inverse_scat(S, filters, options, node)	
+function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	if nargin < 3
 		options = [];
 	end
@@ -46,14 +56,36 @@ function xt = inverse_scat(S, filters, options, node)
 		node = [0 1];
 	end
 	
+	if nargin < 5
+		Ut = cell(size(S));
+		for m0 = 0:length(Ut)-1
+			Ut{m0+1}.signal = cell(size(S{m0+1}.signal));
+			Ut{m0+1}.meta = struct();
+			field_names = fieldnames(S{m0+1}.meta);
+			for k = 1:length(field_names)
+				Ut{m0+1}.meta = setfield(Ut{m0+1}.meta, field_names{k}, ...
+					zeros(size(getfield(S{m0+1}.meta, field_names{k}),1),0));
+			end
+		end
+	end
+	
 	if isempty(options)
 		options = struct();
 	end
 
 	options = fill_struct(options, 'oversampling', 1);
+	options = fill_struct(options, 'verbose', 0);
 
 	m = node(1);
 	p = node(2);
+
+	if ~isempty(Ut{m+1}.signal{p})
+		if options.verbose, fprintf('node [%d %d] is already estimated\n',m,p); end
+		xt = Ut{m+1}.signal{p};
+		return;
+	end
+
+	if options.verbose, fprintf('estimating node [%d %d]\n',m,p); end
 	
 	% find the filter bank used to calculate mth layer
 	filt_ind = min(m+1,length(filters));
@@ -88,24 +120,37 @@ function xt = inverse_scat(S, filters, options, node)
 	if length(children) > 0
 		% recurse on the children to estimate wavelet modulus coefficients,
 		% then recover original signal using Griffin & Lim
+		
+		if options.verbose, fprintf('has children; recovering\n'); end
 	
 		for k = 1:length(children)
 			j_child = S{m+2}.meta.j(m+1,children(k));
-			x_psi_mod{j_child+1} = inverse_scat(S, filters, options, ...
-				[m+1 children(k)]);
-			x_psi_mod{j_child+1} = upsample(x_psi_mod{j_child+1}, N);
+			if isempty(Ut{m+2}.signal{children(k)})
+				[x_psi_mod{j_child+1},Ut] = inverse_scat(S, filters, ...
+					options, [m+1 children(k)], Ut);
+			else
+				x_psi_mod{j_child+1} = Ut{m+2}.signal{children(k)};
+			end
 		end
 	
-		% TODO: we don't always need this, do we?
-		options1.oversampling = 100;
+		options1 = options;
 		options1.x_resolution = log2(N0/N);
+		options1.x_phi_resolution = log2(N0/N);
 
+		if options.verbose, fprintf('applying Griffin & Lim\n'); end
 		xt = griffin_lim(x_phi, x_phi, x_psi_mod, filters{filt_ind}, ...
 			options1);
 	else
 		% no children, deconvolve using Richardson & Lucy
+		
+		if options.verbose, fprintf('no children; deconvolving\n'); end
 
 		xt = richardson_lucy(x_phi, filters{filt_ind}.phi.filter, options);
 	end
+	
+	Ut{m+1}.signal{p} = xt;
+	Ut{m+1}.meta = map_meta(S{m+1}.meta, p, Ut{m+1}.meta, p, {'bandwidth', 'resolution'});
+	Ut{m+1}.meta.bandwidth(1,p) = bw;
+	Ut{m+1}.meta.resolution(1,p) = log2(N0/N);
 end
 
