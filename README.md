@@ -14,19 +14,21 @@ filters/selesnick_filter_bank_1d.
 * The MATLAB Signal Processing Toolbox is no longer required
 
 
-ScatNet
--------
+ScatNet v0.2
+------------
 
-ScatNet is a MATLAB implementation of the Scattering Networks.
+ScatNet is a MATLAB library for scattering networks.
 
-See homepage of the project for license, documentation, tutorials, bug reports
+See our homepage of the project for documentation, tutorials, and bibliography
 
 http://www.di.ens.fr/data/software/scatnet/
 
 Contact
 -------
 
+For any enquiry, please write to the brand new e-mail address of our team :
 scatnet[AT]di[DOT]ens[DOT]fr
+where [AT] and [DOT] must be replaced by the characters @ and . respectively.
 
 Install ScatNet
 ---------------
@@ -49,3 +51,11 @@ http://www.di.ens.fr/data/software/scatnet/quickstart-audio/
 Use ScatNet with images:
 http://www.di.ens.fr/data/software/scatnet/quickstart-image/
 
+Team
+-------
+
+Developers : Laurent Sifre, Joakim Anden, Edouard Oyallon, Michel Kapoko, Vincent Lostanlen.
+
+Beta-testers : Irene Waldspurger, Guy Wolf, Matthew Hirn.
+
+Many thanks to : Stephane Mallat, our team leader ; Ivan Selesnick (NYU), of which the filters/selesnick/ package appears courtesy ; Joan Bruna (NYU) for his help.
