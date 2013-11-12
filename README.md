@@ -54,8 +54,8 @@ http://www.di.ens.fr/data/software/scatnet/quickstart-image/
 Team
 -------
 
-Developers : Laurent Sifre, Joakim Anden, Edouard Oyallon, Michel Kapoko, Vincent Lostanlen.
+Developers : Laurent Sifre, Joakim Andén, Edouard Oyallon, Michel Kapoko, Vincent Lostanlen.
 
-Beta-testers : Irene Waldspurger, Guy Wolf, Matthew Hirn.
+Beta-testers : Irène Waldspurger, Guy Wolf, Matthew Hirn.
 
-Many thanks to : Stephane Mallat, our team leader ; Ivan Selesnick (NYU), of which the filters/selesnick/ package appears courtesy ; Joan Bruna (NYU) for his help.
+Many thanks to : Stéphane Mallat, our team leader ; Ivan Selesnick (NYU), of which the filters/selesnick/ package appears courtesy ; Joan Bruna (NYU) for his help.
