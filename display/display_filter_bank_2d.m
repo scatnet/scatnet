@@ -31,11 +31,12 @@ if(isfield(filters,'phi'))
 	end
 
 	margin = 4;
+    margin_outer = 10;
 	N = 2*n+1;
 	N_margin = N + margin;
 	J = filters.meta.J;
 	L = filters.meta.L;
-	big_img = ones(N_margin*J, (2*L+1)*N_margin);
+	big_img = ones(N_margin*J, (2*L+1)*N_margin + 2*margin_outer);
 
 
 	% low pass : first on the left
@@ -45,7 +46,6 @@ if(isfield(filters,'phi'))
 		M = 1;
 	end
 	big_img((1:N), (1:N)) = real(filt_for_disp)/M;
-	big_img((1:N)+N_margin ,(1:N)) = imag(filt_for_disp)/M;
 
 	% band pass : following filters
 	for p = 1:numel(filters.psi.filter)
@@ -59,9 +59,11 @@ if(isfield(filters,'phi'))
 		j = filters.psi.meta.j(p);
 		theta = filters.psi.meta.theta(p);
 
-		big_img((1:N)+ j*N_margin, (1:N) + (theta)*N_margin) = ...
-		real(filt_for_disp)/M;
-		big_img((1:N)+ j*N_margin, (1:N) + (theta+L)*N_margin) = ...
+		big_img((1:N)+ j*N_margin, ...
+                (1:N) + (theta)*N_margin + margin_outer) = ...
+                    real(filt_for_disp)/M;
+		big_img((1:N)+ j*N_margin, ...
+                   (1:N) + (theta+L)*N_margin + 2*margin_outer) = ...
 		imag(filt_for_disp)/M;
 	end
 
