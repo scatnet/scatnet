@@ -10,7 +10,7 @@ clear; close all;
 
 %% build a filter bank of oriented and dilated morlet wavelets
 size_in = [512, 512];
-options.margins = [0, 0];
+options.min_margin = [0, 0];
 filters = morlet_filter_bank_2d(size_in, options);
 
 %% build two grids of dirac
