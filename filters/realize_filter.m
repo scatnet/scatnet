@@ -32,6 +32,8 @@ function filter_f = realize_filter(filter, N)
 		
 		if filter.start <= 0
 			ind = [N0+filter.start:N0 1:length(filter.coefft)+filter.start-1];
+		elseif filter.start+length(filter.coefft) > N0
+			ind = [filter.start:N0 1:length(filter.coefft)+filter.start-N0-1];
 		else
 			ind = [1:length(filter.coefft)]+filter.start-1;
 		end
