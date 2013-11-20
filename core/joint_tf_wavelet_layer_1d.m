@@ -5,84 +5,25 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 	
 	calc_U = (nargout>=2);
 	
-	options = fill_struct(options,'time_renormalize',0);
-	options = fill_struct(options,'time_renormalize_epsilon',2^(-20));
-	
 	if ~isfield(U.meta, 'bandwidth'), U.meta.bandwidth = 2*pi; end
 	if ~isfield(U.meta, 'resolution'), U.meta.resolution = 0; end
 
-	% renormalize in time
-	% un-normalized coefficients are in U, normalized coefficients are in Up
-	
-	if calc_U && options.time_renormalize
-		Up = concatenate_freq(U,'cell');
-		r0 = 1;
-		for k = 1:length(Up.signal)
-			ind0 = r0:r0+length(Up.signal{k})-1;
-		
-			resolutions = unique(Up.meta.resolution(ind0));
-		
-			for l = 1:length(resolutions)
-				valid = find(Up.meta.resolution(ind0)<=resolutions(l));
-				% WARNING: this is wrong, should try to use correct N
-				% will only work if the original signal is of size N, not smaller
-				mask = 1:2^resolutions(l):filters{2}.N/2;
-				if resolutions(l)<max(resolutions)
-					mask = mask(2:2:end);
-				end
-				nsignal = zeros(length(valid),length(mask));
-				for r = 1:length(valid)
-					res1 = Up.meta.resolution(ind0(valid(r)));
-					mask1 = ((mask-1)/2^res1+1);
-					nsignal(r,:) = Up.signal{k}{valid(r)}(mask1)/sqrt(2^res1);
-				end
-				options1 = options;
-				options1.x_resolution = 0; % WARNING: wrong!
-				options1.psi_mask = [];
-				options1.phi_renormalize = 0;
-				options1.antialiasing = 100;
-				nsignal_phi = wavelet_1d(nsignal, filters{1}, options1);
-				nsignal = nsignal./(nsignal_phi+options.time_renormalize_epsilon);
-				for r = 1:length(valid)
-					res1 = Up.meta.resolution(ind0(valid(r)));
-					mask1 = ((mask-1)/2^res1+1);
-					Up.signal{k}{valid(r)}(mask1) = nsignal(r,:)*sqrt(2^res1);
-				end
-			end
-		
-			r0 = r0+length(Up.signal{k});
-		end
-		Up = separate_freq(Up);
-	end
-	
 	% filter along time, no modulus
 
 	% Compute convolutions along time (filters{2} contains temporal filters).
 	if calc_U
 		[U_phi, U_psi] = wavelet_layer_1d(U, filters{2}, options);
-		if options.time_renormalize
-			% If we have renormalized coefficents, decompose them too.
-			[Up_phi, Up_psi] = wavelet_layer_1d(Up, filters{2}, options);
-		else
-			Up_phi = U_phi;
-			Up_psi = U_psi;
-		end
 	else
 		% No U to calculate, jsut the lowpass then.
 		U_phi = wavelet_layer_1d(U, filters{2}, options);
 		U_psi.signal = {};
 		U_psi.meta = struct();
 		U_psi.meta.j = zeros(0,0);
-		
-		Up_phi = U_phi;
-		Up_psi = U_psi;
 	end
 	
 	% Line the coefficients up into time-frequency tables
 	Y_phi = concatenate_freq(U_phi);
 	Y_psi = concatenate_freq(U_psi);
-	Yp_phi = concatenate_freq(Up_phi);
-	Yp_psi = concatenate_freq(Up_psi);
 	
 	% Prepare fr_j fields if they are not present.
 	if ~isfield(Y_phi.meta,'fr_j')
@@ -91,14 +32,6 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 	
 	if ~isfield(Y_psi.meta,'fr_j')
 		Y_psi.meta.fr_j = zeros(0,size(Y_psi.meta.j,2));
-	end
-	
-	if ~isfield(Yp_phi.meta,'fr_j')
-		Yp_phi.meta.fr_j = zeros(0,size(Yp_phi.meta.j,2));
-	end
-	
-	if ~isfield(Yp_psi.meta,'fr_j')
-		Yp_psi.meta.fr_j = zeros(0,size(Yp_psi.meta.j,2));
 	end
 	
 	% These U_psi and U_psi are going to contain the real outputs, filtered in frequency as well.
@@ -114,16 +47,12 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 	r_phi = 1;
 	r_psi = 1;
 	p2 = 1;
-	for s = 1:4
+	for s = 1:2
 		% Process each of the tables.
 		if s == 1
 			Z = Y_phi;
 		elseif s == 2
 			Z = Y_psi;
-		elseif s == 3
-			Z = Yp_phi;
-		elseif s == 4
-			Z = Yp_psi;
 		end
 		
 		% If field is not present, there has been no subsampling along frequency so set it to zero.
@@ -137,13 +66,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 			% For each table (there may be multiple if we're on 2nd order)..
 			
 			% TODO: Actually use fr_bw to calc psi_mask etc.
-			if s <= 2
-				% On un-normalized coefficients, just calculate lowpass.
-				psi_mask = false(size(filters{1}.psi.filter));
-			else
-				% On normalized coefficients, calculate them all.
-				psi_mask = calc_U&true(size(filters{1}.psi.filter));
-			end
+			psi_mask = calc_U&true(size(filters{1}.psi.filter));
 		
 			% Specify options for frequency decomposition.
 			options1 = options;
@@ -165,8 +88,9 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				wavelet_1d(signal, filters{1}, options1);
 			
 			if s == 1
-				% We've transformed the (un-normalized) temporal low-pass Y_phi,
-				% so we only care about the frequential lowpass Z_phi.
+				% We've transformed the temporal low-pass Y_phi, so we need to
+				% propertly care for the frequential lowpass Z_phi. Put it in
+				% U_phi, that is.
 				
 				% Determine the subsampling rate along frequency.
 				ds = meta_phi.resolution-options1.x_resolution;
@@ -191,9 +115,9 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				% Increase current running U_phi index.
 				r_phi = r_phi+length(ind_phi);
 			elseif s == 2
-				% We've transformed the (un-normalized) temporal band-pass 
-				% Y_psi, so we care about both both frequential low-pass and
-				% band-pass Z_phi and Z_psi, respectively.
+				% We've transformed the temporal band-pass Y_psi, so we care 
+				% about both both frequential low-pass and band-pass Z_phi and
+				% Z_psi, respectively.
 				
 				% To facilitate treatment, just handle the low-pass as another
 				% band-pass filter and concatenate to Z_psi.
@@ -202,9 +126,6 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				meta_psi = map_meta(meta_phi,1,meta_psi,length(Z_psi),'j');
 				meta_psi.j(length(Z_psi)) = length(filters{1}.psi.filter);
 			end
-			% Note that if s == 3 or s == 4, we don't include the low-pass
-			% components Z_phi, only Z_psi. This is because for these 
-			% normalized coefficients, we only want band-pass x band-pass.
 		
 			for k = find(psi_mask)
 				% For each frequential band-pass filter.
@@ -225,12 +146,12 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				% Copy the meta fields of the original frequencies.
 				U_psi.meta = map_meta(Z.meta,ind0,U_psi.meta,ind_psi,{'j','fr_j'});
 				
-				if s == 2 || s == 4
-					% If we're a temporal band-pass Y_psi or Yp_psi, new j's
+				if s == 2
+					% If we're a temporal band-pass Y_psi, new j's
 					% are just old j's.
 					U_psi.meta.j(:,ind_psi) = Z.meta.j(:,ind0);
 				else
-					% If we're a temporal low-pass Y_phi or Yp_phi, new j's
+					% If we're a temporal low-pass Y_phi, new j's
 					% are big J. This won't already be in Z.meta.j since
 					% low-pass filter indices are not in there.
 					U_psi.meta.j(:,ind_psi) = [Z.meta.j(:,ind0); length(filters{2}.psi.filter)*ones(1,fr_count)];
