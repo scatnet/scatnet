@@ -199,7 +199,8 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				% band-pass filter and concatenate to Z_psi.
 				Z_psi = [Z_psi Z_phi];
 				psi_mask = [psi_mask true];
-				meta_psi = map_meta(meta_phi,1,meta_psi,length(Z_psi));
+				meta_psi = map_meta(meta_phi,1,meta_psi,length(Z_psi),'j');
+				meta_psi.j(length(Z_psi)) = length(filters{1}.psi.filter);
 			end
 			% Note that if s == 3 or s == 4, we don't include the low-pass
 			% components Z_phi, only Z_psi. This is because for these 
@@ -235,8 +236,9 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 					U_psi.meta.j(:,ind_psi) = [Z.meta.j(:,ind0); length(filters{2}.psi.filter)*ones(1,fr_count)];
 				end
 				% Add the latest frequency decomposition scale, fr_j, which
-				% here is given by the loop index k, minus one.
-				U_psi.meta.fr_j(:,ind_psi) = [Z.meta.fr_j(:,ind0); (k-1)*ones(1,fr_count)];
+				% here is given by the meta_psi.j.
+				fr_j = meta_psi.j(k);
+				U_psi.meta.fr_j(:,ind_psi) = [Z.meta.fr_j(:,ind0); fr_j*ones(1,fr_count)];
 				% Assign the frequential resolution after subsampling by 2^ds.
 				new_res = meta_psi.resolution(k);
 				U_psi.meta.fr_resolution(1,ind_psi) = new_res*ones(1,fr_count);
