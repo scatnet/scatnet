@@ -26,6 +26,11 @@ function to_meta = map_meta(from_meta, from_ind, to_meta, to_ind, except)
 	
 	field_names = fieldnames(from_meta);
 	
+	fact = length(to_ind)/length(from_ind);
+	if abs(fact-round(fact))>1e-6
+		error('length(to_ind) must be a multiple of length(from_ind)');
+	end
+	
 	for k = 1:length(field_names)
 		if any(strcmp(field_names{k},except))
 			continue;

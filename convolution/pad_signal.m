@@ -49,6 +49,10 @@ function y = pad_signal(x, Npad, boundary, center)
     orig_sz = size(x);
     orig_sz = orig_sz(1:length(Npad));
 
+	if any(orig_sz > Npad)
+		error('Original size must be smaller than padding size');
+	end
+
 	if center
 		margins = floor((Npad - orig_sz)/2);
     end
