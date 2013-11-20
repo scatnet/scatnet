@@ -3,10 +3,17 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 		options = struct();
 	end
 	
+	options = fill_struct(options, 'negative_freq', 1);
+	
 	calc_U = (nargout>=2);
 	
 	if ~isfield(U.meta, 'bandwidth'), U.meta.bandwidth = 2*pi; end
 	if ~isfield(U.meta, 'resolution'), U.meta.resolution = 0; end
+	
+	% If we're doing negative frequencies, prepare filters	
+	if options.negative_freq
+		neg_filters = flip_filters(filters{1});
+	end
 
 	% filter along time, no modulus
 
@@ -86,7 +93,21 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 			% Actually transform using frequency filters (filters{1}).
 			[Z_phi, Z_psi, meta_phi, meta_psi] = ...
 				wavelet_1d(signal, filters{1}, options1);
-			
+				
+			if options.negative_freq
+				% Calculate wavelet transform with negative frequencies.
+				[temp1, Z_neg_psi, temp2, meta_neg_psi] = ...
+					wavelet_1d(signal, neg_filters, options1);
+				% Add these to the set of all wavelet coefficients, Z_psi.
+				psi_mask = [psi_mask psi_mask];
+				Z_psi = [Z_psi Z_neg_psi];
+				% Copy the meta fields, setting the j to negative.
+				rng_neg = 1:length(Z_neg_psi);
+				rng = length(Z_psi)-length(Z_neg_psi)+1:length(Z_psi);
+				meta_psi = map_meta(meta_neg_psi,rng_neg,meta_psi,rng,'j');
+				meta_psi.j(rng) = -meta_neg_psi.j(rng_neg);
+			end
+		
 			if s == 1
 				% We've transformed the temporal low-pass Y_phi, so we need to
 				% propertly care for the frequential lowpass Z_phi. Put it in
