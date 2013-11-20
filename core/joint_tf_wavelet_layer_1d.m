@@ -147,7 +147,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 		
 			% Specify options for frequency decomposition.
 			options1 = options;
-			options1.x_resolution = Z.meta.fr_resolution(p1);
+			options1.x_resolution = Z.meta.fr_resolution(r0);
 			options1.psi_mask = psi_mask;
 			options1.phi_renormalize = 0;
 
@@ -169,7 +169,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				% so we only care about the frequential lowpass Z_phi.
 				
 				% Determine the subsampling rate along frequency.
-				ds = meta_phi.resolution;
+				ds = meta_phi.resolution-options1.x_resolution;
 				% Extract the indices of the "original" signal along frequency,
 				% with subsampling by 2^ds.
 				ind0 = r0:2^ds:r0+size(signal,1)-1;
@@ -184,8 +184,9 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 		
 				% Copy the meta fields of the original frequencies.
 				U_phi.meta = map_meta(Z.meta,ind0,U_phi.meta,ind_phi);
-				% Assign the frequential resolution after subsampling by 2^ds.
-				U_phi.meta.fr_resolution(1,ind_phi) = ds*ones(1,fr_count);
+				% Assign the frequential resolution.
+				new_res = meta_phi.resolution;
+				U_phi.meta.fr_resolution(1,ind_phi) = new_res*ones(1,fr_count);
 				
 				% Increase current running U_phi index.
 				r_phi = r_phi+length(ind_phi);
@@ -212,7 +213,7 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				% afterwards.
 				U_psi.signal{p2} = reshape(Z_psi{k},[size(Z_psi{k},1) sz_orig(2:3)]);
 				% Determine the subsampling rate along frequency.
-				ds = meta_psi.resolution(k);
+				ds = meta_psi.resolution(k)-options1.x_resolution;
 				% Extract the indices of the "original" signal along frequency,
 				% with subsampling by 2^ds.
 				ind0 = r0:2^ds:r0+size(signal,1)-1;
@@ -237,7 +238,8 @@ function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
 				% here is given by the loop index k, minus one.
 				U_psi.meta.fr_j(:,ind_psi) = [Z.meta.fr_j(:,ind0); (k-1)*ones(1,fr_count)];
 				% Assign the frequential resolution after subsampling by 2^ds.
-				U_psi.meta.fr_resolution(1,ind_psi) = ds*ones(1,fr_count);
+				new_res = meta_psi.resolution(k);
+				U_psi.meta.fr_resolution(1,ind_psi) = new_res*ones(1,fr_count);
 				
 				% Increase the current running U_psi index.
 				r_psi = r_psi+length(ind_psi);
