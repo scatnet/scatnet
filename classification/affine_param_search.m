@@ -42,7 +42,7 @@ function [err,dim] = affine_param_search(db,train_set,valid_set,opt)
 				train_set(cvtrain_set),train_set(cvvalid_set),opt);
 			
 			[cvtrain_set,cvvalid_set] = ...
-				next_fold(cvtrain_set,cvvalid_set,obj_class);
+				next_fold(obj_class,cvtrain_set,cvvalid_set);
 		end
 	else
 		model = affine_train(db,train_set,opt);

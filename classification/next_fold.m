@@ -1,13 +1,13 @@
 % NEXT_FOLD Calculates the next fold in an N-fold cross validation
 %
 % Usage
-%    [train_set, test_set] = NEXT_FOLD(train_set, test_set, obj_class)
+%    [train_set, test_set] = NEXT_FOLD(obj_class, train_set, test_set)
 %
 % Input
-%    train_set (int): The training set of the current fold.
-%    test_set (int): The testing set of the current fold.
 %    obj_class (int): The classes of the objects in the database. The sets 
 %       train_set and test_set contain indexes of obj_class.
+%    train_set (int): The training set of the current fold.
+%    test_set (int): The testing set of the current fold.
 %
 % Output
 %    train_set (int): The training set of the next fold.
@@ -28,7 +28,7 @@
 % See also
 %    CREATE_PARTITION
 
-function [train_set, test_set] = next_fold(train_set, test_set, obj_class)
+function [train_set, test_set] = next_fold(obj_class, train_set, test_set)
 	cv_folds = (length(train_set)+length(test_set))/length(test_set);
 	
 	for k = 1:max(obj_class)
