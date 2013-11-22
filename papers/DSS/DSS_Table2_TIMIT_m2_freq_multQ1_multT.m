@@ -94,13 +94,17 @@ duration_fun = @(x,obj)(32*duration_feature(x,obj));
 features = {format_fun1, format_fun2, format_fun3, ...
 	format_fun4, format_fun5, format_fun6, duration_fun};
 
-	for k = 1:length(features)
-		fprintf('testing feature #%d...',k);
-		tic;
+for k = 1:length(features)
+	fprintf('testing feature #%d...',k);
+	tic;
+	if nargin(features{k}) == 1
 		sz = size(features{k}(randn(N,1)));
-		aa = toc;
-		fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
+	else
+		sz = size(features{k}(randn(N,1),struct('u1',1,'u2',N)));
 	end
+	aa = toc;
+	fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
+end
 
 database_opt.input_sz = N;
 database_opt.output_sz = T_s;

@@ -34,7 +34,11 @@ features = {format_fun1, duration_fun};
 for k = 1:length(features)
 	fprintf('testing feature #%d...',k);
 	tic;
-	sz = size(features{k}(randn(N,1)));
+	if nargin(features{k}) == 1
+		sz = size(features{k}(randn(N,1)));
+	else
+		sz = size(features{k}(randn(N,1),struct('u1',1,'u2',N)));
+	end
 	aa = toc;
 	fprintf('OK (%.2fs) (size [%d,%d])\n',aa,sz(1),sz(2));
 end
