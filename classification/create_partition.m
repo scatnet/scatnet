@@ -3,12 +3,16 @@
 % Usage
 %    [train_set, test_set] = CREATE_PARTITION(src, ratio, shuffle)
 %
+%    [train_set, test_set] = CREATE_PARTITION(obj_class, ratio, shuffle)
+%
 % Input
 %    src (struct): The source structure describing the objects.
-%    ratio (numeric): The proportion of all instances selected for training 
-%       (default 0.8).
-%    shuffle (boolean): If true, objects are shuffled before assigning parti-
-%       tions (default 1).
+%    ratio (numeric, optional): The proportion of all instances selected for 
+%       training (default 0.8).
+%    shuffle (boolean, optional): If true, objects are shuffled before assign-
+%       ing partitions (default 1).
+%    obj_class (integer): The indices of the classes each object belongs to.
+%       Can be obtained from src through [src.objects.class].
 %
 % Output
 %    train_set (int): The indices of objects in src.objects corresponding to 
