@@ -1,6 +1,6 @@
 % "MFCCs" (frequency-averaged spectra) 32ms (23ms in paper), cv parameters
 
-run_name = 'DSS_Table2_faspec_32ms';
+run_name = 'DSS_Table2_mfcc_32ms';
 
 src = phone_src('/path/to/timit');
 
