@@ -73,5 +73,5 @@ model = svm_train(db,train_set,optt1);
 labels = svm_test(db,model,test_set);
 err = classif_err(labels,test_set,db.src);
 			
-save([run_name '.mat'],'err','C','gamma');
+save([run_name '.mat'],'labels','err','C','gamma');
 
