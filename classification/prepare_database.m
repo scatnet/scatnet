@@ -123,6 +123,7 @@ function db = prepare_database(src,feature_fun,opt)
 			fprintf('.');
 		end
 	end
+	fprintf('\n');
 
 	% Identify the files for which objects have been computed.
 	nonempty = find(~cellfun(@isempty,features));
