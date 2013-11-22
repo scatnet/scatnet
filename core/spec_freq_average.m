@@ -45,6 +45,7 @@ function [out,meta] = spec_freq_average(in,filters,options)
 	supp_mult = 4;
 	
 	N = size(in,1);
+	sig_count = size(in,3);
 	Nfilt = filters1.meta.size_filter;
 	N1 = 2^round(log2(2*pi/phi2_bw));
 	
@@ -58,9 +59,9 @@ function [out,meta] = spec_freq_average(in,filters,options)
 	window = ifft(realize_filter(filters2.phi.filter));
 	window = [window(Nfilt-N1*supp_mult/2+1:Nfilt); window(1:N1*supp_mult/2)];
 	
-	frames = zeros(length(window),round(N/N1*2^options.oversampling),size(in,2));
+	frames = zeros(length(window),round(N/N1*2^options.oversampling),sig_count);
 	
-	out = zeros(size(frames,2),size(fs,2),size(in,2));
+	out = zeros(size(frames,2),size(fs,2),sig_count);
 	
 	for t = 0:size(out,1)-1
 		ind = round(t*N1/2^options.oversampling+[-N1*supp_mult/2:N1*supp_mult/2-1]+1);
@@ -95,7 +96,7 @@ function [out,meta] = spec_freq_average(in,filters,options)
 	X{2}.meta = meta;
 	
 	for k0 = 0:size(out,1)-1
-		X{2}.signal{k0+1} = reshape(out(k0+1,:,:),size(out,2),size(out,3));
+		X{2}.signal{k0+1} = reshape(out(k0+1,:,:),[size(out,2) 1 size(out,3)]);
 	end
 
 	out = X;
