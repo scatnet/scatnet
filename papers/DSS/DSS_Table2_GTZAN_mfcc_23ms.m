@@ -49,11 +49,11 @@ for k = 1:10
 	optt1.gamma = gamma(k);
 
 	model = svm_train(db,train_set{k},optt1);
-	labels = svm_test(db,model,test_set{k});
-	err(k) = classif_err(labels,test_set{k},db.src);
+	labels(:,k) = svm_test(db,model,test_set{k});
+	err(k) = classif_err(labels(:,k),test_set{k},db.src);
 
 	fprintf('dev err = %f, test err = %f\n',dev_err(k),err(k));
 
-	save([run_name '.mat'],'dev_err','err','C','gamma');
+	save([run_name '.mat'],'labels','dev_err','err','C','gamma');
 end
 
