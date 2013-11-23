@@ -3,7 +3,7 @@
 
 % M=2 scattering, frequency scattering, multiple Q1, multiple T
 
-run_name = 'DSS_Table2_GTZAN_m2_freq_multQ1';
+run_name = 'DSS_Table2_GTZAN_m2_freq_multQ1_multT';
 
 src = gtzan_src('/path/to/gtzan');
 

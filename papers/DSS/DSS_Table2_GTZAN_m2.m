@@ -20,7 +20,7 @@ Wop = wavelet_factory_1d(N, fparam, options);
 feature_fun = {@(x)(format_scat(log_scat(renorm_scat(scat(x,Wop)))))};
 
 db = prepare_database(src,feature_fun);
-db.features = single(db.features)
+db.features = single(db.features);
 db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
 
 partitions = load('prts-gtzan.mat');
