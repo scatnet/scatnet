@@ -104,9 +104,13 @@ db = prepare_database(src,features);
 db.features = single(db.features);
 db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
 
-partitions = load('prts-gtzan.mat');
-train_set = partitions.prt_train;
-test_set = partitions.prt_test;
+rs = RandStream.create('mt19937ar','Seed',floor(pi*1e9));
+RandStream.setGlobalStream(rs);
+[train_set{1}, test_set{1}] = create_partition([src.objects.class], 0.8);
+for k = 2:10
+	[train_set{k}, test_set{k}] = ...
+		next_fold([src.objects.class], train_set{k-1}, test_set{k-1});
+end
 
 optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
