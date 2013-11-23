@@ -27,7 +27,7 @@ db = svm_calc_kernel(db,'gaussian','square',1:2*16:size(db.features,2));
 
 rs = RandStream.create('mt19937ar','Seed',floor(pi*1e9));
 RandStream.setGlobalStream(rs);
-[train_set{1}, test_set{1}] = create_partition([src.objects.class], 0.8);
+[train_set{1}, test_set{1}] = create_partition([src.objects.class], 0.9);
 for k = 2:10
 	[train_set{k}, test_set{k}] = ...
 		next_fold([src.objects.class], train_set{k-1}, test_set{k-1});
