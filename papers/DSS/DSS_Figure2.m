@@ -3,6 +3,8 @@
 % Load signal (music).
 x = wavread('kodaly.wav');
 
+ds = 8;
+
 % Prepare filters.
 filt_opt.B = 8;
 filt_opt.Q = 4*filt_opt.B;
@@ -35,11 +37,13 @@ xt2 = log(xt2+1e-6);
 
 % Display the representations.
 figure(2);
-subplot(121);
-imagesc(xt1.');
+clf;
+set(gcf,'Units','inches','Position',[3 3 3.5 1.5]);
+axes('Units','inches','Position',[0.15 0.15 1.5 1.2]);
+imagesc(xt1(1:2^ds:end,:).');
 set(gca,'XTick',[]);
 set(gca,'YTick',[]);
-subplot(122);
-imagesc(xt2.');
+axes('Units','inches','Position',[1.85 0.15 1.5 1.2]);
+imagesc(xt2(1:2^ds:end,:).');
 set(gca,'XTick',[]);
 set(gca,'YTick',[]);
