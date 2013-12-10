@@ -34,7 +34,7 @@ psi_f = [psi_f{:}];
 
 % Determine which filter is dominant at a particular frequency. This gives a
 % mapping from the frequency scale to the filter (~mel) scale.
-[~,I] = max(psi_f,[],2);
+[temp,I] = max(psi_f,[],2);
 
 % Calculate mel-frequency spectrum by averaging spectrogram along frequency.
 melspec = psi_f(1:end/2,I(1:end/2))'*spec;
@@ -49,23 +49,27 @@ melspec = log(melspec+1);
 
 % Display the spectrogram and mel-frequency spectrogram.
 figure(1);
-subplot(1,10,1:4);
+clf;
+set(gcf,'Units','inches','Position',[3 3 8 1.2]);
+ax_spec = axes('Units','inches','Position',[0.50 0.24 3.10 0.72]);
 imagesc(spec);
 set(gca,'YDir','normal');
 set(gca,'YTick',[]);
 set(gca,'XTick',[]);
-subplot(1,10,5);
-plot([spec(:,sl1) spec(:,sl2)],1:fft_size/2);
+ax_spec = axes('Units','inches','Position',[3.80 0.24 0.30 0.72]);
+plot(spec(:,sl1),1:fft_size/2,'b', ...
+	spec(:,sl2),1:fft_size/2,'r');
 set(gca,'YTick',[]);
 set(gca,'XTick',[]);
 ylim([1 fft_size/2]);
-subplot(1,10,6:9);
+ax_spec = axes('Units','inches','Position',[4.30 0.24 3.10 0.72]);
 imagesc(melspec);
 set(gca,'YDir','normal');
 set(gca,'YTick',[]);
 set(gca,'XTick',[]);
-subplot(1,10,10);
-plot([melspec(:,sl1) melspec(:,sl2)],1:fft_size/2);
+ax_spec = axes('Units','inches','Position',[7.60 0.24 0.30 0.72]);
+plot(melspec(:,sl1),1:fft_size/2,'b', ...
+	melspec(:,sl2),1:fft_size/2,'r');
 set(gca,'YTick',[]);
 set(gca,'XTick',[]);
 ylim([1 fft_size/2]);
