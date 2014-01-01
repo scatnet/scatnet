@@ -106,7 +106,7 @@ function [xt,Ut] = inverse_scat(S, filters, options, node, Ut)
 	if m < length(S)-1
 		% intermediate layer, find children
 		if ~isempty(j_node)
-			children = find(all(S{m+2}.meta.j(1:m,:)==j_node,1));
+			children = find(all(bsxfun(@eq,S{m+2}.meta.j(1:m,:),j_node),1));
 		else
 			children = 1:length(S{m+2}.signal);
 		end
