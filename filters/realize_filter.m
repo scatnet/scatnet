@@ -6,8 +6,8 @@
 % Input
 %    filter (struct): The filter structure, usually from 
 %       filters{m}.psi.filter{k} or filters{m}.phi.filter.
-%    N (int, optional): The signal size for which the filters should be defin-
-%       ed (default the maximum size allowed by the filter).
+%    N (int, optional): The signal resolution for which the filters should be 
+%       defined (default the maximum size allowed by the filter).
 %
 % Output
 %    filter_f (numeric): The Fourier transform of the filter for signal size 
@@ -40,15 +40,16 @@ function filter_f = realize_filter(filter, N)
 		
 		filter_f(ind) = filter.coefft;
 	end
-	
+		
 	if ~isempty(N)
 		if length(N) == 1
-			j0 = log2(size(filter_f)./[N 1]);
+			filter_f = [filter_f(1:N(1)/2,:); ...
+				filter_f(N(1)/2+1,:)/2+filter_f(end-N(1)/2+1,:)/2; ...
+				filter_f(end-N(1)/2+2:end,:)];
 		else
-			j0 = log2(size(filter_f)./N);
+			filter_f = [filter_f(:,1:N(2)/2) ...
+				filter_f(:,N(2)/2+1)/2+filter_f(:,end-N(2)/2+1)/2 ...
+				filter_f(:,end-N(2)/2+2:end)];
 		end
-	else
-		j0 = [0 0];
 	end
-	filter_f = filter_f(1:2^j0(1):end,1:2^j0(2):end);
 end
