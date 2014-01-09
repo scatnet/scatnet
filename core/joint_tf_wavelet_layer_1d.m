@@ -1,200 +1,284 @@
-function [U_phi, U_psi] = joint_wavelet_layer_1d(U, filters, options)
+% JOINT_TF_WAVELET_LAYER_1D Compute the two-dimensional, joint
+% time-frequency wavelet transform from the modulus wavelet coefficients of
+% the previous layer in a scattering network.
+%
+% Usages
+%    [U_Phi,U_Psi] = joint_tf_wavelet_layer_1d(U,filters)
+%
+%    [U_Phi,U_Psi] = joint_tf_wavelet_layer_1d(U,filters,scat_opt)
+%
+% Input
+%    U (struct): the input layer to be transformed.
+%    filters (cell): the filters of the wavelet transform.
+%       filters{1} contains the first-order temporal filters,
+%       filters{2} contains the second-order temporal filters,
+%       filters{3} contains the second-order log-frequential filters.
+%    scat_opt (struct): the options of joint scattering transform.
+%    scat_opt fields are :
+%       * negative_freq (logical) : when set to true, computes scattering
+%       coefficients for negative fr°j's, that is, chirplets going
+%       downwards in log-frequency alonf time, as well as their mirrors.
+%       This options is important to preserve the energy in the previous
+%       layer. (default true)
+%
+% Description
+%   This function builds a scattering layer, which performs two wavelet
+%   transform at once : one over the time axis, the other on the
+%   log-frequency axis. Henceforth, it is known as joint time-frequency
+%   (tf) wavelet layer for 1-d signals. Starting from a scalogram U, it
+%   computes a two-dimensional, low-pass filtering U_Phi of U, as well as
+%   an array of two-dimensional, band-pass filtering U_Psi is required.
+%   This function is called by joint_tf_wavelet_factory_1d and calls
+%   wavelet_factory_1d twice, is whch most of the computation is
+%   concentrated.
+% See also
+%   WAVELET_LAYER_1D, WAVELER_LAYER_2D, WAVELER_LAYER_3D
+
+function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
+    % PRELUDE : as in wavelet_layer_1d, default options are managed here.
 	if nargin < 3
-		options = struct();
-	end
-	
-	options = fill_struct(options, 'negative_freq', 1);
-	
+		scat_opt = struct();
+    end
+	scat_opt = fill_struct(scat_opt, 'negative_freq', true);
 	calc_U = (nargout>=2);
-	
+    
+    % if log-frequential filters of negative center frequency are required,
+    % the first-order temporal filters must be flipped to cover a
+    % half-plane in the time-resolution Fourier domain.
+	if scat_opt.negative_freq
+		neg_filters = flip_filters(filters{1});
+    end
+
 	if ~isfield(U.meta, 'bandwidth'), U.meta.bandwidth = 2*pi; end
 	if ~isfield(U.meta, 'resolution'), U.meta.resolution = 0; end
 	
-	% If we're doing negative frequencies, prepare filters	
-	if options.negative_freq
-		neg_filters = flip_filters(filters{1});
-	end
-
-	% filter along time, no modulus
-
-	% Compute convolutions along time (filters{2} contains temporal filters).
+    
+	% STEP 1 : calling wavelet_layer_1d for the scalogram U performs 
+    % convolutions along time of the form (U*phi_tm) and (U*psi_tm).
 	if calc_U
-		[U_phi, U_psi] = wavelet_layer_1d(U, filters{2}, options);
+		[U_phi_tm, U_psi_tm] = wavelet_layer_1d(U, filters{2}, scat_opt);
 	else
-		% No U to calculate, jsut the lowpass then.
-		U_phi = wavelet_layer_1d(U, filters{2}, options);
-		U_psi.signal = {};
-		U_psi.meta = struct();
-		U_psi.meta.j = zeros(0,0);
-	end
+		% If U_Psi is not required as an output, it is not necessary to
+		% perform a full wavelet transform : a low-pass filtering along
+		% time is sufficient. This is achieved through calling
+		% wavelet_layer_1d with one single output, namely U_phi_tm.
+		U_phi_tm = wavelet_layer_1d(U, filters{2}, scat_opt);
+        % In this case, U_psi_tm is just declared as a dummy layer.
+		U_psi_tm.signal = {};
+		U_psi_tm.meta = struct();
+		U_psi_tm.meta.j = zeros(0,0);
+    end
 	
-	% Line the coefficients up into time-frequency tables
-	Y_phi = concatenate_freq(U_phi);
-	Y_psi = concatenate_freq(U_psi);
+    
+    % STEP 2 : the coefficients in U_phi_tm and U_psi_tm are lined up into
+    % time-frequency tables Y_phi and Y_psi.
+	Y_phi = concatenate_freq(U_phi_tm);
+	Y_psi = concatenate_freq(U_psi_tm);
 	
-	% Prepare fr_j fields if they are not present.
+	% If this layer is the first to involve log-frequency scattering (which
+    % is likely), then Y_phi.meta and Y_psi.meta do not contain fr_j fields.
+    % As a consequence, we have to initialize them as dummy arrays.
 	if ~isfield(Y_phi.meta,'fr_j')
 		Y_phi.meta.fr_j = zeros(0,size(Y_phi.meta.j,2));
-	end
-	
+    end
 	if ~isfield(Y_psi.meta,'fr_j')
 		Y_psi.meta.fr_j = zeros(0,size(Y_psi.meta.j,2));
-	end
+    end
 	
-	% These U_psi and U_psi are going to contain the real outputs, filtered in frequency as well.
-	U_phi.signal = {};
-	U_phi.meta = struct();
-	
-	U_psi.signal = {};
-	U_psi.meta = struct();
-	U_psi.meta.fr_j = zeros(size(Y_phi.meta.fr_j,1)+1,0);
-	U_psi.meta.j = zeros(size(Y_phi.meta.j,1)+1,0);
-
-	% Set up indices for U_phi and U_psi.
-	r_phi = 1;
-	r_psi = 1;
+    % Here, we declare the outputs U_Phi and U_Psi and initialize their
+    % resolution indices r_phi and r_psi.
+	U_Phi.signal = {};
+	U_Phi.meta = struct();
+	U_Psi.signal = {};
+	U_Psi.meta = struct();
+	U_Psi.meta.fr_j = zeros(size(Y_phi.meta.fr_j,1)+1,0);
+	U_Psi.meta.j = zeros(size(Y_phi.meta.j,1)+1,0);
+	r_Phi = 1;
+	r_Psi = 1;
 	p2 = 1;
+    
+    % STEP 3 : the tables Y_phi and Y_psi are respectively filtered along
+    % the log-frequency axis. This step naturally divides in four
+    % operations :
+    %  - 3A : low-pass filtering of Y_phi
+    %  - 3B : band-pass filtering of Y_phi
+    %  - 3C : low-pass filtering of Y_psi
+    %  - 3D : band-pass filtering of Y_psi
+    % Observe that U_Phi consists in the result of 3A, whereas U_Psi
+    % gathers the result of 3B, 3C and 3D.
+    % In the sequel, s==1 means that we are dealing with operations 3A and
+    % 3B ; conversely, s==2 means that we are dealing with 3C and 3D.
 	for s = 1:2
-		% Process each of the tables.
 		if s == 1
 			Z = Y_phi;
 		elseif s == 2
 			Z = Y_psi;
-		end
+        end
 		
-		% If field is not present, there has been no subsampling along frequency so set it to zero.
-		if ~isfield(Z.meta,'fr_resolution')
-			Z.meta.fr_resolution = zeros(1,size(Z.meta.j,2));
-		end
+        % If the field Z.meta.fr_resolution does not already exist, there
+        % has been no log-frequential subsampling prior to this layer.
+        % Therefore, we must set all the log-frequential resolutions in Z
+        % to zero.
+        if ~isfield(Z.meta,'fr_resolution')
+            Z.meta.fr_resolution = zeros(1,size(Z.meta.j,2));
+        end
 		
-		r0 = 1;
-		
-		for p1 = 1:length(Z.signal)
-			% For each table (there may be multiple if we're on 2nd order)..
-			
-			% TODO: Actually use fr_bw to calc psi_mask etc.
-			psi_mask = calc_U&true(size(filters{1}.psi.filter));
-		
-			% Specify options for frequency decomposition.
-			options1 = options;
-			options1.x_resolution = Z.meta.fr_resolution(r0);
-			options1.psi_mask = psi_mask;
-			options1.phi_renormalize = 0;
-
+        r0 = 1; % resolution index for Z
+        
+        for p1 = 1:length(Z.signal)
+            % p1 is the table index of the input network Z.
+            % p1 remains equal to 1 is this layer is the first to include
+            % log-frequency scattering.
+            
+            % TODO: Actually use fr_bw to calc psi_mask etc.
+            % The Psi_mask logical array assesses which coefficients in
+            % U_psi must be actually computed, since they carry a
+            % non-negligible energy.
+            % TODO : compute Psi_mask only once for all p1 and s.
+            Psi_mask = calc_U&true(size(filters{1}.psi.filter));
+            
+            % Here, we specify scat_opt for frequency decomposition.
+            scat_opt_fr = scat_opt;
+            scat_opt_fr.x_resolution = Z.meta.fr_resolution(r0);
+            scat_opt_fr.psi_mask = Psi_mask;
+            scat_opt_fr.phi_renormalize = 0;
+            
+            % (i) prior reshaping
 			% Get the current table and reshape it. Since we only want to 
 			% transform along columns, we need to interleave these with 
 			% the signal index (third), so that each column is transformed
 			% independently.
 			signal = Z.signal{p1};
-			sz_orig = size(signal);
-			sz_orig = [sz_orig ones(1,3-length(sz_orig))];
-			signal = reshape(signal,[sz_orig(1) 1 sz_orig(2)*sz_orig(3)]);
+			original_size = size(signal);
+            % We append a '1' as third dimension if signal is just 2-D.
+			appended_size = ...
+                [original_size ones(1,3-length(original_size))];
+            new_size = ...
+                [appended_size(1) 1 appended_size(2)*appended_size(3)];
+			signal = reshape(signal,new_size);
 
-			% Actually transform using frequency filters (filters{1}).
-			[Z_phi, Z_psi, meta_phi, meta_psi] = ...
-				wavelet_1d(signal, filters{1}, options1);
-				
-			if options.negative_freq
-				% Calculate wavelet transform with negative frequencies.
-				[temp1, Z_neg_psi, temp2, meta_neg_psi] = ...
-					wavelet_1d(signal, neg_filters, options1);
-				% Add these to the set of all wavelet coefficients, Z_psi.
-				psi_mask = [psi_mask psi_mask];
-				Z_psi = [Z_psi Z_neg_psi];
-				% Copy the meta fields, setting the j to negative.
-				rng_neg = 1:length(Z_neg_psi);
-				rng = length(Z_psi)-length(Z_neg_psi)+1:length(Z_psi);
-				meta_psi = map_meta(meta_neg_psi,rng_neg,meta_psi,rng,'j');
-				meta_psi.j(rng) = -meta_neg_psi.j(rng_neg);
-			end
-		
+            % (ii) log-frequential wavelet transform
+			[Z_Phi, Z_Psi, meta_Phi, meta_Psi] = ...
+				wavelet_1d(signal, filters{1}, scat_opt_fr);
+            
+            if scat_opt.negative_freq
+                % Wavelet transform with negative frequencies.
+                [~, Z_neg_Psi, ~, meta_neg_Psi] = ...
+                    wavelet_1d(signal, neg_filters, scat_opt);
+                % Append these to the set of all wavelet coefficients
+                % TODO : use [Psi_mask Psi_mask(end:-1:1)] ?
+                Psi_mask = [Psi_mask Psi_mask];
+                Z_Psi = [Z_Psi Z_neg_Psi];
+                % The fields in meta_neg_Psi are set identical as in
+                % meta_Psi, except that the resolution j is mirrored
+                % below zero.
+                rng_neg = 1:length(Z_neg_Psi);
+                rng = length(Z_Psi)-length(Z_neg_Psi)+1:length(Z_Psi);
+                meta_Psi = map_meta(meta_neg_Psi,rng_neg,meta_Psi,rng,'j');
+                meta_Psi.j(rng) = -meta_neg_Psi.j(rng_neg);
+            end
+            
 			if s == 1
 				% We've transformed the temporal low-pass Y_phi, so we need to
-				% propertly care for the frequential lowpass Z_phi. Put it in
-				% U_phi, that is.
+				% propertly care for the frequential low-pass Z_Phi. Put it in
+				% U_Phi, that is.
 				
-				% Determine the subsampling rate along frequency.
-				ds = meta_phi.resolution-options1.x_resolution;
-				% Extract the indices of the "original" signal along frequency,
-				% with subsampling by 2^ds.
+				% a. Determine the subsampling rate along resolutions.
+				ds = meta_phi.resolution-scat_opt1.x_resolution;
+				% b. Extract the log-frequency indices with a subsampling
+				% by 2^ds.
 				ind0 = r0:2^ds:r0+size(signal,1)-1;
-				% How many frequency indices are left?
-				fr_count = size(Z_phi,1);
-				% Put everything back into "table x signal idx" format & copy.
-				% Note that there is a 1-to-1 correspondence between Z (Y_phi)
-				% and U_phi, so p1 will do perfectly as an index.
-				U_phi.signal{p1} = reshape(Z_phi,[size(Z_phi,1) sz_orig(2:3)]);
-				% Determine the indices in the U_phi output array.
-				ind_phi = r_phi:r_phi+fr_count-1;
-		
-				% Copy the meta fields of the original frequencies.
-				U_phi.meta = map_meta(Z.meta,ind0,U_phi.meta,ind_phi);
-				% Assign the frequential resolution.
+				% c. Count the remaining indices.
+				fr_count = size(Z_Phi,1);
+				% d. Put Z_Phi back into "scale x signal index" format.
+				% Note that there is a one-to-one correspondence between Z
+				% (that is Y_phi here) and U_Phi, so p1 will do perfectly
+				% as an index.
+				U_Phi.signal{p1} = ...
+                    reshape(Z_Phi,[size(Z_Phi,1) appended_size(2:3)]);
+				% e. Determine the indices in the U_Phi output array.
+				ind_Phi = r_Phi:r_Phi+fr_count-1;
+				% f. Copy the meta fields of the original frequencies.
+				U_Phi.meta = map_meta(Z.meta,ind0,U_Phi.meta,ind_Phi);
+				% g. Assign the frequential resolutions.
 				new_res = meta_phi.resolution;
-				U_phi.meta.fr_resolution(1,ind_phi) = new_res*ones(1,fr_count);
-				
-				% Increase current running U_phi index.
-				r_phi = r_phi+length(ind_phi);
+				U_Phi.meta.fr_resolution(1,ind_Phi) = ...
+                    new_res*ones(1,fr_count);
+				% h. Increase current running U_Phi index.
+				r_Phi = P_phi+length(ind_Phi);
 			elseif s == 2
-				% We've transformed the temporal band-pass Y_psi, so we care 
-				% about both both frequential low-pass and band-pass Z_phi and
-				% Z_psi, respectively.
-				
-				% To facilitate treatment, just handle the low-pass as another
-				% band-pass filter and concatenate to Z_psi.
-				Z_psi = [Z_psi Z_phi];
-				psi_mask = [psi_mask true];
-				meta_psi = map_meta(meta_phi,1,meta_psi,length(Z_psi),'j');
-				meta_psi.j(length(Z_psi)) = length(filters{1}.psi.filter);
-			end
+				% We've transformed the temporal band-pass Y_psi, so we
+				% both care about Z_phi and Z_psi. However, to facilite the
+				% treatment, we handle the low-pass Z_phi as another
+				% band_pass filter of the Z_phi table. As a result,
+				% we must append one logical 'true' at the end of Psi_mask.
+				Z_Psi = [Z_Psi Z_Phi];
+				Psi_mask = [Psi_mask true];
+				meta_Psi = map_meta(meta_Phi,1,meta_Psi,length(Z_Psi),'j');
+				meta_Psi.j(length(Z_Psi)) = length(filters{1}.psi.filter);
+            end
 		
-			for k = find(psi_mask)
-				% For each frequential band-pass filter.
-				
-				% Put everything back into "table x signal idx" format & copy.
-				% Note that we need to keep track of p2 here and increase it
-				% afterwards.
-				U_psi.signal{p2} = reshape(Z_psi{k},[size(Z_psi{k},1) sz_orig(2:3)]);
-				% Determine the subsampling rate along frequency.
-				ds = meta_psi.resolution(k)-options1.x_resolution;
-				% Extract the indices of the "original" signal along frequency,
-				% with subsampling by 2^ds.
+            % (iv) every frequential band-pass filter must be reshaped back
+            % into the "table x signal x index" format.
+			for k = find(Psi_mask)
+				% a. Determine the subsampling rate along resolutions
+				ds = meta_psi.resolution(k)-scat_opt_fr.x_resolution;
+				% b. Extract the log-frequency indices, with a subsampling
+                % by 2^ds.
 				ind0 = r0:2^ds:r0+size(signal,1)-1;
-				% How many frequency indices are left?
-				fr_count = size(Z_psi{k},1);
-				% Determine the indices in the U_phi output array.
-				ind_psi = r_psi:r_psi+fr_count-1;
-				% Copy the meta fields of the original frequencies.
-				U_psi.meta = map_meta(Z.meta,ind0,U_psi.meta,ind_psi,{'j','fr_j'});
-				
-				if s == 2
-					% If we're a temporal band-pass Y_psi, new j's
-					% are just old j's.
-					U_psi.meta.j(:,ind_psi) = Z.meta.j(:,ind0);
-				else
-					% If we're a temporal low-pass Y_phi, new j's
-					% are big J. This won't already be in Z.meta.j since
+				% c. Count the reminaing indices.
+				fr_count = size(Z_Psi{k},1);
+                % d. Put Z_Psi back into "scale x signal index" format.
+				% This time, we need to keep track of p2 here and increase
+				% it along iterations k.
+				U_Psi.signal{p2} = ...
+                    reshape(Z_Psi{k},[size(Z_Psi{k},1) appended_size(2:3)]);
+				% e. Determine the indices in the U_phi output array.
+				ind_Psi = r_Psi:r_Psi+fr_count-1;
+				% f. Copy the meta fields of the original frequencies.
+				U_psi.meta = ...
+                    map_meta(Z.meta,ind0,U_psi.meta,ind_Psi,{'j','fr_j'});
+				if s == 1
+					% If Z is the temporal low-pass filter Y_phi, new j's
+					% are all big J. This won't already be in Z.meta.j since
 					% low-pass filter indices are not in there.
-					U_psi.meta.j(:,ind_psi) = [Z.meta.j(:,ind0); length(filters{2}.psi.filter)*ones(1,fr_count)];
-				end
-				% Add the latest frequency decomposition scale, fr_j, which
-				% here is given by the meta_psi.j.
-				fr_j = meta_psi.j(k);
-				U_psi.meta.fr_j(:,ind_psi) = [Z.meta.fr_j(:,ind0); fr_j*ones(1,fr_count)];
-				% Assign the frequential resolution after subsampling by 2^ds.
+					U_psi.meta.j(:,ind_psi) = ...
+                        [Z.meta.j(:,ind0); ...
+                          length(filters{2}.psi.filter)*ones(1,fr_count)];
+                elseif s==2
+                    % If Z is the temporal band-pass filter Y_psi, all
+                    % scales j are copied without modification.
+					U_psi.meta.j(:,ind_psi) = Z.meta.j(:,ind0);
+                end
+				% g. Assign the frequential resolutions after getting the
+				% log-frequency decomposition scale fr_j, which here is
+				% given by meta.psi.j, and subsample it by 2^ds.
+                fr_j = meta_psi.j(k);
+				U_psi.meta.fr_j(:,ind_psi) = [...
+                    Z.meta.fr_j(:,ind0); fr_j*ones(1,fr_count)];
 				new_res = meta_psi.resolution(k);
-				U_psi.meta.fr_resolution(1,ind_psi) = new_res*ones(1,fr_count);
-				
-				% Increase the current running U_psi index.
+				U_psi.meta.fr_resolution(1,ind_psi) = ...
+                    new_res*ones(1,fr_count);
+				% h. Increase the current running U_psi index.
 				r_psi = r_psi+length(ind_psi);
-				% Increase the path index p2.
+				% Increase the path index p2 (see d. above)
 				p2 = p2+1;
 			end
 			
-			% Increase the current running Z index.
+			% (v) Increase the current running Z index.
 			r0 = r0+size(signal,1);
 		end
 	end
+
+	% STEP 4 : transform the tables U_phi and U_psi back
+	U_phi = separate_freq(U_phi);
+	U_psi = separate_freq(U_psi);
+end
+
+%%% TODO
+% - incorporate progressivity along log-frequency
+% - use fr_bw to actually compute Psi_mask
+% - compute Psi_mask only once for all p1 and logical s
 
 	% Transform our tables into "frequency channels" like before.
 	U_phi = separate_freq(U_phi);
