@@ -33,7 +33,7 @@ function img = scattergram_layer(X,j)
 
 	ind = find(all(bsxfun(@eq,X.meta.j(1:end-1,:),j),1));
 	
-	signal = cellfun(@(x)(interpft(x,nbTimePt)), ...
+	signal = cellfun(@(x)(interpft(x,nbTimePt).*sqrt(size(x,1)/nbTimePt)), ...
 		X.signal(ind),'UniformOutput',false);
 	
 	img(X.meta.j(end,ind)+1,:) = [signal{:}].';
