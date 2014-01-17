@@ -28,7 +28,7 @@ function S = resample_scat(S, res, preserve_energy)
 
 	if iscell(S)
 		for m = 0:length(S)-1
-			S{m+1} = resample_scat(S{m+1}, res); % self-call
+			S{m+1} = resample_scat(S{m+1}, res, preserve_energy); % self-call
         end
 		return;
     end
