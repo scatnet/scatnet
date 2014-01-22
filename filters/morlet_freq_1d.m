@@ -35,7 +35,7 @@ function [xi_psi, bw_psi, bw_phi] = morlet_freq_1d(filt_opt)
     sigma_psi(filt_opt.J+1:filt_opt.J+1+filt_opt.P) = ...
         filt_opt.sigma_psi*2^((filt_opt.J-1)/filt_opt.Q);
     
-    % Calculate band-pass filter
+    % Calculate low-pass filter
 	sigma_phi = filt_opt.sigma_phi * 2^((filt_opt.J-1)/filt_opt.Q);
 
 	% Convert (spatial) sigmas to (frequential) bandwidths
