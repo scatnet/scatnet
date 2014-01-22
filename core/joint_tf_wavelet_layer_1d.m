@@ -10,8 +10,10 @@
 % Input
 %    U (struct): the input layer to be transformed.
 %    filters (cell): the filters of the wavelet transform.
-%       filters{1} contains the second-order temporal filters,
-%       filters{2} contains the second-order log-frequential filters.
+%       filters{1} contains the first-order temporal filters,
+%       filters{2} contains the second-order joint filters,
+%	filters{3} contains the third-order joint filters, etc.
+%    Observe that filters{scat_opt.M} merely contains a low-pass filter.
 %    scat_opt (struct): the options of joint scattering transform.
 %    scat_opt fields are :
 %       * negative_freq (logical) : when set to true, computes scattering
