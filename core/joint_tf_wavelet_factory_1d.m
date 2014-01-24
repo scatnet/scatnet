@@ -10,7 +10,7 @@ function Wop = ...
     Wop = cell(1,scat_opt.M+1);
 	Wop{1} = @(X)(wavelet_layer_1d(X, time_filters{1}, scat_opt1));
 	
-	for m = 1:M
+	for m = 1:scat_opt.M
 		time_filt_ind = min(numel(time_filters), m+1);
 		freq_filt_ind = min(numel(freq_filters), m+1);
 		Wop{1+m} = @(X)( ...
