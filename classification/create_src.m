@@ -27,7 +27,7 @@ function src = create_src(directory,objects_fun)
 	
 	files = find_files(directory);
 	
-	if length(files) == 0
+	if isempty(files)
 		error('No data files found in the specified directory!');
 	end
 	
