@@ -78,7 +78,11 @@ function [U_Phi, U_Psi] = wavelet_layer_3d_pyramid(...
             q = U_orb.meta.q(end, p);
             
             % configure wavelet transform
-            w_options.angular_range = 'zero_pi';
+            if (length(U_orb.meta.j(:,p)) > 1)
+                w_options.angular_range = 'zero_2pi';
+            else
+                w_options.angular_range = 'zero_pi';
+            end
             w_options.j_min         = 1;
             w_options.J             = J - j;
             w_options.q_mask        = zeros(1,Q);

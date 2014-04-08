@@ -60,8 +60,9 @@ function [Wop, filters, filters_rot] = wavelet_factory_3d_pyramid(filt_opt, filt
     
     % first layer : usual 2d wavelet transform
     Wop{1} = @(x)(wavelet_layer_2d_pyramid(x, filters, wavelet_opt));
-    Wop{2} = @(x)(wavelet_layer_3d_pyramid(x, filters, filters_rot, wavelet_opt));
-    Wop{3} = @(x)(wavelet_layer_3d_pyramid(x, filters, filters_rot, wavelet_opt));
+    for m = 2:scat_opt.M+1
+        Wop{m} = @(x)(wavelet_layer_3d_pyramid(x, filters, filters_rot, wavelet_opt));
+    end
     
 end
 

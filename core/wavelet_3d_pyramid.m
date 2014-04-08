@@ -8,7 +8,7 @@
 %       postion and third dimension corresponds to orientation.
 %   filters (struct): a 2d pyramid filter bank (applied along spatial variable)
 %   filters_rot (struct): a 1d filter bank (applied along orientation)
-%   options (struct): containing the following optional fields 
+%   options (struct): containing the following optional fields
 %       x_resolution (int): the log of spatial resolution
 %       psi_mask (bool array): a mask for determining which filter to apply
 %       oversampling (int): the log of spatial oversampling
@@ -73,9 +73,9 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
     end
     
     if (isa(filters.h.filter.coefft, 'single'))
-       cast = @single;
-    else 
-       cast = @double; 
+        cast = @single;
+    else
+        cast = @double;
     end
     
     %%%%%%%%%%%%%%%%%%
@@ -102,7 +102,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
             else
                 clear tmp_slice;
                 tmp(:,:,theta) = ...
-                   pad_conv_sub_unpad(hy.signal{j}(:,:,theta), h);
+                    pad_conv_sub_unpad(hy.signal{j}(:,:,theta), h);
             end
         end
         hy.signal{j+1} = tmp;
@@ -118,7 +118,7 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
         % in this case it is faster to compute the sum along the angle
         y_Phi = sum(y_phi.signal{1},3) / 2^(ds/2);
     else
-        if (strcmp(angular_range, 'zero_pi'))
+        if (strcmp(options.angular_range, 'zero_pi'))
             % divide by sqrt(2) for energy preservation
             y_phi.signal{1} = repmat(y_phi.signal{1}, [1 1 2]) / sqrt(2);
         end
@@ -178,26 +178,45 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
         %%%%%%%%%%%%%%%%%%
         
         %% high pass spatial - with pyramid
-        if (strcmp(options.angular_range, 'zero_pi') && angular_res == 0)
+        if (angular_res == 0)
             g = filters.g.filter;
             
             for j2 = options.j_min:options.J-1
                 for q = find(options.q_mask==1)-1
                     for theta2 = 1:L
-                        for theta = 1:L
-                            % convolution with psi_{j1, theta + theta2}
-                            theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
-                            theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
-                            tmp_slice = pad_conv_unpad(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL + L*q});
-                            if (theta == 1) % allocate
-                                tmp = cast(zeros([size(tmp_slice), 2*L]));
+                        if (strcmp(options.angular_range, 'zero_pi'))
+                            for theta = 1:L
+                                % convolution with psi_{j1, theta + theta2}
+                                theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
+                                theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
+                                tmp_slice = pad_conv_unpad(hy.signal{j2+1}(:,:,theta), g{theta_sum_modL + L*q});
+                                if (theta == 1) % allocate
+                                    tmp = cast(zeros([size(tmp_slice), 2*L]));
+                                end
+                                if (theta_sum_mod2L <= L)
+                                    tmp(:,:,theta) = tmp_slice;
+                                    tmp(:,:,theta+L) = conj(tmp_slice);
+                                else
+                                    tmp(:,:,theta) = conj(tmp_slice);
+                                    tmp(:,:,theta+L) = tmp_slice;
+                                end
                             end
-                            if (theta_sum_mod2L <= L)
+                        else % options.angular_range is 'zero_2pi'
+                            for theta = 1:2*L
+                                % convolution with psi_{j1, theta + theta2}
+                                theta_sum_mod2L =  1 + mod(theta + theta2 - 2, 2*L);
+                                theta_sum_modL =  1 + mod(theta + theta2 - 2, L);
+                                if (theta_sum_mod2L <= L)
+                                    curr_g =  g{theta_sum_modL + L*q};
+                                else
+                                    curr_g =  conjugate_filter(g{theta_sum_modL + L*q});
+                                end
+                                tmp_slice = pad_conv_unpad(hy.signal{j2+1}(:,:,theta), curr_g);
+                                if (theta == 1) % allocate
+                                    tmp = cast(zeros([size(tmp_slice), 2*L]));
+                                end
                                 tmp(:,:,theta) = tmp_slice;
-                                tmp(:,:,theta+L) = conj(tmp_slice);
-                            else
-                                tmp(:,:,theta) = conj(tmp_slice);
-                                tmp(:,:,theta+L) = tmp_slice;
+                                
                             end
                         end
                         
@@ -247,13 +266,18 @@ function [y_Phi, y_Psi, meta_Phi, meta_Psi] = wavelet_3d_pyramid(y,...
         out = conv_sub_2d(out, filter, 1);
         out = unpad_signal(out, 1, size(in), filters.meta.offset);
     end
-
+    
     
     function out = pad_conv_unpad(in, filter)
         Npad = size(in) + filters.meta.size_filter - 1;
         out = pad_signal(in, Npad, 'symm', 1);
         out = conv_sub_2d(out, filter, 0);
         out = unpad_signal(out, 0, size(in), filters.meta.offset);
+    end
+    
+    function conj_filter = conjugate_filter(filter)
+        conj_filter = filter;
+        conj_filter.coefft = conj(filter.coefft);
     end
 end
 
