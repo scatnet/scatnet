@@ -38,8 +38,10 @@ function [err,C,gamma] = svm_adaptive_param_search(db,train_set,valid_set,opt)
 	for k = 1:opt.search_depth
 		[err{k},C{k},gamma{k}] = svm_param_search(db,train_set,valid_set,opt);
 	
-		[temp,ind] = min(mean(err{k},2));
+		[best_err,ind] = min(mean(err{k},2));
 		
+		fprintf('best ave error = %f\n',best_err);
+
 		if length(C0) > 1
 			step = exp(1/2*mean(log(C0(2:end))-log(C0(1:end-1))));
 			C0 = [step^(-1) 1 step]*C{k}(ind);
