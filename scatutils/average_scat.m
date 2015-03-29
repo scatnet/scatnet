@@ -61,7 +61,7 @@ function X = average_scat(X, T, step, window_fun)
 			% for each segment, multiply by windowing kernel & sum
 			kernel = window_fun(size(buf,1));
 			buf = bsxfun(@times,buf,kernel/sum(kernel));
-			buf = sum(buf,1);
+			buf = sum(buf,1)*sqrt(real_step);
 
 			% get rid of dimension 1 & store result in X
 			buf =permute(buf,[2 1 3]);
