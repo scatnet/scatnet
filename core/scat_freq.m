@@ -28,14 +28,20 @@
 % See also 
 %    SCAT, WAVELET_FACTORY_1D, CONCATENATE_FREQ
 
-function [S, U] = scat_freq(X, Wop)
+function [S, U] = scat_freq(X, Wop, zero_pad)
+	if nargin < 3
+		zero_pad = 0;
+	end
+
 	% Group all the coefficients into tables along lambda1 and t. For order 1,
 	% this gives a single table containing all first-order coefficients, while
 	% for order 2, each lambda2 corresponds to one table containing the 
 	% second-order coefficients for that lambda2 and the different lambda1s,
 	% and so on.
 	Y = concatenate_freq(X);
-	
+
+	max_fr_count = length(X{2}.signal);
+
 	S = {};
 	U = {};
 	
@@ -65,10 +71,22 @@ function [S, U] = scat_freq(X, Wop)
 			signal = reshape(signal,[sz_orig(1) 1 prod(sz_orig(2:3))]);
 			
 			if m > 0
+				fr_count0 = size(signal,1);
+				
+				if zero_pad
+					signal = pad_signal(signal,max_fr_count,'zero');
+				end
+				
+				if isfield(Y{m+1}.meta,'fr_resolution');
+					frsc_opt.x_resolution = Y{m+1}.meta.fr_resolution(ind(1));
+				else
+					frsc_opt.x_resolution = 0;
+				end
+				
 				% If we're not in the zeroth order, we can (and want to)
 				% compute the scattering transform along lambda1, which is now
 				% the first dimension of signal.
-				[S_fr,U_fr] = scat(signal, Wop);
+				[S_fr,U_fr] = scat(signal, Wop, frsc_opt);
 				
 				% Needed for the case of U. These are not initialized by scat.
 				if ~isfield(U_fr{1}.meta,'bandwidth')
@@ -76,6 +94,17 @@ function [S, U] = scat_freq(X, Wop)
 				end
 				if ~isfield(U_fr{1}.meta,'resolution')
 					U_fr{1}.meta.resolution = 0;
+				end
+				
+				if zero_pad
+					unpad_layer = @(layer)(...
+						cellfun(@(x,res)(unpad_signal(x,res,fr_count0)), ...
+						layer.signal, num2cell(layer.meta.resolution), ...
+						'UniformOutput',0));
+					for mp = 1:length(S_fr)
+						S_fr{mp}.signal = unpad_layer(S_fr{mp});
+						U_fr{mp}.signal = unpad_layer(U_fr{mp});
+					end
 				end
 			else
 				% If we're in the zeroth order, just copy the signal.
@@ -128,6 +157,9 @@ function [S, U] = scat_freq(X, Wop)
 						% Retrieve P' = j1_count and downsampling factor.
 						j1_count = size(nsignal,1);
 						ds = X_fr{mp+1}.meta.resolution(kp);
+						if isfield(Y{m+1}.meta,'fr_resolution')
+							ds = ds-Y{m+1}.meta.fr_resolution(ind(1));
+						end
 					
 						% Which of the indices from the original range ind
 						% have been kept after subsampling.
@@ -152,8 +184,13 @@ function [S, U] = scat_freq(X, Wop)
 								X_fr{mp+1}.meta.bandwidth(kp);
 							X{m+1}{mp+1}.meta.fr_resolution(1,rc(mp+1)) = ...
 								X_fr{mp+1}.meta.resolution(kp);
-							X{m+1}{mp+1}.meta.fr_j(:,rc(mp+1)) = ...
-								X_fr{mp+1}.meta.j(:,kp);
+							if isfield(Y{m+1}.meta,'fr_j')
+								X{m+1}{mp+1}.meta.fr_j(:,rc(mp+1)) = ...
+									[Y{m+1}.meta.fr_j(:,inds(j1)); X_fr{mp+1}.meta.j(:,kp)];
+							else
+								X{m+1}{mp+1}.meta.fr_j(:,rc(mp+1)) = ...
+									X_fr{mp+1}.meta.j(:,kp);
+							end
 							rc(mp+1) = rc(mp+1)+1;
 						end
 						
@@ -171,7 +208,7 @@ function [S, U] = scat_freq(X, Wop)
 				end
 			end
 			
-			r = r+size(signal,1);
+			r = r+length(ind);
 		end
 	end
 	
