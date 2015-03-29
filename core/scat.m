@@ -1,12 +1,15 @@
 % SCAT Compute the scattering transform
 %
 % Usage
-%    [S, U] = SCAT(x, Wop) 
+%    [S, U] = SCAT(x, Wop, opt)
 %
 % Input
 %    x (numeric): The input signal.
 %    Wop (cell of function handles): Linear operators used to generate a new 
 %       layer from the previous one.
+%    opt (struct, optional): Pass initial parameters to scattering cascade.
+%       Parameters include:
+%          x_resolution: The initial resolution of the input signal.
 %
 % Output
 %    S (cell): The scattering representation of x.
@@ -38,12 +41,19 @@
 % See also 
 %   WAVELET_FACTORY_1D, WAVELET_FACTORY_2D, WAVELET_FACTORY_2D_PYRAMID
 
-function [S, U] = scat(x, Wop)
+function [S, U] = scat(x, Wop, opt)
+	if nargin < 3
+		opt = struct();
+	end
+
+	opt = fill_struct(opt, 'x_resolution', 0);
+
 	% Initialize signal and meta
 	U{1}.signal{1} = x;
 	U{1}.meta.j = zeros(0,1);
 	U{1}.meta.q = zeros(0,1);
-    U{1}.meta.resolution=0;
+	U{1}.meta.resolution = opt.x_resolution;
+	U{1}.meta.bandwidth = 2*pi;
 
 	% Apply scattering, order per order
 	for m = 0:numel(Wop)-1
