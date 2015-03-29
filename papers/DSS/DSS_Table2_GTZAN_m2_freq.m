@@ -8,10 +8,11 @@ run_name = 'DSS_Table2_GTZAN_m2_freq';
 src = gtzan_src('/path/to/gtzan');
 
 N = 5*2^17;
+T = 16384;
 
-filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
-filt1_opt.Q = [8 1];
-filt1_opt.J = T_to_J(8192,filt1_opt);
+filt1_opt.filter_type = 'morlet_1d';
+filt1_opt.Q = [8 2];
+filt1_opt.J = T_to_J(T,filt1_opt);
 
 sc1_opt.M = 2;
 
@@ -23,7 +24,7 @@ fsc1_opt.M = 1;
 Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 fWop1 = wavelet_factory_1d(128, ffilt1_opt, fsc1_opt);
 
-scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
+scatt_fun1 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop1)),x,Wop1{1})));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
 feature_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 
@@ -39,7 +40,7 @@ end
 
 db = prepare_database(src,features);
 db.features = single(db.features);
-db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
+db = svm_calc_kernel(db,'gaussian','square');
 
 rs = RandStream.create('mt19937ar','Seed',floor(pi*1e9));
 RandStream.setGlobalStream(rs);

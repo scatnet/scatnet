@@ -6,22 +6,23 @@
 run_name = 'DSS_Table2_GTZAN_m1';
 
 N=5*2^17;
+T = 16384;
 
 src=gtzan_src('/path/to/gtzan');
 
-fparam.filter_type = {'gabor_1d','morlet_1d'};
+fparam.filter_type = 'morlet_1d';
 fparam.Q = [8 2];
-fparam.J = T_to_J(8192,fparam);
+fparam.J = T_to_J(T,fparam);
 
 options.M = 1;
 
 Wop = wavelet_factory_1d(N, fparam, options);
 
-feature_fun = {@(x)(format_scat(log_scat(renorm_scat(scat(x,Wop)))))};
+feature_fun = {@(x)(format_scat(log_scat(renorm_1st(renorm_scat(scat(x,Wop)),x,Wop{1}))))};
 
 db = prepare_database(src,feature_fun);
 db.features = single(db.features);
-db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
+db = svm_calc_kernel(db,'gaussian','square');
 
 rs = RandStream.create('mt19937ar','Seed',floor(pi*1e9));
 RandStream.setGlobalStream(rs);

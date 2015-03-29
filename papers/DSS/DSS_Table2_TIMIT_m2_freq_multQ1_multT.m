@@ -9,7 +9,7 @@ src = phone_src('/path/to/timit');
 N = 2^13;
 T_s = 2560;
 
-filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
+filt1_opt.filter_type = 'morlet_1d';
 filt1_opt.Q = [8 1];
 filt1_opt.J = T_to_J(512,filt1_opt);
 

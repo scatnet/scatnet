@@ -2,14 +2,15 @@
 
 run_name = 'DSS_Table2_TIMIT_m3';
 
-src = phone_src('/path/to/timit');
+%src = phone_src('/path/to/timit');
+src = phone_src('/home/anden/timit/TIMIT');
 
 [train_set,test_set,valid_set] = phone_partition(src);
 
 N = 2^13;
 T_s = 2560;
 
-filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
+filt1_opt.filter_type = 'morlet_1d';
 filt1_opt.Q = [8 1];
 filt1_opt.J = T_to_J(512,filt1_opt);
 
@@ -17,7 +18,14 @@ sc1_opt.M = 3;
 
 Wop = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 
-scatt_fun = @(x)(format_scat(log_scat(renorm_scat(scat(x,Wop)))));
+filts_opt.Q = 8;
+filts_opt.J = T_to_J(T_s,filts_opt);
+
+scs_opt.M = 0;
+
+Wops = wavelet_factory_1d(N, filts_opt, scs_opt);
+
+scatt_fun = @(x)(format_scat(log_scat(renorm_1st(renorm_scat(scat(x,Wop)), x, Wops{1}))));
 
 duration_fun = @(x,obj)(32*duration_feature(x,obj));
 

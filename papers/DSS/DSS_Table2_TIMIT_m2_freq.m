@@ -9,7 +9,7 @@ src = phone_src('/path/to/timit');
 N = 2^13;
 T_s = 2560;
 
-filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
+filt1_opt.filter_type = 'morlet_1d';
 filt1_opt.Q = [8 1];
 filt1_opt.J = T_to_J(512,filt1_opt);
 
@@ -23,7 +23,14 @@ fsc1_opt.M = 1;
 Wop = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 fWop = wavelet_factory_1d(64, ffilt1_opt, fsc1_opt); 
 
-scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop))));
+filts_opt.Q = 8;
+filts_opt.J = T_to_J(T_s,filts_opt);
+
+scs_opt.M = 0;
+
+Wops = wavelet_factory_1d(N, filts_opt, scs_opt);
+
+scatt_fun1 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop)), x, Wops{1})));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop));
 format_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 

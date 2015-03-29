@@ -37,8 +37,7 @@ optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
 optt.gamma = 2.^[-16:4:-8];
 optt.search_depth = 3;
-%optt.full_test_kernel = 1;
-optt.full_test_kernel = 0;
+optt.full_test_kernel = 1;
 
 for k = 1:10
 	[dev_err_grid,C_grid,gamma_grid] = ...

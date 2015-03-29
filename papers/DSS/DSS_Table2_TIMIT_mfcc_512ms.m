@@ -2,7 +2,8 @@
 
 run_name = 'DSS_Table2_TIMIT_mfcc_512ms';
 
-src = phone_src('/path/to/timit');
+%src = phone_src('/path/to/timit');
+src = phone_src('/home/anden/timit/TIMIT');
 
 [train_set,test_set,valid_set] = phone_partition(src);
 

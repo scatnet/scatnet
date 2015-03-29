@@ -8,12 +8,14 @@ run_name = 'DSS_Table2_GTZAN_m2_freq_multQ1_multT';
 src = gtzan_src('/path/to/gtzan');
 
 N = 5*2^17;
+T = 16384;
 
-filt1_opt.filter_type = {'gabor_1d','morlet_1d'};
-filt1_opt.Q = [8 1];
-filt1_opt.J = T_to_J(8192,filt1_opt);
+filt1_opt.filter_type = 'morlet_1d';
+filt1_opt.Q = [8 2];
+filt1_opt.J = T_to_J(T,filt1_opt);
 
 sc1_opt.M = 2;
+sc1_opt.oversampling = 1;
 
 ffilt1_opt.filter_type = 'morlet_1d';
 ffilt1_opt.J = 7;
@@ -23,13 +25,13 @@ fsc1_opt.M = 1;
 Wop1 = wavelet_factory_1d(N, filt1_opt, sc1_opt);
 fWop1 = wavelet_factory_1d(128, ffilt1_opt, fsc1_opt);
 
-scatt_fun1 = @(x)(log_scat(renorm_scat(scat(x,Wop1))));
+scatt_fun1 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop1)),x,Wop1{1})));
 fscatt_fun1 = @(x)(func_output(@scat_freq,2,scatt_fun1(x),fWop1));
 feature_fun1 = @(x)(format_scat(fscatt_fun1(x)));
 
 filt2_opt = filt1_opt;
-filt2_opt.Q = [1 1];
-filt2_opt.J = T_to_J(8192,filt2_opt);
+filt2_opt.Q = [1 2];
+filt2_opt.J = T_to_J(T,filt2_opt);
 
 sc2_opt = sc1_opt;
 
@@ -41,51 +43,55 @@ fsc2_opt = fsc1_opt;
 Wop2 = wavelet_factory_1d(N, filt2_opt, sc2_opt);
 fWop2 = wavelet_factory_1d(32, ffilt2_opt, fsc2_opt);
 
-scatt_fun2 = @(x)(log_scat(renorm_scat(scat(x,Wop2))));
+scatt_fun2 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop2)),x,Wop2{1})));
 fscatt_fun2 = @(x)(func_output(@scat_freq,2,scatt_fun2(x),fWop2));
 feature_fun2 = @(x)(format_scat(fscatt_fun2(x)));
 
 filt3_opt = filt1_opt;
-filt3_opt.J = T_to_J(2*8192,filt3_opt);
+filt3_opt.J = T_to_J(2*T,filt3_opt);
 
 sc3_opt = sc1_opt;
+sc3_opt.oversampling = sc1_opt.oversampling+1;
 
 Wop3 = wavelet_factory_1d(N, filt3_opt, sc3_opt);
 
-scatt_fun3 = @(x)(log_scat(renorm_scat(scat(x,Wop3))));
+scatt_fun3 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop3)),x,Wop3{1})));
 fscatt_fun3 = @(x)(func_output(@scat_freq,2,scatt_fun3(x),fWop1));
 feature_fun3 = @(x)(format_scat(fscatt_fun3(x)));
 
 filt4_opt = filt2_opt;
-filt4_opt.J = T_to_J(2*8192,filt4_opt);
+filt4_opt.J = T_to_J(2*T,filt4_opt);
 
 sc4_opt = sc2_opt;
+sc4_opt.oversampling = sc2_opt.oversampling+1;
 
 Wop4 = wavelet_factory_1d(N, filt4_opt, sc4_opt);
 
-scatt_fun4 = @(x)(log_scat(renorm_scat(scat(x,Wop4))));
+scatt_fun4 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop4)),x,Wop4{1})));
 fscatt_fun4 = @(x)(func_output(@scat_freq,2,scatt_fun4(x),fWop2));
 feature_fun4 = @(x)(format_scat(fscatt_fun4(x)));
 
 filt5_opt = filt1_opt;
-filt5_opt.J = T_to_J(4*8192,filt5_opt);
+filt5_opt.J = T_to_J(4*T,filt5_opt);
 
 sc5_opt = sc1_opt;
+sc5_opt.oversampling = sc1_opt.oversampling+2;
 
 Wop5 = wavelet_factory_1d(N, filt5_opt, sc5_opt);
 
-scatt_fun5 = @(x)(log_scat(renorm_scat(scat(x,Wop5))));
+scatt_fun5 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop5)),x,Wop5{1})));
 fscatt_fun5 = @(x)(func_output(@scat_freq,2,scatt_fun5(x),fWop1));
 feature_fun5 = @(x)(format_scat(fscatt_fun5(x)));
 
 filt6_opt = filt2_opt;
-filt6_opt.J = T_to_J(4*8192,filt6_opt);
+filt6_opt.J = T_to_J(4*T,filt6_opt);
 
 sc6_opt = sc2_opt;
+sc6_opt.oversampling = sc2_opt.oversampling+2;
 
 Wop6 = wavelet_factory_1d(N, filt6_opt, sc6_opt);
 
-scatt_fun6 = @(x)(log_scat(renorm_scat(scat(x,Wop6))));
+scatt_fun6 = @(x)(log_scat(renorm_1st(renorm_scat(scat(x,Wop6)),x,Wop6{1})));
 fscatt_fun6 = @(x)(func_output(@scat_freq,2,scatt_fun6(x),fWop2));
 feature_fun6 = @(x)(format_scat(fscatt_fun6(x)));
 
@@ -102,7 +108,7 @@ end
 
 db = prepare_database(src,features);
 db.features = single(db.features);
-db = svm_calc_kernel(db,'gaussian','square',1:2:size(db.features,2));
+db = svm_calc_kernel(db,'gaussian','square');
 
 rs = RandStream.create('mt19937ar','Seed',floor(pi*1e9));
 RandStream.setGlobalStream(rs);
@@ -116,7 +122,7 @@ optt.kernel_type = 'gaussian';
 optt.C = 2.^[0:4:8];
 optt.gamma = 2.^[-16:4:-8];
 optt.search_depth = 3;
-optt.full_test_kernel = 0;
+optt.full_test_kernel = 1;
 
 for k = 1:10
 	[dev_err_grid,C_grid,gamma_grid] = ...
