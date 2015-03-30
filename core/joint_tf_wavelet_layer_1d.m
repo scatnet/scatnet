@@ -40,6 +40,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 		scat_opt = struct();
     end
 	scat_opt = fill_struct(scat_opt, 'negative_freq', true);
+	scat_opt = fill_struct(scat_opt, 'zero_pad', false);
 	calc_U = (nargout>=2);
     
     % if log-frequential filters of negative center frequency are required,
@@ -85,6 +86,9 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 		Y_psi.meta.fr_j = zeros(0,size(Y_psi.meta.j,2));
     end
 	
+	% correct?
+	max_fr_count = max(cellfun(@(s)(size(s,1)),Y_phi.signal));
+
     % Here, we declare the outputs U_Phi and U_Psi and initialize their
     % resolution indices r_phi and r_psi.
 	U_Phi.signal = {};
@@ -144,6 +148,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
             scat_opt_fr.phi_renormalize = 0;
             
             % (i) prior reshaping
+
 			% Get the current table and reshape it. Since we only want to 
 			% transform along columns, we need to interleave these with 
 			% the signal index (third), so that each column is transformed
@@ -156,6 +161,12 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
             new_size = ...
                 [appended_size(1) 1 appended_size(2)*appended_size(3)];
 			signal = reshape(signal,new_size);
+
+			fr_count0 = size(signal,1);
+
+			if scat_opt.zero_pad			% resolution?
+				signal = pad_signal(signal,round(max_fr_count/2^scat_opt_fr.x_resolution),'zero');
+			end
 
             % (ii) log-frequential wavelet transform
 			[Z_Phi, Z_Psi, meta_Phi, meta_Psi] = ...
@@ -178,6 +189,18 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
                 meta_Psi.j(rng) = -meta_neg_Psi.j(rng_neg);
             end
             
+			if scat_opt.zero_pad
+				unpad_layer = @(layer,resolution)(...
+					cellfun(@(x,res)(unpad_signal(x,res,fr_count0)), ...
+					layer, num2cell(resolution-scat_opt_fr.x_resolution), ...
+					'UniformOutput',0));
+				Z_phi = feval(@(x)(x{1}),unpad_layer({Z_Phi}, meta_Phi.resolution));
+				mask = ~cellfun(@isempty, Z_Psi);
+				if any(mask)
+					Z_Psi(mask) = unpad_layer(Z_Psi(mask), meta_Psi.resolution(mask));
+				end
+            end
+            
 			if s == 1
 				% We've transformed the temporal low-pass Y_phi, so we need to
 				% propertly care for the frequential low-pass Z_Phi. Put it in
@@ -187,7 +210,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 				ds = meta_Phi.resolution-scat_opt_fr.x_resolution;
 				% b. Extract the log-frequency indices with a subsampling
 				% by 2^ds.
-				ind0 = r0:2^ds:r0+size(signal,1)-1;
+				ind0 = r0:2^ds:r0+fr_count0-1;
 				% c. Count the remaining indices.
 				fr_count = size(Z_Phi,1);
 				% d. Put Z_Phi back into "scale x signal index" format.
@@ -225,7 +248,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 				ds = meta_Psi.resolution(k)-scat_opt_fr.x_resolution;
 				% b. Extract the log-frequency indices, with a subsampling
                 % by 2^ds.
-				ind0 = r0:2^ds:r0+size(signal,1)-1;
+				ind0 = r0:2^ds:r0+fr_count0-1;
 				% c. Count the reminaing indices.
 				fr_count = size(Z_Psi{k},1);
                 % d. Put Z_Psi back into "scale x signal index" format.
@@ -266,7 +289,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 			end
 			
 			% (v) Increase the current running Z index.
-			r0 = r0+size(signal,1);
+			r0 = r0+fr_count0;
 		end
 	end
 
