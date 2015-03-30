@@ -50,7 +50,7 @@ function yn = richardson_lucy(z, filter, options)
 		y = y.*ht_filter(zr);
 
 		if ismember(n, options.rl_iter)
-			[~,k] = ismember(n, options.rl_iter);
+			[temp,k] = ismember(n, options.rl_iter);
 			yn(:,k) = y;
 		end
 	end
