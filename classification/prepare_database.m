@@ -57,9 +57,9 @@ function db = prepare_database(src,feature_fun,opt)
 			
 			if ~isempty(opt.file_normalize)
 				if opt.file_normalize == 1
-					x = x/sum(abs(x(:)));
+					x = x/sum(abs(x(:))/length(x));
 				elseif opt.file_normalize == 2
-					x = x/sqrt(sum(abs(x(:)).^2));
+					x = x/sqrt(sum(abs(x(:)).^2/length(x)));
 				elseif opt.file_normalize == Inf
 					x = x/max(abs(x(:)));
 				end
@@ -100,9 +100,9 @@ function db = prepare_database(src,feature_fun,opt)
 			
 			if ~isempty(opt.file_normalize)
 				if opt.file_normalize == 1
-					x = x/sum(abs(x(:)));
+					x = x/sum(abs(x(:))/length(x));
 				elseif opt.file_normalize == 2
-					x = x/sqrt(sum(abs(x(:)).^2));
+					x = x/sqrt(sum(abs(x(:)).^2/length(x)));
 				elseif opt.file_normalize == Inf
 					x = x/max(abs(x(:)));
 				end
