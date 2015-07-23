@@ -165,7 +165,9 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 			fr_count0 = size(signal,1);
 
 			if scat_opt.zero_pad			% resolution?
-				signal = pad_signal(signal,round(max_fr_count/2^scat_opt_fr.x_resolution),'zero');
+				% For N formula, see unpad_signal
+				signal = pad_signal(signal, ...
+					1+floor((max_fr_count-1)/2^scat_opt_fr.x_resolution),'zero');
 			end
 
             % (ii) log-frequential wavelet transform
