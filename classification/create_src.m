@@ -34,9 +34,7 @@ function src = create_src(directory,objects_fun)
 	objects = [];
 	classes = [];
 
-    
 	for ind = 1:length(files)
-        
 		[file_objects,file_classes] = objects_fun(files{ind});
 		
 		if ~isempty(file_objects)
@@ -109,3 +107,4 @@ function files = find_files(directory)
 		end
 	end
 end
+
