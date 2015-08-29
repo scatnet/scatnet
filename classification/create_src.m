@@ -31,19 +31,22 @@ function src = create_src(directory,objects_fun)
 		error('No data files found in the specified directory!');
 	end
 	
-	objects = [];
-	classes = [];
+	objects = cell(1, length(files));
+	classes = cell(1, length(files));
 
 	for ind = 1:length(files)
 		[file_objects,file_classes] = objects_fun(files{ind});
 		
 		if ~isempty(file_objects)
-			file_objects = arrayfun(@(s)(setfield(s,'ind',ind)),file_objects);
+			[file_objects.ind] = deal(ind);
 		end
 
-		objects = [objects file_objects];
-		classes = [classes file_classes];
+		objects{ind} = file_objects;
+		classes{ind} = file_classes;
 	end
+
+	objects = [objects{:}];
+	classes = [classes{:}];
 
 	file_inds = [objects.ind];
 
