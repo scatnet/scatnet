@@ -12,17 +12,17 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 	N_orig = size(x);
 	N_orig = N_orig(1:2);
 
-	N_padded(1) = filters{1}.N/2^options.x_resolution(1);
-	N_padded(2) = filters{2}.N/2^options.x_resolution(2);
+	N_padded(1) = filters{1}.meta.size_filter/2^options.x_resolution(1);
+	N_padded(2) = filters{2}.meta.size_filter/2^options.x_resolution(2);
 
-	x = pad_signal_1d(x, N_padded, 'symm');
+	x = pad_signal(x, N_padded, 'symm');
 
 	% along 1
 	N = size(x,1);
 
-	[temp,psi_bw,phi_bw] = filter_freq(filters{1});
+	[temp,psi_bw,phi_bw] = filter_freq(filters{1}.meta);
 
-	j0 = log2(filters{1}.N/N);
+	j0 = log2(filters{1}.meta.size_filter/N);
 
 	xf = fft(x,[],1);
 	xf = reshape(xf,[size(xf,1) size(xf,2)*size(xf,3)]);
@@ -57,9 +57,9 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 	% along 2
 	N = size(x,2);
 
-	[temp,psi_bw,phi_bw] = filter_freq(filters{2});
+	[temp,psi_bw,phi_bw] = filter_freq(filters{2}.meta);
 
-	j0 = log2(filters{2}.N/N);
+	j0 = log2(filters{2}.meta.size_filter/N);
 
 	x2 = cell(numel(filters{1}.psi.filter)+1,numel(filters{2}.psi.filter)+1);
 	res2 = zeros(1, numel(filters{2}.psi.filter)+1);
@@ -90,7 +90,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 			%x2{p1,p2} = permute(conv_sub_1d(permute(xf,[2 1 3]), filters{2}.psi.filter{p2}, ds),[2 1 3]);
 			res2(1,p2) = ds;
 			bw2(1,p2) = psi_bw(p2);
-			x2{p1,p2} = unpad_signal_1d(x2{p1,p2}, [res1(p1) res2(p2)], N_orig);
+			x2{p1,p2} = unpad_signal(x2{p1,p2}, [res1(p1) res2(p2)], N_orig);
 			meta.j1(:,p1,p2) = p1-1;
 			meta.j2(:,p1,p2) = p2-1;
 			meta.bandwidth(:,p1,p2) = [bw1(p1) bw2(p2)];
@@ -108,7 +108,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		x2{p1,end} = y;
 		res2(1,end) = ds;
 		bw2(1,end) = phi_bw;
-		x2{p1,end} = unpad_signal_1d(x2{p1,end}, [res1(p1) res2(end)], N_orig);
+		x2{p1,end} = unpad_signal(x2{p1,end}, [res1(p1) res2(end)], N_orig);
 		meta.j1(:,p1,end) = p1-1;
 		meta.j2(:,p1,end) = numel(filters{2}.psi.filter)+1-1;
 		meta.bandwidth(:,p1,end) = [bw1(p1) bw2(end)];

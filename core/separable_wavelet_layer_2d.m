@@ -5,13 +5,21 @@ function [U_phi, U_psi] = separable_wavelet_layer_2d(U, filters, options)
 
 	calc_U = (nargout>=2);
 
-	[psi1_xi,psi1_bw,phi1_bw] = filter_freq(filters{1});
-	[psi2_xi,psi2_bw,phi2_bw] = filter_freq(filters{2});
+	[psi1_xi,psi1_bw,phi1_bw] = filter_freq(filters{1}.meta);
+	[psi2_xi,psi2_bw,phi2_bw] = filter_freq(filters{2}.meta);
 
 	if ~isfield(U.meta, 'bandwidth'), U.meta.bandwidth = 2*pi*ones(2,1); end
 	if ~isfield(U.meta, 'resolution'), U.meta.resolution = 0*ones(2,1); end
 	if ~isfield(U.meta, 'j1'), U.meta.j1 = zeros(0,1); end
 	if ~isfield(U.meta, 'j2'), U.meta.j2 = zeros(0,1); end
+
+	if size(U.meta.bandwidth, 1) == 1
+		U.meta.bandwidth = ones(2,1)*U.meta.bandwidth;
+	end
+
+	if size(U.meta.resolution, 1) == 1
+		U.meta.resolution = ones(2,1)*U.meta.resolution;
+	end
 
 	U_phi.signal = {};
 	U_phi.meta.bandwidth = [];
