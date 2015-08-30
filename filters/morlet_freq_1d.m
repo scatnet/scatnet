@@ -28,12 +28,14 @@ function [xi_psi, bw_psi, bw_phi] = morlet_freq_1d(filt_opt)
 
 	% Calculate linearly spaced band-pass filters so that they evenly
 	% cover the remaining part of the spectrum
+	if filt_opt.P > 0
 	step = pi * 2^(-filt_opt.J/filt_opt.Q) * ...
         (1-1/4*sigma0/filt_opt.sigma_phi*2^(1/filt_opt.Q))/filt_opt.P;
     xi_psi(filt_opt.J+1:filt_opt.J+filt_opt.P) = filt_opt.xi_psi * ...
         2^((-filt_opt.J+1)/filt_opt.Q) - step * (1:filt_opt.P);
     sigma_psi(filt_opt.J+1:filt_opt.J+1+filt_opt.P) = ...
         filt_opt.sigma_psi*2^((filt_opt.J-1)/filt_opt.Q);
+	end
     
     % Calculate low-pass filter
 	sigma_phi = filt_opt.sigma_phi * 2^((filt_opt.J-1)/filt_opt.Q);
