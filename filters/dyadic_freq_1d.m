@@ -1,7 +1,7 @@
 % DYADIC_FREQ_1D Compute center frequencies and bandwidths for the 1D Dyadic
 %
 % Usage
-%	[psi_xi, psi_bw, phi_bw] = DYADIC_FREQ_1D(filt_opt)
+%    [psi_xi, psi_bw, phi_bw] = DYADIC_FREQ_1D(filt_opt);
 %
 % Input
 %    filt_opt (struct): The parameters defining the filter bank. For example,
@@ -14,9 +14,9 @@
 %
 % Description
 %    Compute the center frequencies and bandwidth for the wavelets and lowpass
-%    filter of the one-dimensional dyadic filter bank, such as 
+%    filter of the one-dimensional dyadic filter bank, such as
 %    SPLINE_FILTER_BANK_1D.
-%    
+%
 % See also
 %    FILTER_FREQ, MORLET_FREQ_1D
 
@@ -28,3 +28,4 @@ function [psi_xi, psi_bw, phi_bw] = dyadic_freq_1d(filter_options)
 
 	phi_bw = pi*2^(-[filter_options.J-1]);
 end
+

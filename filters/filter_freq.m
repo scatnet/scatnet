@@ -1,7 +1,7 @@
 % FILTER_FREQ Calculate center frequencies and bandwidths
 %
 % Usage
-%    [psi_xi, psi_bw, phi_bw] = FILTER_FREQ(filt_opt)
+%    [psi_xi, psi_bw, phi_bw] = FILTER_FREQ(filt_opt);
 %
 % Input
 %    filt_opt (struct): The parameters defining the filter bank.
@@ -22,7 +22,7 @@
 
 function [psi_xi, psi_bw, phi_bw] = filter_freq(filter_options)
 	if strcmp(filter_options.filter_type,'spline_1d') || ...
-        strcmp(filter_options.filter_type,'selesnick_1d')
+		strcmp(filter_options.filter_type,'selesnick_1d')
 		[psi_xi,psi_bw,phi_bw] = dyadic_freq_1d(filter_options);
 	elseif strcmp(filter_options.filter_type,'morlet_1d') || ...
 		strcmp(filter_options.filter_type,'gabor_1d')
@@ -31,3 +31,4 @@ function [psi_xi, psi_bw, phi_bw] = filter_freq(filter_options)
 		error('Unknown filter type ''%s''', filter_options.filter_type);
 	end
 end
+
