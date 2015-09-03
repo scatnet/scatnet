@@ -8,8 +8,15 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		'psi_mask', {true(1, numel(filters{1}.psi.filter)), ...
 			true(1, numel(filters{2}.psi.filter))});
 	options = fill_struct(options, 'x_resolution', [0; 0]);
+	options = fill_struct(options, 'negative_freq', 0);
 
 	filters_ct = [numel(filters{1}.psi.filter)+1 numel(filters{2}.psi.filter)+1];
+	p1_phi = numel(filters{1}.psi.filter)+1;
+
+	if options.negative_freq
+		neg_filters = flip_filters(filters{1});
+		filters_ct(1) = filters_ct(1) + numel(neg_filters.psi.filter);
+	end
 
 	N_orig = size(x);
 	N_orig = N_orig(1:2);
@@ -43,6 +50,14 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		x1{p1,1} = y;
 		res1(p1,1) = ds;
 		bw1(p1,1) = psi_bw(p1);
+
+		if options.negative_freq
+			y = conv_sub_1d(xf, neg_filters.psi.filter{p1}, ds);
+			y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
+			x1{end+1-p1,1} = y;
+			res1(end+1-p1,1) = ds;
+			bw1(end+1-p1,1) = psi_bw(p1);
+		end
 	end
 
 	ds = round(log2(2*pi/phi_bw)) - ...
@@ -52,9 +67,9 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 
 	y = real(conv_sub_1d(xf, filters{1}.phi.filter, ds));
 	y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
-	x1{end,1} = y;
-	res1(end,1) = ds;
-	bw1(end,1) = phi_bw;
+	x1{p1_phi,1} = y;
+	res1(p1_phi,1) = ds;
+	bw1(p1_phi,1) = phi_bw;
 
 	% along 2
 	N = size(x,2);
@@ -116,19 +131,19 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		meta.resolution(:,p1,end) = [res1(p1) res2(end)];
 	end
 
-	x_phi = x2{end,end};
-	x2{end,end} = [];
+	x_phi = x2{p1_phi,end};
+	x2{p1_phi,end} = [];
 	x_psi = x2;
 
-	meta_phi.j1 = meta.j1(:,end,end);
-	meta_phi.j2 = meta.j2(:,end,end);
-	meta_phi.bandwidth = meta.bandwidth(:,end,end);
-	meta_phi.resolution = meta.resolution(:,end,end);
+	meta_phi.j1 = meta.j1(:,p1_phi,end);
+	meta_phi.j2 = meta.j2(:,p1_phi,end);
+	meta_phi.bandwidth = meta.bandwidth(:,p1_phi,end);
+	meta_phi.resolution = meta.resolution(:,p1_phi,end);
 
 	meta_psi = meta;
-	meta_psi.j1(:,end,end) = [0];
-	meta_psi.j2(:,end,end) = [0];
-	meta_psi.bandwidth(:,end,end) = [0; 0];
-	meta_psi.resolution(:,end,end) = [0; 0];
+	meta_psi.j1(:,p1_phi,end) = [0];
+	meta_psi.j2(:,p1_phi,end) = [0];
+	meta_psi.bandwidth(:,p1_phi,end) = [0; 0];
+	meta_psi.resolution(:,p1_phi,end) = [0; 0];
 end
 
