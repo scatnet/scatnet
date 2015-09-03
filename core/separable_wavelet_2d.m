@@ -9,6 +9,8 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 			true(1, numel(filters{2}.psi.filter))});
 	options = fill_struct(options, 'x_resolution', [0; 0]);
 
+	filters_ct = [numel(filters{1}.psi.filter)+1 numel(filters{2}.psi.filter)+1];
+
 	N_orig = size(x);
 	N_orig = N_orig(1:2);
 
@@ -27,9 +29,9 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 	xf = fft(x,[],1);
 	xf = reshape(xf,[size(xf,1) size(xf,2)*size(xf,3)]);
 
-	x1 = cell(numel(filters{1}.psi.filter)+1,1);
-	res1 = zeros(numel(filters{1}.psi.filter)+1,1);
-	bw1 = zeros(numel(filters{1}.psi.filter)+1,1);
+	x1 = cell(filters_ct(1), 1);
+	res1 = zeros(filters_ct(1) ,1);
+	bw1 = zeros(filters_ct(1), 1);
 	for p1 = find(options.psi_mask{1})
 		ds = round(log2(2*pi/psi_bw(p1)/2)) - ...
 		     j0 - ...
@@ -61,13 +63,13 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 
 	j0 = log2(filters{2}.meta.size_filter/N);
 
-	x2 = cell(numel(filters{1}.psi.filter)+1,numel(filters{2}.psi.filter)+1);
-	res2 = zeros(1, numel(filters{2}.psi.filter)+1);
-	bw2 = zeros(1, numel(filters{2}.psi.filter)+1);
-	meta.j1 = -1*ones(1, numel(filters{1}.psi.filter)+1, numel(filters{2}.psi.filter)+1);
-	meta.j2 = -1*ones(1, numel(filters{1}.psi.filter)+1, numel(filters{2}.psi.filter)+1);
-	meta.bandwidth = -1*ones(2, numel(filters{1}.psi.filter)+1, numel(filters{2}.psi.filter)+1);
-	meta.resolution = -1*ones(2, numel(filters{1}.psi.filter)+1, numel(filters{2}.psi.filter)+1);
+	x2 = cell(filters_ct);
+	res2 = zeros(1, filters_ct(2));
+	bw2 = zeros(1, filters_ct(2));
+	meta.j1 = -1*ones([1 filters_ct]);
+	meta.j2 = -1*ones([1 filters_ct]);
+	meta.bandwidth = -1*ones([2 filters_ct]);
+	meta.resolution = -1*ones([2 filters_ct]);
 	for p1 = 1:size(x1,1)
 		if isempty(x1{p1})
 			continue;
@@ -87,7 +89,6 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 			y = reshape(y,[size(y,1) size(y,2)/size(x,3) size(x,3)]);
 			y = permute(y,[2 1 3]);
 			x2{p1,p2} = y;
-			%x2{p1,p2} = permute(conv_sub_1d(permute(xf,[2 1 3]), filters{2}.psi.filter{p2}, ds),[2 1 3]);
 			res2(1,p2) = ds;
 			bw2(1,p2) = psi_bw(p2);
 			x2{p1,p2} = unpad_signal(x2{p1,p2}, [res1(p1) res2(p2)], N_orig);
@@ -110,7 +111,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = separable_wavelet_2d(x, filters, o
 		bw2(1,end) = phi_bw;
 		x2{p1,end} = unpad_signal(x2{p1,end}, [res1(p1) res2(end)], N_orig);
 		meta.j1(:,p1,end) = p1-1;
-		meta.j2(:,p1,end) = numel(filters{2}.psi.filter)+1-1;
+		meta.j2(:,p1,end) = filters_ct(2)-1;
 		meta.bandwidth(:,p1,end) = [bw1(p1) bw2(end)];
 		meta.resolution(:,p1,end) = [res1(p1) res2(end)];
 	end
