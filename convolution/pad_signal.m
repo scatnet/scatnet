@@ -1,7 +1,7 @@
 % PAD_SIGNAL Pad a signal
 %
 % Usage
-%    y = PAD_SIGNAL(x, Npad, boundary, center)
+%    y = PAD_SIGNAL(x, Npad, boundary, center);
 %
 % Input
 %    x (numeric): The signal to be padded.
@@ -14,22 +14,22 @@
 %        'zero': Zero boundary, for example
 %             [1 2 3 4]' -> [1 2 3 4 0 0 0 0]' for Npad = 8
 %        (default 'symm')
-%    center (boolean): If true, the signal x is centered in the output y, 
+%    center (boolean): If true, the signal x is centered in the output y,
 %        otherwise it is located in the (upper) left corner (default false).
 %
 % Output
-%    y (numeric): The padded signal of size Npad
+%    y (numeric): The padded signal of size Npad.
 %
 % Description
-%    The input signal x is padded to give a signal of the size Npad using the 
+%    The input signal x is padded to give a signal of the size Npad using the
 %    boundary conditions specified in boundary. This has the advantage of
-%    reducing boundary effects when computing convolutions by specifying 
+%    reducing boundary effects when computing convolutions by specifying
 %    boundary to be 'symm' or 'zero', depending on the signal. It also allows
-%    for convolutions to be calculated on signals smaller than the filter was 
+%    for convolutions to be calculated on signals smaller than the filter was
 %    originally defined for. Specifically, Npad does not need to be a multiple
 %    of size(x). Indeed, if x = [1 2 3 4]', we can have Npad = 11, which gives
 %    y = [1 2 3 4 4 3 2 4 3 2 1]'. There is a discontinuity since Npad is not
-%    a multiple of 4, but this discontinuity occurs as far from the original 
+%    a multiple of 4, but this discontinuity occurs as far from the original
 %    signal, located in indices 1 through 4, as possible.
 %
 %    The function takes both 1D and 2D inputs.
@@ -44,10 +44,10 @@ function y = pad_signal(x, Npad, boundary, center)
 
 	if nargin < 4
 		center = 0;
-    end
-    
-    orig_sz = size(x);
-    orig_sz = orig_sz(1:length(Npad));
+	end
+
+	orig_sz = size(x);
+	orig_sz = orig_sz(1:length(Npad));
 
 	if any(orig_sz > Npad)
 		error('Original size must be smaller than padding size');
@@ -55,7 +55,7 @@ function y = pad_signal(x, Npad, boundary, center)
 
 	if center
 		margins = floor((Npad - orig_sz)/2);
-    end
+	end
 
 	has_imag = norm(imag(x(:)))>0;
 
@@ -118,3 +118,4 @@ function y = pad_signal(x, Npad, boundary, center)
 
 	y = x;
 end
+
