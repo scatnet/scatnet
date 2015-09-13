@@ -188,7 +188,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
                 rng_neg = 1:length(Z_neg_Psi);
                 rng = length(Z_Psi)-length(Z_neg_Psi)+1:length(Z_Psi);
                 meta_Psi = map_meta(meta_neg_Psi,rng_neg,meta_Psi,rng,'j');
-                meta_Psi.j(rng) = 2*length(neg_filters.psi.filter)+1-meta_neg_Psi.j(rng_neg);
+                meta_Psi.j(rng) = 2*length(neg_filters.psi.filter)-meta_neg_Psi.j(rng_neg);
             end
             
 			if scat_opt.zero_pad
