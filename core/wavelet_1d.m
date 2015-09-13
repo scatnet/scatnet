@@ -61,7 +61,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
 	ds = max(ds, 0);
 
-	x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
+	x_phi = conv_sub_1d(xf, filters.phi.filter, ds);
 
 	x_phi = unpad_signal(x_phi, ds, N);
 	meta_phi.j = -1;
