@@ -9,11 +9,11 @@
 %    x (numeric): The signal to be transformed.
 %    filters (struct): The filter bank of the wavelet transform.
 %    options (struct): Various options for the transform:
-%       options.oversampling (int): The oversampling factor (as a power of 2) 
+%       options.oversampling (int): The oversampling factor (as a power of 2)
 %          with respect to the critical bandwidth when calculating convolu-
 %          tions (default 1).
 %       options.psi_mask (boolean): Specifies the wavelet filters in 
-%          filters.psi for which the transform is to be calculated (default 
+%          filters.psi for which the transform is to be calculated (default
 %          all).
 %       options.x_resolution (int): The resolution of the input signal x as
 %          a power of 2, representing the downsampling of the signal with
@@ -57,12 +57,11 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	x = pad_signal(x, N_padded, filters.meta.boundary);
 
 	xf = fft(x,[],1);
-    
-    ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
+
+	ds = round(log2(2*pi/phi_bw)) - j0 - options.oversampling;
 	ds = max(ds, 0);
-    
-     
-    x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
+
+	x_phi = real(conv_sub_1d(xf, filters.phi.filter, ds));
 
 	x_phi = unpad_signal(x_phi, ds, N);
 	meta_phi.j = -1;
@@ -70,7 +69,7 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 	meta_phi.resolution = j0+ds;
 
 	x_phi = reshape(x_phi, [size(x_phi,1) 1 size(x_phi,2)]);
-    
+
 	x_psi = cell(1, numel(filters.psi.filter));
 	meta_psi.j = -1*ones(1, numel(filters.psi.filter));
 	meta_psi.bandwidth = -1*ones(1, numel(filters.psi.filter));
@@ -90,3 +89,4 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		x_psi{p1} = reshape(x_psi{p1}, [size(x_psi{p1},1) 1 size(x_psi{p1},2)]);
 	end
 end
+
