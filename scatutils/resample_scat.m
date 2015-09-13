@@ -7,7 +7,8 @@
 %    S (cell): A scattering transform.
 %    res (int): The desired resolution.
 %    preserve_energy (bool, optional): If set, renormalizes each resampled
-%       coefficient so that its energy (sum of squares) remains the same.
+%       coefficient so that its energy (sum of squares) remains the same
+%       (default true).
 %
 % Output
 %    S (cell): The scattering transform with each coefficient resampled to
