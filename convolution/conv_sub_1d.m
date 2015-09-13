@@ -42,6 +42,8 @@ function y_ds = conv_sub_1d(xf, filter, ds)
 		filter_j = [filter(1:sig_length/2); ...
 			filter(sig_length/2+1)/2+filter(end-sig_length/2+1)/2; ...
 			filter(end-sig_length/2+2:end)];
+norm(filter_j)
+norm(xf)
 		yf = bsxfun(@times, xf, filter_j);
 	elseif isstruct(filter)
 		% optimized filter, output of OPTIMIZE_FILTER
