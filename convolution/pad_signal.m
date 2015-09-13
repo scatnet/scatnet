@@ -9,6 +9,8 @@
 %    boundary (string): The boundary condition of the signal, one of:
 %        'symm': Symmetric boundary condition with half-sample symmetry, for
 %             example [1 2 3 4]' -> [1 2 3 4 4 3 2 1]' for Npad = 8
+%        'herm': Hermitian boundary condition with half-sample symmetry, for
+%             example [1+i 2+i 3+i 4+i]' -> [1+i 2+i 3+i 4+i 4-i 3-i 2-i 1-i]'
 %        'per': Periodic boundary with half-sample symmetry, for example
 %             [1 2 3 4]' -> [1 2 3 4 1 2 3 4]' for Npad = 8
 %        'zero': Zero boundary, for example
@@ -63,6 +65,9 @@ function y = pad_signal(x, Npad, boundary, center)
 		Norig = size(x,d);
 
 		if strcmp(boundary,'symm')
+			ind0 = [1:Norig Norig:-1:1];
+			conjugate0 = zeros(1,2*Norig);
+		elseif strcmp(boundary,'herm')
 			ind0 = [1:Norig Norig:-1:1];
 			conjugate0 = [zeros(1,Norig) ones(1,Norig)];
 		elseif strcmp(boundary,'per')
