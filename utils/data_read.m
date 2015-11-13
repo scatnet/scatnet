@@ -36,6 +36,12 @@ function varargout = data_read(file,varargin)
 		else
 			[varargout{1},varargout{2}] = sphere_read(file,varargin{:});
 		end
+	elseif length(file) > 4 && strcmpi(file(end-3:end), '.ogg')
+		if exist('audioread')
+			[varargout{1},varargout{2}] = audioread(file,varargin{:});
+		else
+			error('Cannot read OGG file since audioread is not present!');
+		end
 	elseif length(file) > 4 && (strcmpi(file(end-3:end),'.jpg')...
 			|| strcmpi(file(end-3:end),'.png') )
 		varargout{1} = imreadBW(file,varargin{:});

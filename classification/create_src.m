@@ -77,7 +77,7 @@ function src = create_src(directory,objects_fun)
 end
 
 function files = find_files(directory)
-	extensions = {'au','wav','jpg','png'};
+	extensions = {'au','wav','ogg','jpg','png'};
 	
 	dir_list = dir(directory);
 	
