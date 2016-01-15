@@ -1,7 +1,7 @@
 % SVM_TRAIN Train an SVM classifier
 %
 % Usage
-%    model = SVM_TRAIN(db, train_set, options)
+%    model = SVM_TRAIN(db, train_set, options);
 %
 % Input
 %    db (struct): The database containing the feature vector.
@@ -10,17 +10,17 @@
 %          options.kernel_type (char): The kernel type: 'linear' or 'gaussian'
 %             (default 'gaussian').
 %          options.C (numeric): The slack factor (default 8).
-%          options.gamma (numeric): The gamma of the Gaussian kernel (default 
+%          options.gamma (numeric): The gamma of the Gaussian kernel (default
 %             1e-4).
-%          options.no_inplace (boolean): Do not use the inplace version of 
+%          options.no_inplace (boolean): Do not use the inplace version of
 %             LIBSVM, even if it available (default false).
 %          options.full_test_kernel (boolean): Explicity calculate the test
-%             kernel instead of relying on the precalculated kernel. Used if 
-%             the kernel is only defined on the training vectors (default 
+%             kernel instead of relying on the precalculated kernel. Used if
+%             the kernel is only defined on the training vectors (default
 %             false).
-%          options.reweight (boolean): Add weights to rebalance the training set if 
+%          options.reweight (boolean): Add weights to rebalance the training set if
 %             it is imbalanced. The rebalancing is done so that the distribu-
-%             tion of the training samples seem to be uniform for all the 
+%             tion of the training samples seem to be uniform for all the
 %             classes (default 0).
 %
 % Output

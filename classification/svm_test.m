@@ -1,16 +1,16 @@
 % SVM_TEST Calculate labels for an SVM model
 %
 % Usage
-%    [labels, votes, feature_labels] = SVM_TEST(db, model, test_set)
+%    [labels, votes, feature_labels] = SVM_TEST(db, model, test_set);
 %
 % Input
 %    db (struct): The database containing the feature vector.
-%    model (struct): The affine space model obtained from svm_train.
+%    model (struct): The SVM model obtained from svm_train.
 %    test_set (int): The object indices of the testing instances.
 %
 % Output
 %    labels (int): The assigned labels.
-%    votes (int): The number of votes for each testing instance and class 
+%    votes (int): The number of votes for each testing instance and class
 %       pair.
 %    feature_labels (int): The labels assigned to the individual features.
 %
