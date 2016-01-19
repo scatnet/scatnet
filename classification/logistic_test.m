@@ -35,6 +35,10 @@ function [labels, p] = logistic_test(db, model, test_set)
 	% Get the responses.
 	r = x*model.beta;
 
+	% For each response, we only care about the relative response, so
+	% renormalize by maximum to prevent overflow.
+	r = bsxfun(@minus, r, max(r, [], 2));
+
 	% Form probabilities.
 	p = exp(r);
 	p = bsxfun(@times, p, 1./(1+sum(p, 2)));
