@@ -170,7 +170,7 @@ function model = svm_train(db,train_set,opt)
 
 	% Call the desired LIBSVM routine.
 	if ~exist('svmtrain_inplace') || opt.no_inplace
-		model.svm = svmtrain(double(feature_class.'), ...
+		model.svm = svmtrain(feature_class.', ...
 			double(features.'),params);
 	else
 		% To specify the training vectors, ind_features is passed as a mask.
