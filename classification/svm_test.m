@@ -17,7 +17,8 @@
 % See also
 %    SVM_TRAIN, CLASSIF_ERR, CLASSIF_RECOG
 
-function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,test_set)
+function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model, ...
+	test_set)
 	% Determine indices of feature vectors belonging to the test objects.
 	ind_features = [db.indices{test_set}];
 
@@ -26,18 +27,22 @@ function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,test_se
 		model.svm.Parameters(2) == 5 || ...
 		model.svm.Parameters(2) == 6 || ...
 		model.svm.Parameters(2) == 7)
-		% If we're working with a precalculated kernel and only some of the testing
-		% vectors are available, only use these (unless full_test_kernel is set).
+		% If we're working with a precalculated kernel and only some of the
+		% testing vectors are available, only use these (unless
+		% full_test_kernel is set).
 
-		[kernel_mask,kernel_ind] = ismember(1:size(db.features,2),db.kernel.kernel_set);
+		[kernel_mask,kernel_ind] = ismember(1:size(db.features,2), ...
+			db.kernel.kernel_set);
 		ind_features = ind_features(kernel_mask(ind_features));
 	end
 
 	% Obtain the feature vector labels for ind_features.
-	[feature_labels,temp,K,sv_coef,dec] = svm_feature_test(db,model.svm,ind_features,model.full_test_kernel);
+	[feature_labels,temp,K,sv_coef,dec] = svm_feature_test(db,model.svm, ...
+		ind_features,model.full_test_kernel);
 
 	for l = 1:length(test_set)
-		% For each object in the test set, count the votes assigned to each of its feature vectors. 
+		% For each object in the test set, count the votes assigned to each of
+		% its feature vectors.
 
 		ind = find(ismember(ind_features,db.indices{test_set(l)}));
 		votes(:,l) = histc(feature_labels(ind),1:length(db.src.classes));
@@ -45,24 +50,25 @@ function [labels,votes,feature_labels,K,sv_coef,dec] = svm_test(db,model,test_se
 	end
 end
 
-function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,full_test_kernel)
-	% As in SVM_CALC_KERNEL, it's useful to break down kernel computations into
-	% blocks.
+function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model, ...
+	ind_features0,full_test_kernel)
+	% As in SVM_CALC_KERNEL, it's useful to break down kernel computations
+	% into blocks.
 	block_size = 8192;
 
 	% How many classes are in this model?
 	class_ct = model.nr_class;
 
-	% Prepare the matrix of support vector coefficients for each pair of classes,
-	% since each corresponds to a different SVM.
+	% Prepare the matrix of support vector coefficients for each pair of
+	% classes, since each corresponds to a different SVM.
 	sv_coef = zeros(model.totalSV,class_ct*(class_ct-1)/2,class(db.features));
 
 	pairs = [];
 
-	% Fill the sv_coef matrix. For more details on the model.sv_coef matrix, see
-	% the LIBSVM FAQ. The difference with our sv_coefs is that our stores the 
-	% coefficients for each class pair, with zeros for the vectors belonging to
-	% neither class.
+	% Fill the sv_coef matrix. For more details on the model.sv_coef matrix,
+	% see the LIBSVM FAQ. The difference with our sv_coefs is that our stores
+	% the coefficients for each class pair, with zeros for the vectors
+	% belonging to neither class.
 	r = 1;
 	for n1 = 1:class_ct
 		for n2 = n1+1:class_ct
@@ -77,7 +83,8 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 		end
 	end
 
-	% Prepare matrix of decision values for each testing vector and class pair.
+	% Prepare matrix of decision values for each testing vector and class
+	% pair.
 	dec = zeros(length(ind_features0),size(sv_coef,2),class(db.features));
 
 	if full_test_kernel && ...
@@ -85,8 +92,8 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 		model.Parameters(2) == 5 || ...
 		model.Parameters(2) == 6 || ...
 		model.Parameters(2) == 7)
-		% If we have to recalculate kernel, prepare square norms. This should only
-		% be necessary in Gaussian kernel case, though (6 & 7)...
+		% If we have to recalculate kernel, prepare square norms. This should
+		% only be necessary in Gaussian kernel case, though (6 & 7)...
 		norm2 = sum(abs(db.features(:,db.kernel.kernel_set(model.SVs))).^2,1);
 	end
 
@@ -113,52 +120,60 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 			model.Parameters(2) == 5 || ...
 			model.Parameters(2) == 6 || ...
 			model.Parameters(2) == 7)
-			% Kernel was precalculated, but for testing, we have to recalculate it. This
-			% can be necessary if the set of kernel vectors is restricted.
+			% Kernel was precalculated, but for testing, we have to
+			% recalculate it. This can be necessary if the set of kernel
+			% vectors is restricted.
 
 			if strcmp(db.kernel.kernel_type,'linear')
-				% Calculate the linear kernel of the testing vector with respect to the 
-				% support vectors.
-				K = db.features(:,ind_features).'*db.features(:,db.kernel.kernel_set(model.SVs));
+				% Calculate the linear kernel of the testing vector with
+				% respect to the support vectors.
+				K = db.features(:,ind_features).'* ...
+					db.features(:,db.kernel.kernel_set(model.SVs));
 			elseif strcmp(db.kernel.kernel_type,'gaussian')
-				% Same for Gaussian kernel, except that we don't multiply by gamma and 
-				% exponentiate here. This is done later, as in the precalculated case.
+				% Same for Gaussian kernel, except that we don't multiply by
+				% gamma and exponentiate here. This is done later, as in the
+				% precalculated case.
 				norm1 = sum(abs(db.features(:,ind_features)).^2,1);
 				K = bsxfun(@plus,norm1.',norm2)-...
-					2*db.features(:,ind_features).'*db.features(:,db.kernel.kernel_set(model.SVs));
+					2*db.features(:,ind_features).'*db ...
+					.features(:,db.kernel.kernel_set(model.SVs));
 			else
 				error('unknown kernel type');
 			end
 		elseif model.Parameters(2) == 4	|| ...
 			model.Parameters(2) == 6
-			% Precalculated kernel in square format, so just extract the rows corre-
-			% sponding to the support vectors and the columns corresponding to the
-			% testing vectors.
-			
+			% Precalculated kernel in square format, so just extract the rows
+			% % corresponding to the support vectors and the columns %
+			% corresponding to the % testing vectors.
+
 			% Translate to the kernel indexation.
-			[kernel_mask,kernel_ind] = ismember(1:size(db.features,2),db.kernel.kernel_set);
+			[kernel_mask,kernel_ind] = ismember(1:size(db.features,2), ...
+				db.kernel.kernel_set);
 			K = db.kernel.K(1+model.SVs,kernel_ind(ind_features)).';
 		elseif model.Parameters(2) == 5 || ...
 			model.Parameters(2) == 7
-			% Precalculated kernel in triangular format. Need to unpack the kernel for
-			% desired support vectors and testing vectors.
+			% Precalculated kernel in triangular format. Need to unpack the
+			% kernel for desired support vectors and testing vectors.
 
 			% Prepare the kernel matrix.
-			K = zeros(length(ind_features),length(model.SVs),class(db.kernel.K));
+			K = zeros(length(ind_features),length(model.SVs), ...
+				class(db.kernel.K));
 
 			% Obtain kernel indexation.
-			[kernel_mask,kernel_ind] = ismember(1:size(db.features,2),db.kernel.kernel_set);
+			[kernel_mask,kernel_ind] = ismember(1:size(db.features,2), ...
+				db.kernel.kernel_set);
 
 			for k = 1:length(ind_features)
-				% For each of the testing vectors, extract the indices in the triangular
-				% kernel.
+				% For each of the testing vectors, extract the indices in the
+				% triangular kernel.
 
 				% Translate to the kernel indexation.
 				idx = kernel_ind(ind_features(k));
 
-				% Separate support vectors into those with index below testing vector index
-				% and those above. Need to cast to integers since floating-point indexing
-				% causes problems. Take 64 bits to be safe...
+				% Separate support vectors into those with index below testing
+				% vector index and those above. Need to cast to integers
+				% since floating-point indexing % causes problems. Take 64
+				% bits to be safe...
 				lower_SVs = int64(model.SVs(model.SVs<=idx));
 				upper_SVs = int64(model.SVs(model.SVs>idx));
 		
@@ -171,21 +186,22 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 			end
 		end
 
-		if (model.Parameters(2) == 4 && strcmp(db.kernel.kernel_type,'gaussian')) || ...
+		if (model.Parameters(2) == 4 && ...
+			strcmp(db.kernel.kernel_type,'gaussian')) || ...
 			model.Parameters(2) == 6 || model.Parameters(2) == 7
-			% If we have a Gaussian kernel, we need to multiply by gamma and exponentia-
-			% te.
+			% If we have a Gaussian kernel, we need to multiply by gamma and
+			% exponentiate.
 			K = exp(-model.Parameters(4)*K);
 		end
 
-		% Calculate the decision values for the current block. See LIBSVM FAQ for 
-		% the detailed formula.
+		% Calculate the decision values for the current block. See LIBSVM FAQ
+		% for the detailed formula.
 		dec(mask,:) = bsxfun(@minus,K*sv_coef,model.rho.');
 
 		n = n+length(mask);
 	end
 
-	% Prepare the votes matrix, which will contain the votes assigned to each 
+	% Prepare the votes matrix, which will contain the votes assigned to each
 	% class for each testing vector.
 	votes = zeros(size(dec,1),class_ct);
 
@@ -204,3 +220,4 @@ function [labels,votes,K,sv_coef,dec] = svm_feature_test(db,model,ind_features0,
 	% Translate labels to those used in the model.
 	labels = model.Label(labels);
 end
+
