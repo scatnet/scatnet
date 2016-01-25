@@ -45,6 +45,7 @@ function model = svm_train(db,train_set,opt)
 	% Set default options.
 	opt = fill_struct(opt, 'no_inplace', 0);
 	opt = fill_struct(opt, 'full_test_kernel', 0);
+	opt = fill_struct(opt, 'feature_precision', []);
 
 	opt = fill_struct(opt, 'kernel_type', 'gaussian');
 
@@ -168,14 +169,28 @@ function model = svm_train(db,train_set,opt)
 	% Which vectors were used to train the SVM?
 	model.train_set = train_set;
 
+	if isempty(opt.feature_precision)
+		if ~exist('svmtrain_inplace') || opt.no_inplace
+			opt.feature_precision = 'double';
+		else
+			opt.feature_precision = 'single';
+		end
+	end
+
+	if strcmp(opt.feature_precision, 'double')
+		features = double(features);
+	else
+		features = single(features);
+	end
+
 	% Call the desired LIBSVM routine.
 	if ~exist('svmtrain_inplace') || opt.no_inplace
 		model.svm = svmtrain(feature_class.', ...
-			double(features.'),params);
+			features.',params);
 	else
 		% To specify the training vectors, ind_features is passed as a mask.
 		model.svm = svmtrain_inplace(feature_class, ...
-			single(features),params,ind_features);
+			features,params,ind_features);
 	end
 end
 
