@@ -83,7 +83,15 @@ function model = svm_train(db,train_set,opt)
 		end
 		% Feature matrix for LIBSVM is just the submatrix containing the
 		% training feature vectors.
-		features = db.features(:,ind_features);
+		if exist('svmtrain_inplace') && ~opt.no_inplace
+			feature_class = zeros(1,size(db.features,2));
+			for k = 1:length(db.indices)
+				feature_class(db.indices{k}) = db.src.objects(k).class;
+			end
+			features = db.features;
+		else
+			features = db.features(:,ind_features);
+		end
 	else
 		% Precalculated kernel. If inplace version of LIBSVM is available, we
 		% pass it the kernel plus a mask, otherwise we extract the relevant
