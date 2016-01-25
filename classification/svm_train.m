@@ -37,7 +37,6 @@
 
 
 function model = svm_train(db,train_set,opt)
-
 	if nargin < 3
 		opt = struct();
 	end
@@ -196,16 +195,16 @@ end
 
 function db_weights = calc_train_weights(db,train_set)
 	% The weight of each class k is the ratio btw the total number of
-	% training features Nfeat_tot, and the number of training features of 
-	% the class Nfeat_train_k ie w_k =  Nfeat_tot/Nfeat_train_k
-	% Note that the range of the values of C used for cross_validation 
+	% training features Nfeat_tot, and the number of training features of
+	% the class Nfeat_train_k ie w_k = Nfeat_tot/Nfeat_train_k.
+	% Note that the range of the values of C used for cross_validation
 	% should take these weights into consideration.
 
 	ind_objs = {};
 	ind_feats = {};
 	db_weights = [];
 
-% Find the total number of features in the training set
+	% Find the total number of features in the training set
 	tot_ind_objs = 1:numel(db.src.objects);
 	tot_ind_feats = [db.indices{tot_ind_objs}];
 	mask = ismember(tot_ind_feats,[db.indices{train_set}]);
@@ -216,7 +215,8 @@ function db_weights = calc_train_weights(db,train_set)
 			ind_feats{k} = [db.indices{ind_objs{k}}];
 			mask_class = ismember(ind_feats{k},[db.indices{train_set}]);
 			ind_feats{k} = ind_feats{k}(mask_class > 0);
-			db_weights = [db_weights ' -w' num2str(k) ' ' num2str(nb_train_feats/numel(ind_feats{k}))];
+			db_weights = [db_weights ' -w' num2str(k) ' ' ...
+				num2str(nb_train_feats/numel(ind_feats{k}))];
 	end
 end
 
