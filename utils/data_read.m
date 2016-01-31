@@ -1,21 +1,21 @@
 % DATA_READ Read data (audio, image) file
 %
 % Usage
-%    x = DATA_READ(filename, ...)
+%    x = DATA_READ(filename, ...);
 %
 % Input
 %    filename (char): The file to read.
 %
 % Output
-%    x (numeric): The contents of the file. In the case of audio, this is a 
-%       one-dimensional vector, while for images, it is a two-dimensional 
+%    x (numeric): The contents of the file. In the case of audio, this is a
+%       one-dimensional vector, while for images, it is a two-dimensional
 %       array.
 %
 % Description
-%    Detecting the type of file that filename refers to, the function calls one
-%    of AUREAD, WAVREAD, SPHERE_READ, or IMREADBW in order to read the data 
-%    contained in the file. Any additional arguments are passed on to the load-
-%    ing function.
+%    Detecting the type of file that filename refers to, the function calls
+%    one of AUREAD, WAVREAD, SPHERE_READ, AUDIO_READ or IMREADBW in order to
+%    read the data contained in the file. Any additional arguments are passed
+%    on to the loading function.
 %
 % See also
 %    SPHERE_READ, IMREADBW
