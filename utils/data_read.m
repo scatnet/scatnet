@@ -32,7 +32,13 @@ function varargout = data_read(file,varargin)
 		s = textscan(fid,'%s',1);
 		fclose(fid);
 		if isempty(strfind(s{1}{1},'NIST_1A'))
-			[varargout{1},varargout{2}] = wavread(file,varargin{:});
+			if exist('audioread')
+				% If present, use it since it can read more sophisticated
+				% types of WAV files
+				[varargout{1},varargout{2}] = audioread(file,varargin{:});
+			else
+				[varargout{1},varargout{2}] = wavread(file,varargin{:});
+			end
 		else
 			[varargout{1},varargout{2}] = sphere_read(file,varargin{:});
 		end
