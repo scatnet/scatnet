@@ -1,37 +1,37 @@
 % FEATURE_WRAPPER Wrapper for feature functions
 %
 % Usage
-%    feature = FEATURE_WRAPPER(x, objects, feature_fun, options)
+%    feature = FEATURE_WRAPPER(x, objects, feature_fun, options);
 %
 % Input
 %    x (numeric): The file data.
 %    object (struct): The objects contained in the data.
 %    feature_fun (function handle): The real feature function handle, takes as
-%       input one signal (or multiple, arranged as columns of a matrix) and 
-%       outputs the corresponding feature vectors. These are arranged with 
-%       feature dimension along the first axis, time/space along second and 
-%       third axes and signal index along the fourth axis (if more than one 
+%       input one signal (or multiple, arranged as columns of a matrix) and
+%       outputs the corresponding feature vectors. These are arranged with
+%       feature dimension along the first axis, time/space along second and
+%       third axes and signal index along the fourth axis (if more than one
 %       signal are input).
 %    options (struct): Various parameters for the wrapper, such as:
-%       options.input_sz (int): The size of the input vectors to be given to 
+%       options.input_sz (int): The size of the input vectors to be given to
 %          feature_fun. If empty, takes the rectangle specified by the objects
-%          structure, otherwise takes the rectangle of size input_sz centered  
+%          structure, otherwise takes the rectangle of size input_sz centered
 %          on the object (default empty).
-%       options.output_sz (int): The desired size of the data covered by the 
+%       options.output_sz (int): The desired size of the data covered by the
 %          feature vector. If empty, keeps the output from feature_fun, other-
-%          wise extracts the time/space rectangle of size output_sz centered 
-%          on the original data, taking into account any subsampling by 
+%          wise extracts the time/space rectangle of size output_sz centered
+%          on the original data, taking into account any subsampling by
 %          feature_fun (default empty).
-%       options.obj_normalize (int): The normalization of the input vectors  
-%          before being given to feature_fun. Can be empty, 1, 2, or Inf 
+%       options.obj_normalize (int): The normalization of the input vectors
+%          before being given to feature_fun. Can be empty, 1, 2, or Inf
 %          (default []).
 %       options.collapse (boolean): If true, collapses the time/space dimen-
 %          sion into one vector, otherwise leaves this dimension intact
 %          (default false).
 %
 % Output
-%    feature (numeric): An PxNxK array where P is the feature dimension, N is 
-%       the space/time dimension and K is the signal index, if multiple 
+%    feature (numeric): An PxNxK array where P is the feature dimension, N is
+%       the space/time dimension and K is the signal index, if multiple
 %       objects are given as input.
 %
 % See also
@@ -80,7 +80,8 @@ function t = feature_wrapper(x,objects,fun,options)
 		switch n_dim
 			case 1
 				ind = max(u1(l),1):min(u2(l),length(x));
-				buf(:,1,l) = [zeros(max(0,1-u1(l)),1); x(ind); zeros(max(0,u2(l)-length(x)),1)];
+				buf(:,1,l) = [zeros(max(0,1-u1(l)),1); x(ind); ...
+					zeros(max(0,u2(l)-length(x)),1)];
 			case 2
 				buf = x;
 				% TODO : extract bounding box
