@@ -13,6 +13,11 @@
 function y = downsample_signal(x, ds)
 	N = size(x, 1);
 
+	if ds == 0
+		y = x;
+		return;
+	end
+
 	x_f = fft(x, [], 1);
 
 	y_f = [x_f(1:N/2^(ds+1),:,:);
