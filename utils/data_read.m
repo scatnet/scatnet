@@ -9,13 +9,14 @@
 % Output
 %    x (numeric): The contents of the file. In the case of audio, this is a
 %       one-dimensional vector, while for images, it is a two-dimensional
-%       array.
+%       array. If the file is a MAT file, the function simply loads the
+%       'signal' variable and returns its contents.
 %
 % Description
 %    Detecting the type of file that filename refers to, the function calls
-%    one of AUREAD, WAVREAD, SPHERE_READ, AUDIO_READ or IMREADBW in order to
-%    read the data contained in the file. Any additional arguments are passed
-%    on to the loading function.
+%    one of AUREAD, WAVREAD, SPHERE_READ, AUDIO_READ, IMREADBW, or LOAD in
+%    order to read the data contained in the file. Any additional arguments are
+%    passed on to the loading function.
 %
 % See also
 %    SPHERE_READ, IMREADBW
@@ -51,6 +52,9 @@ function varargout = data_read(file,varargin)
 	elseif length(file) > 4 && (strcmpi(file(end-3:end),'.jpg')...
 			|| strcmpi(file(end-3:end),'.png') )
 		varargout{1} = imreadBW(file,varargin{:});
+	elseif length(file) > 4 && strcmpi(file(end-3:end), '.mat')
+		f = load(file);
+		varargout{1} = f.signal;
 	else
 		error('Unknown file extension!');
 	end
