@@ -77,7 +77,7 @@ function src = create_src(directory,objects_fun)
 end
 
 function files = find_files(directory)
-	extensions = {'au','wav','ogg','jpg','png'};
+	extensions = {'au','wav','ogg','jpg','png','mat'};
 	
 	dir_list = dir(directory);
 	
@@ -91,7 +91,7 @@ function files = find_files(directory)
 			continue;
 		end
 		
-		% Depending on file type, recurse or add audio file.
+		% Depending on file type, recurse or add file.
 		if dir_list(k).isdir
 			files = [files find_files(fullfile(directory,name))];
 		else
