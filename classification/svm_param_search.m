@@ -40,6 +40,8 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 		[cvtrain_set,cvvalid_set] = create_partition(obj_class,ratio,0);
 		cvtrain_set = cvtrain_set;
 		cvvalid_set = cvvalid_set;
+
+		% TODO: Check for empty validation set.
 		
 		% If some reweighting is needed let svm_train know that even in
 		% this phase, the weigths should be computed base on the total
