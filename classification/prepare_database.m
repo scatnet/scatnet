@@ -14,6 +14,8 @@
 %          []).
 %       options.parallel (boolean): If true, tries to use the Distributed
 %          Computing Toolbox to speed up calculation (default true).
+%       options.verbose (boolean): If true, outputs a dot (.) for each
+%          completed file (default true).
 %       Other options are listed in the help for the FEATURE_WRAPPER function.
 % Output
 %    database (struct): The database of feature vectors.
@@ -29,6 +31,7 @@ function db = prepare_database(src,feature_fun,opt)
 	opt = fill_struct(opt, 'feature_sampling', 1);
 	opt = fill_struct(opt, 'file_normalize', []);
 	opt = fill_struct(opt, 'parallel', 1);
+	opt = fill_struct(opt, 'verbose', true);
 	
 	features = cell(1,length(src.files));
 	obj_ind = cell(1,length(src.files));
@@ -88,7 +91,10 @@ function db = prepare_database(src,feature_fun,opt)
 			for l = 1:length(file_objects)
 				features{k}{l} = buf(:,:,l);
 			end
-			fprintf('.');
+
+			if opt.verbose
+				fprintf('.');
+			end
 		end
 	else
 		time_start = clock;
@@ -124,10 +130,15 @@ function db = prepare_database(src,feature_fun,opt)
 			end
 			time_elapsed = etime(clock, time_start);
 			estimated_time_left = time_elapsed * (length(src.files)-k) / k;
-			fprintf('.');
+
+			if opt.verbose
+				fprintf('.');
+			end
 		end
 	end
-	fprintf('\n');
+	if opt.verbose
+		fprintf('\n');
+	end
 
 	% Identify the files for which objects have been computed.
 	nonempty = find(~cellfun(@isempty,features));
