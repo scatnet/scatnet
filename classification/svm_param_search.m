@@ -7,7 +7,10 @@
 %    db (struct): The database containing the feature vector.
 %    train_set (int): The object indices of the training instances.
 %    valid_set (int): The object indices of the validation instances.
-%    options (struct): The training options passed to svm_train.
+%    options (struct): The training options passed to svm_train. In addition,
+%       the following options are used:
+%          options.verbose (boolean): If true, outputs results of each
+%             parameter option (default true).
 %
 % Output
 %    err (numeric): The errors for the parameters (C, gamma).
@@ -30,7 +33,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'C',8);
 	opt = fill_struct(opt,'cv_folds',5);
 	opt = fill_struct(opt,'reweight',0);
-
+	opt = fill_struct(opt,'verbose',true);
 
 	if isempty(valid_set)	
 		obj_class = [db.src.objects(train_set).class];
@@ -41,7 +44,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 		cvtrain_set = cvtrain_set;
 		cvvalid_set = cvvalid_set;
 
-		% TODO: Check for empty validation set.
+        % TODO: Check for empty validation set.
 		
 		% If some reweighting is needed let svm_train know that even in
 		% this phase, the weigths should be computed base on the total
@@ -65,7 +68,9 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			opt1.C = C(r);
 			opt1.gamma = gamma(r);
 			
-			fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
+			if opt.verbose
+				fprintf('testing C = %f, gamma = %f.\n',opt1.C,opt1.gamma);
+			end
 			
 			tm0 = tic;
 			
@@ -78,7 +83,9 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 				err(r,1) = classif_err(labels,valid_set,db.src);
 			end
 			
-			fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
+			if opt.verbose
+				fprintf('\terror = %f (%.2f seconds).\n',err(r,1),toc(tm0));
+			end
 		end
 	end
 
