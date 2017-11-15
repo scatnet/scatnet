@@ -21,7 +21,7 @@ function err = classif_err(labels,test_set,src)
 	if isfield(src,'cluster')
 		cluster = src.cluster;
 	else
-		cluster = 1:max(truth);
+		cluster = 1:numel(src.classes);
 	end
 	
 	err = 1-sum(bsxfun(@eq,cluster(labels),cluster(truth)),2)/length(truth);
