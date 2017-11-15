@@ -9,6 +9,10 @@
 %    valid_set (int): The object indices of the validation instances.
 %    options (struct): The training options passed to svm_train. In addition,
 %       the following options are used:
+%          options.cv_folds (numeric): If valid_set is empty, this determines
+%             the number of cross-validation folds to calculate from the
+%             training set. If set to Inf, leave-one-out cross-validation will
+%             be performed.
 %          options.verbose (boolean): If true, outputs results of each
 %             parameter option (default true).
 %
@@ -35,7 +39,7 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'reweight',0);
 	opt = fill_struct(opt,'verbose',true);
 
-	if isempty(valid_set)	
+	if isempty(valid_set) && ~isinf(opt.cv_folds)
 		obj_class = [db.src.objects(train_set).class];
 		
 		ratio = (opt.cv_folds-1)/opt.cv_folds;
@@ -57,6 +61,14 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 			
 			[cvtrain_set,cvvalid_set] = ...
 				next_fold(obj_class,cvtrain_set,cvvalid_set);
+		end
+	elseif isempty(valid_set) && isinf(opt.cv_folds)
+		for f = 1:numel(train_set)
+			cvtrain_set = find(1:numel(train_set) ~= f);
+			cvvalid_set = f;
+
+			[err(:,f),C,gamma] = svm_param_search(db, ...
+				train_set(cvtrain_set),train_set(cvvalid_set),opt);
 		end
 	else
 		r = 1;
