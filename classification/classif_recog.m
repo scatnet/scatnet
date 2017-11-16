@@ -1,16 +1,16 @@
 % CLASSIF_RECOG Calculates the average recognition rate
 %
 % Usage
-%    [rr_mean,recog_rate] =  CLASSIF_RECOG(labels,test_set,truth)
+%    [recog_mean, recog_rates] = CLASSIF_RECOG(labels, test_set, truth);
 %
 % Input
 %    labels (int): The labels attributed to the testing instances.
 %    test_set (int): The object indices of the testing instances.
-%    truth: the actual labels of the testing instances
+%    truth (int): the actual labels of the testing instances.
 %          
 % Output
-%    rr_mean (real): The mean recognition rate
-%    recog_rate(real): array containing the individual recognition rates of
+%    recog_mean (numeric): The mean recognition rate
+%    recog_rates (numeric): array containing the individual recognition rates of
 %       each class.
 %
 % Description
@@ -19,26 +19,24 @@
 %    data set is highly unbalanced.
 %
 % See also
-%    SVM_TEST, CLASSIF_ERR, CLASSIF_RECOG
+%    SVM_TEST, CLASSIF_ERR
 
-function [rg_mean,recog_rate]=classif_recog(labels,test_set,truth)
+function [recog_mean, recog_rates]=classif_recog(labels, test_set, truth)
     if isstruct(truth)
-        src=truth;
+        src = truth;
         truth = [src.objects.class];
     end
 
     % Normally, the test_set contains samples of all classes
-    recog_rate=zeros(1,max(truth));
-    gdTruth=truth(:,test_set);
+    recog_rates = zeros(1, max(truth));
+    gdTruth = truth(:,test_set);
 
     for k=1:max(truth)
-        mask=k==gdTruth;
-        good_elts=find(labels==k & mask);
+        mask = k==gdTruth;
+        good_elts = find(labels==k & mask);
 
-        mask1=numel(find(mask==1));
-        recog_rate(k)=numel(good_elts)/mask1;
+        recog_rates(k) = numel(good_elts)/sum(mask);
     end
 
-    rg_mean=mean(recog_rate);
+    recog_mean = mean(recog_rates);
 end
-
