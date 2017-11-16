@@ -38,5 +38,5 @@ function [recog_mean, recog_rates]=classif_recog(labels, test_set, truth)
         recog_rates(k) = numel(good_elts)/sum(mask);
     end
 
-    recog_mean = mean(recog_rates);
+    recog_mean = mean(recog_rates(isfinite(recog_rates)));
 end
