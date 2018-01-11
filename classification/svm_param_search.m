@@ -39,37 +39,8 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'reweight',0);
 	opt = fill_struct(opt,'verbose',true);
 
-	if isempty(valid_set) && ~isinf(opt.cv_folds)
-		obj_class = [db.src.objects(train_set).class];
-		
-		ratio = (opt.cv_folds-1)/opt.cv_folds;
-		
-		[cvtrain_set,cvvalid_set] = create_partition(obj_class,ratio,0);
-		cvtrain_set = cvtrain_set;
-		cvvalid_set = cvvalid_set;
-
-        % TODO: Check for empty validation set.
-		
-		% If some reweighting is needed let svm_train know that even in
-		% this phase, the weigths should be computed base on the total
-		% training_set, set opt.reweight to 2.
-		% opt.reweight can take the value of 2 only during cross_validation!
-		
-		for f = 1:opt.cv_folds
-			[err(:,f),C,gamma] = svm_param_search(db, ...
-				train_set(cvtrain_set),train_set(cvvalid_set),opt);
-			
-			[cvtrain_set,cvvalid_set] = ...
-				next_fold(obj_class,cvtrain_set,cvvalid_set);
-		end
-	elseif isempty(valid_set) && isinf(opt.cv_folds)
-		for f = 1:numel(train_set)
-			cvtrain_set = find(1:numel(train_set) ~= f);
-			cvvalid_set = f;
-
-			[err(:,f),C,gamma] = svm_param_search(db, ...
-				train_set(cvtrain_set),train_set(cvvalid_set),opt);
-		end
+	if isempty(valid_set)
+		[err, C, gamma] = cv_search(db, train_set, opt);
 	else
 		r = 1;
 		[C,gamma] = ndgrid(opt.C,opt.gamma);
@@ -101,4 +72,39 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 		end
 	end
 
+end
+
+function [err, C, gamma] = cv_search(db, train_set, opt)
+    if ~isinf(opt.cv_folds)
+		obj_class = [db.src.objects(train_set).class];
+		
+		ratio = (opt.cv_folds-1)/opt.cv_folds;
+		
+		[cvtrain_set,cvvalid_set] = create_partition(obj_class,ratio,0);
+		cvtrain_set = cvtrain_set;
+		cvvalid_set = cvvalid_set;
+
+        % TODO: Check for empty validation set.
+		
+		% If some reweighting is needed let svm_train know that even in
+		% this phase, the weigths should be computed base on the total
+		% training_set, set opt.reweight to 2.
+		% opt.reweight can take the value of 2 only during cross_validation!
+		
+		for f = 1:opt.cv_folds
+			[err(:,f),C,gamma] = svm_param_search(db, ...
+				train_set(cvtrain_set),train_set(cvvalid_set),opt);
+			
+			[cvtrain_set,cvvalid_set] = ...
+				next_fold(obj_class,cvtrain_set,cvvalid_set);
+		end
+	else
+		for f = 1:numel(train_set)
+			cvtrain_set = find(1:numel(train_set) ~= f);
+			cvvalid_set = f;
+
+			[err(:,f),C,gamma] = svm_param_search(db, ...
+				train_set(cvtrain_set),train_set(cvvalid_set),opt);
+		end
+	end
 end
