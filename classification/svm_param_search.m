@@ -40,7 +40,12 @@ function [err,C,gamma] = svm_param_search(db,train_set,valid_set,opt)
 	opt = fill_struct(opt,'verbose',true);
 
 	if isempty(valid_set)
-		[err, C, gamma] = cv_search(db, train_set, opt);
+		if ~isfield(db.src.objects, 'augment') || ...
+			all([db.src.objects.augment] == 0)
+			[err, C, gamma] = cv_search(db, train_set, opt);
+		else
+			[err, C, gamma] = cv_search_aug(db, train_set, opt);
+		end
 	else
 		r = 1;
 		[C,gamma] = ndgrid(opt.C,opt.gamma);
@@ -106,5 +111,34 @@ function [err, C, gamma] = cv_search(db, train_set, opt)
 			[err(:,f),C,gamma] = svm_param_search(db, ...
 				train_set(cvtrain_set),train_set(cvvalid_set),opt);
 		end
+	end
+end
+
+function [err, C, gamma] = cv_search_aug(db, train_set, opt)
+	objects = db.src.objects(train_set);
+
+	[clips, obj_inds] = unique([objects.clip_id]);
+	clip_classes = [objects(obj_inds).class];
+
+	if ~isinf(opt.cv_folds)
+		ratio = (opt.cv_folds-1)/opt.cv_folds;
+
+		[cvtrain_idx, cvvalid_idx] = create_partition( ...
+			clip_classes, ratio, 0);
+
+		for f = 1:opt.cv_folds
+			cvtrain_set = find(ismember([db.src.objects.clip_id], ...
+				clips(cvtrain_idx)));
+			cvvalid_set = find(ismember([db.src.objects.clip_id], ...
+				clips(cvvalid_idx)) & [db.src.objects.augment] == 0);
+
+			[err(:,f), C, gamma] = svm_param_search(db, ...
+				cvtrain_set, cvvalid_set, opt);
+
+			[cvtrain_idx, cvvalid_idx] = next_fold( ...
+				clip_classes, cvtrain_idx, cvvalid_idx);
+		end
+	else
+		error('Not implemented');
 	end
 end
