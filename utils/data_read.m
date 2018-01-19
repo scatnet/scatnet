@@ -25,6 +25,18 @@ function varargout = data_read(file,varargin)
 	if nargin < 1
 		error('Must specify filename!');
 	end
+
+	if numel(varargin) == 0
+		cached_data = cache_util(2, file);
+		if ~isempty(cached_data)
+			varargout{1} = cached_data;
+			return;
+		end
+	end
+
+	if ~isempty(varargin) && strcmp(varargin{end}, 'nocache')
+		varargin = varargin(1:end-1);
+	end
 	
 	if length(file) > 3 && strcmpi(file(end-2:end),'.au')
 		[varargout{1},varargout{2}] = auread(file,varargin{:});
