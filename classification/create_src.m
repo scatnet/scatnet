@@ -83,31 +83,18 @@ function files = find_files(directory)
 	
 	files = {};
 	
-	for k = 1:length(dir_list)
-		name = dir_list(k).name;
+	% Remove hidden files/directories.
+	dir_list = dir_list(~startsWith({dir_list.name}, '.'));
 		
-		% Hidden file or current/upper directory? Skip.
-		if name(1) == '.'
-			continue;
-		end
+	% Separate into directories and files.
+	dir_list_d = dir_list([dir_list.isdir]);
+	dir_list_f = dir_list(~[dir_list.isdir]);
 		
-		% Depending on file type, recurse or add file.
-		if dir_list(k).isdir
-			files = [files find_files(fullfile(directory,name))];
-		else
-			found = 0;
-			for l = 1:length(extensions)
-				len = length(extensions{l});
-				if length(name) > len+1 && ...
-				   strcmpi(name(end-len:end),['.' extensions{l}])
-					found = l;
-					break;
-				end
-			end
-			if found > 0
-				files = [files fullfile(directory,name)];
-			end
+	for k = 1:numel(dir_list_d)
+		files = [files find_files(fullfile(directory, dir_list_d(k).name))];
 		end
-	end
-end
 
+	files = [files ...
+		cellfun(@(f)(fullfile(directory, f)), {dir_list_f.name}, ...
+		'UniformOutput', false)];
+end
