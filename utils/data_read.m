@@ -37,9 +37,12 @@ function varargout = data_read(file,varargin)
 	if ~isempty(varargin) && strcmp(varargin{end}, 'nocache')
 		varargin = varargin(1:end-1);
 	end
+
+	is_1d = false;
 	
 	if length(file) > 3 && strcmpi(file(end-2:end),'.au')
 		[varargout{1},varargout{2}] = auread(file,varargin{:});
+		is_1d = true;
 	elseif length(file) > 4 && strcmpi(file(end-3:end),'.wav')
 		fid = fopen(file,'r');
 		s = textscan(fid,'%s',1);
@@ -55,12 +58,14 @@ function varargout = data_read(file,varargin)
 		else
 			[varargout{1},varargout{2}] = sphere_read(file,varargin{:});
 		end
+		is_1d = true;
 	elseif length(file) > 4 && strcmpi(file(end-3:end), '.ogg')
 		if exist('audioread')
 			[varargout{1},varargout{2}] = audioread(file,varargin{:});
 		else
 			error('Cannot read OGG file since audioread is not present!');
 		end
+		is_1d = true;
 	elseif length(file) > 4 && (strcmpi(file(end-3:end),'.jpg')...
 			|| strcmpi(file(end-3:end),'.png') )
 		varargout{1} = imreadBW(file,varargin{:});
@@ -69,5 +74,9 @@ function varargout = data_read(file,varargin)
 		varargout{1} = f.signal;
 	else
 		error('Unknown file extension!');
+	end
+
+	if isempty(varargin) && is_1d
+		varargout{1} = mean(varargout{1}, 2);
 	end
 end
