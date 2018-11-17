@@ -164,7 +164,7 @@ function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
             if scat_opt.negative_freq
                 % Wavelet transform with negative frequencies.
                 [~, Z_neg_Psi, ~, meta_neg_Psi] = ...
-                    wavelet_1d(signal, neg_filters, scat_opt);
+                    wavelet_1d(signal, neg_filters, scat_opt_fr);
                 % Append these to the set of all wavelet coefficients
                 % TODO : use [Psi_mask Psi_mask(end:-1:1)] ?
                 Psi_mask = [Psi_mask Psi_mask];
