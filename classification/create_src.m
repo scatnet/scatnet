@@ -94,7 +94,15 @@ function files = find_files(directory)
 		files = [files find_files(fullfile(directory, dir_list_d(k).name))];
 		end
 
+	% Filter for extensions.
+	dir_list_f_ext = struct([]);
+	for ell = 1:numel(extensions)
+		idx = endsWith({dir_list_f.name}, extensions{ell}, 'IgnoreCase', true);
+
+		dir_list_f_ext = [dir_list_f_ext dir_list_f(idx)];
+	end
+
 	files = [files ...
-		cellfun(@(f)(fullfile(directory, f)), {dir_list_f.name}, ...
+		cellfun(@(f)(fullfile(directory, f)), {dir_list_f_ext.name}, ...
 		'UniformOutput', false)];
 end
