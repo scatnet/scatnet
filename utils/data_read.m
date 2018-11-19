@@ -41,7 +41,13 @@ function varargout = data_read(file,varargin)
 	is_1d = false;
 	
 	if length(file) > 3 && strcmpi(file(end-2:end),'.au')
-		[varargout{1},varargout{2}] = auread(file,varargin{:});
+		if exist('audioread')
+			% If present, use it since auread is gone in newer versions of
+			% MATLAB.
+			[varargout{1},varargout{2}] = audioread(file,varargin{:});
+		else
+			[varargout{1},varargout{2}] = wavread(file,varargin{:});
+		end
 		is_1d = true;
 	elseif length(file) > 4 && strcmpi(file(end-3:end),'.wav')
 		fid = fopen(file,'r');
