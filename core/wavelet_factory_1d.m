@@ -51,6 +51,9 @@ function [Wop, filters] = wavelet_factory_1d(N, filt_opt, scat_opt)
     Wop = cell(1,scat_opt.M);
 	for m = 0:scat_opt.M
 		filt_ind = min(numel(filters), 1+m);
-		Wop{1+m} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, scat_opt));
+        scat_opt_m = scat_opt;
+        scat_opt_m.oversampling = scat_opt.oversampling + ...
+            (scat_opt.M-m)*(scat_opt.path_margin-1);
+		Wop{1+m} = @(X)(wavelet_layer_1d(X, filters{filt_ind}, scat_opt_m));
 	end
 end
