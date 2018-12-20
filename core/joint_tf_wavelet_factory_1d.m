@@ -7,12 +7,22 @@ function [Wop, time_filters, freq_filters] = ...
 	scat_opt1 = scat_opt;
 	scat_opt1.phi_renormalize = 0;
     
+    m = 0;
+    scat_opt_m = scat_opt1;
+    scat_opt_m.oversampling = scat_opt.oversampling + ...
+        (scat_opt.M-m)*(scat_opt.path_margin-1);
+
     Wop = cell(1,scat_opt.M+1);
-	Wop{1} = @(X)(wavelet_layer_1d(X, time_filters{1}, scat_opt1));
+	Wop{1} = @(X)(wavelet_layer_1d(X, time_filters{1}, scat_opt_m));
 	
 	for m = 1:scat_opt.M
 		time_filt_ind = min(numel(time_filters), m+1);
 		freq_filt_ind = min(numel(freq_filters), m+1);
+
+        scat_opt_m = scat_opt1;
+        scat_opt_m.oversampling = scat_opt.oversampling + ...
+            (scat_opt.M-m)*(scat_opt.path_margin-1);
+
 		Wop{1+m} = @(X)( ...
             joint_tf_wavelet_layer_1d(X, ...
             {freq_filters{freq_filt_ind},time_filters{time_filt_ind}}, ...
