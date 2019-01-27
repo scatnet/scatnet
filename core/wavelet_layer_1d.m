@@ -1,12 +1,7 @@
-% WAVELET_LAYER_1D Compute the one-dimensional wavelet transform from
-% the modulus wavelet coefficients of the previous layer.
+% WAVELET_LAYER_1D Apply 1D wavelet transform layer
 %
-% Usages
-%    [U_phi , U_psi] = wavelet_layer_1d(U, filters)
-%
-%    [U_phi , U_psi] = wavelet_layer_1d(U, filters, scat_opt)
-%
-%    [U_phi , U_psi] = wavelet_layer_1d(U, filters, scat_opt, wavelet)
+% Usage
+%    [U_phi, U_psi] = WAVELET_LAYER_1D(U, filters, scat_opt, wavelet)
 %
 % Input
 %    U (struct): The input layer to be transformed.
@@ -18,8 +13,8 @@
 %             scales with respect to the bandwidth of the signal. If the band-
 %             with of a signal in U is bw, only wavelet filters of center fre-
 %             quency less than bw*2^path_margin are applied (default 0).
-%    wavelet (function handle): the wavelet transform function (default
-%       @wavelet_1d).  
+%    wavelet (function handle): The wavelet transform function (default
+%       @wavelet_1d).
 %
 % Output
 %    U_phi The coefficients of in, lowpass-filtered (scattering
@@ -27,11 +22,10 @@
 %    U_psi: The wavelet transform coefficients.
 %
 % Description
-%    This function has a pivotal role between WAVELET_1D (which computes a
-%    single wavelet transform), and WAVELET_FACTORY_1D (which creates the
-%    whole cascade). Given inputs modulus wavelet coefficients
-%    corresponding to a layer, WAVELET_LAYER_1D computes the wavelet
-%    transform coefficients of the next layer using WAVELET_1D. 
+%    Given inputs modulus wavelet coefficients corresponding to a layer,
+%    WAVELET_LAYER_1D computes the wavelet transform coefficients of the next
+%    layer using WAVELET_1D.
+%
 % See also
 %   WAVELET_1D, WAVELET_FACTORY_1D, WAVELET_LAYER_2D
 

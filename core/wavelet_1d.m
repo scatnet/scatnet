@@ -1,8 +1,6 @@
-% WAVELET_1D One-dimensional wavelet transform
+% WAVELET_1D Apply 1D wavelet transform
 %
-% Usages
-%    [x_phi, x_psi, meta_phi, meta_psi] = WAVELET_1D(x, filters)
-%
+% Usage
 %    [x_phi, x_psi, meta_phi, meta_psi] = WAVELET_1D(x, filters, options)
 %
 % Input
@@ -89,4 +87,3 @@ function [x_phi, x_psi, meta_phi, meta_psi] = wavelet_1d(x, filters, options)
 		x_psi{p1} = reshape(x_psi{p1}, [size(x_psi{p1},1) 1 size(x_psi{p1},2)]);
 	end
 end
-
