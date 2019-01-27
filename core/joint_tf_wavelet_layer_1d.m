@@ -1,38 +1,38 @@
-% JOINT_TF_WAVELET_LAYER_1D Compute the two-dimensional, joint
-% time-frequency wavelet transform from the modulus wavelet coefficients of
-% the previous layer in a scattering network.
+% JOINT_TF_WAVELET_LAYER_1D Apply joint time-frequency wavelet transform layer
 %
-% Usages
-%    [U_Phi,U_Psi] = joint_tf_wavelet_layer_1d(U,filters)
-%
-%    [U_Phi,U_Psi] = joint_tf_wavelet_layer_1d(U,filters,scat_opt)
+% Usage
+%    [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
 %
 % Input
-%    U (struct): the input layer to be transformed.
-%    filters (cell): the filters of the wavelet transform.
-%       filters{1} contains the first-order temporal filters,
-%       filters{2} contains the second-order temporal filters,
-%       filters{3} contains the second-order log-frequential filters.
-%    scat_opt (struct): the options of joint scattering transform.
-%    scat_opt fields are :
-%       * negative_freq (logical) : when set to true, computes scattering
-%       coefficients for negative frÂ°j's, that is, chirplets going
-%       downwards in log-frequency alonf time, as well as their mirrors.
-%       This options is important to preserve the energy in the previous
-%       layer. (default true)
+%    U (struct): The input layer to be transformed.
+%    filters (cell): The filters of the wavelet transform. The log-frequential
+%       filters are in filters{1}, while the the time filters are in
+%       filters{2}.
+%    scat_opt (struct): The options of the wavelet layer. Some are used in the
+%       function itself, while others are passed on to the individual wavelet
+%       transforms in time and log-frequency (that is WAVELET_LAYER_1D and
+%       WAVELET_1D). The parameters used by JOINT_TF_WAVELET_LAYER_1D are:
+%          negative_freq: If true, computes wavelet decomposition for negative
+%             values of fr_j, the log-quefrency variable. This is necessary to
+%             preserve the energy in the previous layer and therefore extract
+%             the necessary structure (default true).
+%          zero_pad: If true, will zero-pad along the frequency axis when
+%          computing the log-frequential wavelet decomposition (default false).
 %
 % Description
-%   This function builds a scattering layer, which performs two wavelet
-%   transform at once : one over the time axis, the other on the
-%   log-frequency axis. Henceforth, it is known as joint time-frequency
-%   (tf) wavelet layer for 1-d signals. Starting from a scalogram U, it
-%   computes a two-dimensional, low-pass filtering U_Phi of U, as well as
-%   an array of two-dimensional, band-pass filtering U_Psi is required.
-%   This function is called by joint_tf_wavelet_factory_1d and calls
-%   wavelet_factory_1d twice, is whch most of the computation is
-%   concentrated.
+%   This function decomposes a layer along two axes: time and log-frequency.
+%   The log-frequency axis is given by the first scale index, j_1. The
+%   decomposition is done in a separable manner, which means that the
+%   two-dimensional filters are obtained by multiplying all possible filters
+%   along the time axis with all possible filters along the log-frequency axis.
+%   The time filters are given by filters{2}, while the log-frequency domain
+%   filters are given by filters{1}. The output U_phi contains the convolution
+%   by the combined lowpass filter obtained by multiplying the lowpass filters
+%   of the two filter banks, while U_psi contains the convolutions by all other
+%   filter products.
+%
 % See also
-%   WAVELET_LAYER_1D, WAVELER_LAYER_2D, WAVELER_LAYER_3D
+%   WAVELET_LAYER_1D, JOINT_TF_WAVELET_FACTORY_1D
 
 function [U_Phi, U_Psi] = joint_tf_wavelet_layer_1d(U, filters, scat_opt)
     % PRELUDE : as in wavelet_layer_1d, default options are managed here.
