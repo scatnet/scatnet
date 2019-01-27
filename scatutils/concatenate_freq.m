@@ -43,8 +43,8 @@
 %    first group, and so on. Within each group, the columns are ordered in 
 %    order of decreasing lambda1, just like within the groups themselves.
 %
-% See also 
-%    SCAT_FREQ
+% See also
+%    SEPARATE_FREQ, SCAT_FREQ, JOINT_TF_WAVELET_LAYER_1D
 
 function Y = concatenate_freq(X, fmt)
 	if nargin < 2

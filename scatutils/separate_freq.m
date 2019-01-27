@@ -1,3 +1,30 @@
+% SEPARATE_FREQ Separate first frequencies from tables into cell arrays
+%
+% Usage
+%    Z = SEPARATE_FREQ(Y);
+%
+% Input
+%    Y (struct or cell): The scattering layer to process, or a cell array of
+%       scattering layers. These all have signals that are two-dimensional,
+%       with the first dimension corresponding to the lambda1 log-frequency.
+%
+% Output
+%    Z (struct or cell): The same scattering layers, with all coefficients
+%       separated along the first dimension into different signals.
+%
+% Description
+%    SEPARATE_FREQ undoes the action of CONCATENATE_FREQ, which takes a (set
+%    of) scattering layer(s) and concatenates them along the first
+%    log-frequency dimension lambda1, grouping the coefficients by the
+%    remaining log-frequencies lambda2, lambda3, and so on. The SEPARATE_FREQ
+%    function takes such a concatenated scattering layer and separates out the
+%    different time signals corresponding to different lambda1 values.
+%
+%    For more details, see CONCATENATE_FREQ.
+%
+% See also
+%    CONCATENATE_FREQ, JOINT_TF_WAVELET_LAYER_1D
+
 function Z = separate_freq(Y)
 	if iscell(Y)
 		Z = {};
