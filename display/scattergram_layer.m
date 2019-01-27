@@ -1,26 +1,25 @@
-%SCATTERGRAM_LAYER Formats a one-dimensional layer as an image
-% Usages
-%   img = scattergram_layer(X,[])
+% SCATTERGRAM_LAYER Formats a 1D layer as an image
 %
-%   img = scattergram_layer(X,j)
+% Usage
+%    img = SCATTERGRAM_LAYER(X, j)
 %
 % Input
-%    X (struct): a scattering representation layer
-%    j (integer array): a vector of scale indexes 
+%    X (struct): A scattering layer, typically obtained from SCAT.
+%    j (integer array): A scale prefix specifying which coefficients to
+%       extract. If empty, all coefficients are obtained (default empty).
 %
 % Output
-%    img (numeric): a two-dimensional array of scattering coefficients,
-%    indexed by scale and time
+%    img (numeric): A 2D array of scattering coefficients, indexed by scale and
+%       time.
 %
 % Description
 %    This function is called by SCATTERGRAM, layer by layer, in order to
 %    provide a time-frequency visualisation of scattering coefficients.
 %
 % See also
-%   SCATTERGRAM  
-    
+%    SCATTERGRAM  
 
-function img = scattergram_layer(X,j)
+function img = scattergram_layer(X, j)
 	if all(size(j)==[0 0])
 		j = zeros(0,1);
 	end
