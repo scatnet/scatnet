@@ -1,12 +1,16 @@
-% selesnick_filter_bank_1d: Creates a Selesnick wavelet filter bank.
+% SELESNICK_FILTER_BANK_1D Create a Selesnick wavelet filter bank
+%
 % Usage
-%    filters = selesnick_filter_bank_1d(sz, options)
+%    filters = SELESNICK_FILTER_BANK_1D(sz, options)
+%
 % Input
 %    sz: The size of the input data.
 %    options (optional): Filter parameters.
+%
 % Output
 %    filters: The Selesnick wavelet filter bank corresponding to the data 
 %       size sz and the filter parameters in options.
+%
 % Description
 %    Selesnick wavelet filters are compactly supported complex wavelets, 
 %    whose real and imaginary parts have 4 vanishing moments and are nearly
@@ -17,9 +21,10 @@
 %          maximum size of the wavelets according to the formula 2^J 
 %          (default log2(sz)).
 %       options.boundary, options.precision, and options.filter_format: 
-%          See documentation for filter_bank function.
+%          See documentation for FILTER_BANK function.
+%
 % References
-%   http://eeweb.poly.edu/iselesni/WaveletSoftware/dt1D.html
+%    http://eeweb.poly.edu/iselesni/WaveletSoftware/dt1D.html
 
 function filters = selesnick_filter_bank_1d(sig_length,options)
 	if nargin < 2
