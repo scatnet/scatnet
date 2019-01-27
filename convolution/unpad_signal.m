@@ -1,4 +1,4 @@
-% UNPAD_SIGNAL Remove de padding from PAD_SIGNAL
+% UNPAD_SIGNAL Remove padding from PAD_SIGNAL
 %
 % Usage
 %    x = UNPAD_SIGNAL(y, resolution, target_sz, center)
@@ -21,14 +21,15 @@
 %    before being convolved with CONV_SUB_1D or CONV_SUB_2D. After this, the
 %    padding needs to be removed to recover a regular signal. This is achieved
 %    using UNPAD_SIGNAL, which takes the padded, convolved signal y as input,
-%    as well as its resolution relative to the original, unpadded version,
-%    and the size of this original version. Using this, it extracts the
+%    as well as its resolution relative to the original, unpadded version, and
+%    the size of this original version. Using this, it extracts the
 %    coefficients in y that correspond to the domain of the original signal.
 %    If the center flag was specified during PAD_SIGNAL, it is specified here
 %    again in order to extract the correct part.
 %
 % See Also
 %    PAD_SIGNAL
+
 function x = unpad_signal(x, res, target_sz, center)
     if nargin < 4
         center = 0;

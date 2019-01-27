@@ -1,21 +1,21 @@
-% EXTRACT_BLOCK extract sub block of a 2d matrix
+% EXTRACT_BLOCK Extract subblock of a 2D matrix
 %
 % Usage 
 %   x_block = EXTRACT_BLOCK(x, nb_block)
 %
 % Input
-%   x (numeric): the 2d input matrix
-%   nb_block (2x1 int): the vertical and horizontal number of block
+%   x (numeric): The 2D input matrix.
+%   nb_block (2x1 int): The vertical and horizontal number of block.
 %
 % Output
-%   x_block (numeric): a 3d block matrix whos third dimension corresponds
-%       to block index.
+%   x_block (numeric): A 3D block matrix whos third dimension corresponds to
+%      block index.
 %
 % Description 
-%   Split a 2d matrix into blocks of the same dimension whose index
-%   corresponds to third dimension of the output matrix. This is used
-%   to compute the inverse fourier transform of a downsampled signal
-%   by first periodizing the signal.
+%   Split a 2D matrix into blocks of the same dimension whose index corresponds
+%   to third dimension of the output matrix. This is used to compute the
+%   inverse fourier transform of a downsampled signal by first periodizing the
+%   signal.
 %
 % Example
 %   If x contains
@@ -43,9 +43,7 @@
 % See also
 %   CONV_SUB_2D
 
-
 function x_block = extract_block(x, nb_block)
-	
 	[N, M] = size(x);
 	
 	% assert that input's size is a multiple of nb_block

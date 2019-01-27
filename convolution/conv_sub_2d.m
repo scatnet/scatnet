@@ -1,28 +1,25 @@
-% CONV_SUB_2D Two dimension convolution and downsampling
+% CONV_SUB_2D Two-dimensional convolution and downsampling
 %
 % Usage
-%   y_ds = conv_sub_2d(in, filter, ds, offset)
+%    y_ds = CONV_SUB_2D(in, filter, ds, offset)
 %
 % Input 
-%   in (numeric) :  ! WARNING ! varies depending on the filter type used :
-%       for 'fourier_multires', in = 2d fourier transform of input signal
-%       for 'spatial_support', in = original input signal
-%   filter (struct) : a filter structure, typically obtained with 
-%       a filter bank factory function such as morlet_filter_bank_2d or
-%       morlet_filter_bank_2d_pyramid
-%   ds (int) : log of downsampling rate
-%   offset (2x1 int): offset for grid of dowsampling, valid only for 
-%       filter of type 'spatial_support'. Optional, default is [0,0]
+%    in (numeric): The input signal to be convolved. WARNING: The expected
+%       format varies depending on the filter type used. For
+%       'fourier_multires', in = 2d fourier transform of input signal. For
+%       'spatial_support', in = original input signal.
+%    filter (struct): A filter structure, typically obtained with
+%        a filter bank factory function such as MORLET_FILTER_BANK_2D or
+%        MORLET_FILTER_BANK_2D_PYRAMID.
+%    ds (int): The log2 of downsampling rate.
+%    offset (2x1 int): Offset for grid of dowsampling, valid only for
+%        filter of type 'spatial_support' (default [0,0]).
 %
 % Output
-%   y_ds (numeric) : the filtered, downsampled signal, in the spatial domain.
-%
-% Description
+%    y_ds (numeric) : the filtered, downsampled signal, in the spatial domain.
 %
 % See also
-%   MORLET_FILTER_BANK_2D
-%   MORLET_FILTER_BANK_2D_PYRAMID
-%   EXTRACT_BLOCK
+%    MORLET_FILTER_BANK_2D, MORLET_FILTER_BANK_2D_PYRAMID, EXTRACT_BLOCK
 
 function y_ds = conv_sub_2d(in, filter, ds, offset)
 	if isnumeric(filter)
@@ -37,7 +34,7 @@ function y_ds = conv_sub_2d(in, filter, ds, offset)
 
 		y_ds = ifft2(sum(extract_block(in .* filter_j, [2^ds 2^ds]), 3)) / 2^ds;
 	else
-		switch filter.type 
+		switch filter.type
 			case 'fourier_multires'
 				if (nargin >= 4)
 				   error('offset is not a valid parameter for filters of type fourier_multires');

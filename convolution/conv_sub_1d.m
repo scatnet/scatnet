@@ -32,7 +32,7 @@
 %    each signal separately.
 %
 % See also
-%   CONV_SUB_2D, WAVELET_1D
+%    CONV_SUB_2D, WAVELET_1D
 
 function y_ds = conv_sub_1d(xf, filter, ds)
 	sig_length = size(xf,1);
